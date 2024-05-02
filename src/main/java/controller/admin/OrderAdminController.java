@@ -1,10 +1,8 @@
 package controller.admin;
 
 import model.bean.Order;
-import model.service.DiscountService;
 import model.service.JavaMail.MailService;
 import model.service.OrderService;
-import model.service.ProductService;
 import model.service.UserService;
 
 import javax.servlet.ServletException;
@@ -12,10 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.xml.transform.stream.StreamSource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 @WebServlet(name = "OrderAdminController", value = "/admin/order")
 public class OrderAdminController extends HttpServlet {

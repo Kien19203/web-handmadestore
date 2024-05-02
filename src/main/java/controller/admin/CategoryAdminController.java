@@ -1,8 +1,6 @@
 package controller.admin;
 
 import model.service.CategoryService;
-import model.service.DiscountService;
-import model.service.ProductService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

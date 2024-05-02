@@ -1,7 +1,6 @@
 package controller.admin;
 
 import model.service.CategoryService;
-import model.service.DiscountService;
 import model.service.ImageService;
 import model.service.ProductService;
 
@@ -11,13 +10,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.AccessDeniedException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet(name = "AddProductAdminController", value = "/addproduct")

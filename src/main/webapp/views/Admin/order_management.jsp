@@ -91,34 +91,6 @@
         .table-wrapper-scroll-y {
             display: block;
         }
-
-        <%--                    order`
-                            `id`                   int(11) NOT NULL,
-                            `orderDate`            datetime       DEFAULT current_timestamp(),
-                            `status`               varchar(20)    NOT NULL,
-                            `consigneeName`        varchar(255)   NOT NULL,
-                            `consigneePhoneNumber` varchar(255)   NOT NULL,
-                            `address`              varchar(200)   NOT NULL,
-                            `shippingFee`          decimal(10, 2) DEFAULT 0.00,
-                            `totalPrice`           decimal(10, 2) NOT NULL,
-                                             `order_details`
-                            `productId`              int(11) NOT NULL,
-                            `quantity`               int(11) NOT NULL,
-                            `finalSellingPrice`      decimal(10, 2) NOT NULL,
-                        --%>
-        .buttonload {
-            background-color: #04AA6D; /* Green background */
-            border: none; /* Remove borders */
-            color: white; /* White text */
-            padding: 12px 24px; /* Some padding */
-            font-size: 16px; /* Set a font-size */
-        }
-
-        /* Add a right margin to each icon */
-        .fa {
-            margin-left: -12px;
-            margin-right: 8px;
-        }
     </style>
 </head>
 <%
@@ -128,13 +100,10 @@
 <body>
 <div class="container-fluid mx-auto mt-2">
     <form action="<%=request.getContextPath()%>/admin/order" method="post" id="orderForm">
-        <div class="title m-auto p-2 fw-bold fs-5">
-            <span class="ps-2">Quản Lý Đơn Hàng</span>
-        </div>
         <div class="customer_list  mt-5 ">
             <%--            form--%>
-            <div class="d-flex">
-                <div>
+            <div class="row d-flex">
+                <div class="col-lg-6 col-sm-12">
                     <div class="d-flex">
                         <div class="form-check mx-1">
                             <input class="form-check-input" type="radio" name="choiceFindType" id="orderId_rdo"
@@ -182,25 +151,25 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" name="submit_filter" value="all" class="btn btn-secondary mx-2">Tất cả đơn hàng
+                <button type="submit" name="submit_filter" value="all" class="btn btn-secondary mx-2 col-lg-1 col-sm-1">Tất cả đơn
+                    hàng
                 </button>
-                <button type="submit" name="submit_filter" value="waitConfirmOrders" class="btn btn-warning mx-2">Đơn
+                <button type="submit" name="submit_filter" value="waitConfirmOrders" class="btn btn-warning mx-2 col-sm-1">
+                    Đơn
                     hàng cần xác nhận
                 </button>
-                <button type="submit" name="submit_filter" value="deliveringOrders" class="btn btn-primary mx-2">Đơn
+                <button type="submit" name="submit_filter" value="deliveringOrders" class="btn btn-primary mx-2 col-sm-1">Đơn
                     hàng đang giao
                 </button>
-                <button type="submit" name="submit_filter" value="canceledOrders" class="btn btn-danger mx-2">Đơn hàng
+                <button type="submit" name="submit_filter" value="canceledOrders" class="btn btn-danger mx-2 col-sm-1">Đơn
+                    hàng
                     đã hủy
                 </button>
-                <button type="submit" name="submit_filter" value="succcessfulOrders" class="btn btn-success mx-2">Đơn
+                <button type="submit" name="submit_filter" value="succcessfulOrders" class="btn btn-success mx-2 col-sm-1">
+                    Đơn
                     hàng thành công
                 </button>
             </div>
-            <div>
-                <p class="fw-bold fs-5 pt-3 text-center">Danh sách đơn hàng</p>
-            </div>
-            <hr>
             <div class="table-wrapper-scroll-y my-custom-scrollbar">
                 <table class="table table-striped table-hover">
                     <thead>

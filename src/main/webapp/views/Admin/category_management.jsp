@@ -16,7 +16,7 @@
     if (isAdmin) {
 %>
 <body>
-<div class="container border p-4 rounded" style="margin-top: 10%">
+<div class="container p-4">
     <form action="<%=request.getContextPath()%>/admin/category" method="post" id="categoryForm"
           onsubmit="submitForm(event)">
         <div class="row mb-3">

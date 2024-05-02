@@ -39,7 +39,9 @@
     boolean isAdmin = ((request.getSession().getAttribute("isAdmin") == null) ? false : ((boolean) request.getSession().getAttribute("isAdmin")));
     if (isAdmin) {
 %>
-<body>
+<body >
+
+<div class="container-fluid mx-auto mt-2">
 <form action="<%=request.getContextPath()%>/addproduct" method="post" enctype="multipart/form-data"
       onsubmit="return validateForm()">
     <div class="err">
@@ -161,6 +163,7 @@
         </div>
     </div>
 </form>
+</div>
 <script>
     function showAvailableCategory() {
         document.getElementById("showInputToNewCategory").style.display = "none";

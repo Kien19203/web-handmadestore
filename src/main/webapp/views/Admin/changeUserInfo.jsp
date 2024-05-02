@@ -181,20 +181,19 @@
                         </td>
 
                         <td>
-                            <select class="form-select">
+                            <select class="form-select" id="productSelect">
                                 <%!Product p;%>
                                 <%
                                     for (OrderDetail orderDetail : OrderService.getInstance().getOrderDetailsByOrderId(o.getId()
                                             + "")) {
                                         p = ProductService.getInstance().getProductById(orderDetail.getProductId() + "");
                                 %>
-                                <option>
-                                    <a target="_blank"
-                                       href="<%=request.getContextPath()%>/product-detail?id=<%=p.getId()%>"><%=p.getName()%>
-                                    </a>
-                                    - <%=orderDetail.getFinalSellingPrice()%>
-                                    - <%=orderDetail.getQuantity()%>
-                                    - <%=orderDetail.getQuantity() * orderDetail.getFinalSellingPrice()%>
+
+                                <option value="<%=p.getId()%>">
+                                        <%=p.getName()%>
+                                        - <%=orderDetail.getFinalSellingPrice()%>
+                                        - <%=orderDetail.getQuantity()%>
+                                        - <%=orderDetail.getQuantity() * orderDetail.getFinalSellingPrice()%>
                                 </option>
                                 <%}%>
                             </select>
@@ -218,7 +217,9 @@
         </div>
     </form>
 </div>
-<div><%@include file="../Footer/footer.jsp"%></div>
+<div>
+    <%@include file="../Footer/footer.jsp" %>
+</div>
 <script>
     function editName() {
         document.getElementById("input_name").disabled = false;
@@ -247,6 +248,12 @@
         document.getElementById('cancel_phone').style.display = 'none';
         document.getElementById('edit_phone').style.display = 'inline';
     }
+
+    document.getElementById('productSelect').addEventListener('change', function () {
+        var productId = this.value;
+        var url = '<%=request.getContextPath()%>/product-detail?id=' + productId;
+        window.open(url, '_blank');
+    });
 </script>
 </body>
 <%

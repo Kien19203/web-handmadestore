@@ -1,6 +1,5 @@
 package controller.admin;
 
-import model.service.CategoryService;
 import model.service.JavaMail.MailService;
 import model.service.UserService;
 

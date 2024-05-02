@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @WebServlet(name = "CustomerAdminController", value = "/admin/customer")
 public class CustomerAdminController extends HttpServlet {
@@ -56,16 +58,14 @@ public class CustomerAdminController extends HttpServlet {
                 users = UserService.getInstance().getLockUsers();
             } else if (filter.equals("findCustomer")) {
                 currentFilter = filter;
-                String name = req.getParameter("nameFilter");
-                String phone = req.getParameter("phoneFilter");
-                String email = req.getParameter("emailFilter");
-                System.out.println(name + phone + email);
-                if (!name.equals("")) {
-                    users = UserService.getInstance().findUsersByName(name);
-                } else if (!phone.equals("")) {
-                    users = UserService.getInstance().findUserByPhone(phone);
-                } else if (!email.equals("")) {
-                    users = UserService.getInstance().findUserByEmail(email);
+                String kw = req.getParameter("findCustomer");
+                req.setAttribute("kw", kw);
+                if (kw.contains("@")) {
+                    users = UserService.getInstance().findUserByEmail(kw);
+                } else if (isPhoneNumber(kw)) {
+                    users = UserService.getInstance().findUserByPhone(kw);
+                } else {
+                    users = UserService.getInstance().findUsersByName(kw);
                 }
             } else users = UserService.getInstance().getAllUsers();
         } else {
@@ -74,5 +74,20 @@ public class CustomerAdminController extends HttpServlet {
         req.setAttribute("currentFilter", currentFilter);
         req.setAttribute("users", users);
         req.getRequestDispatcher("/views/Admin/customer_management.jsp").forward(req, resp);
+    }
+
+    public static boolean isPhoneNumber(String text) {
+        // Định nghĩa mẫu regex cho số điện thoại
+        // Các định dạng hợp lệ có thể là: (123) 456-7890 hoặc 1234567890
+        String phoneNumberPattern = "^\\(?(\\d{3})\\)?[- ]?(\\d{3})[- ]?(\\d{4})$";
+
+        // Tạo Pattern object
+        Pattern pattern = Pattern.compile(phoneNumberPattern);
+
+        // Tạo Matcher object
+        Matcher matcher = pattern.matcher(text);
+
+        // Kiểm tra xem chuỗi có khớp với mẫu regex không
+        return matcher.matches();
     }
 }

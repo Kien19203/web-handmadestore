@@ -1,12 +1,6 @@
 package controller.admin;
 
-import model.bean.Category;
-import model.bean.Product;
 import model.bean.User;
-import model.service.CategoryService;
-import model.service.ProductService;
-import model.service.RoleService;
-import model.service.UserService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -14,7 +8,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.List;
 
 @WebServlet(name = "AdminController", value = "/admin")
 public class MainAdminController extends HttpServlet {
@@ -35,11 +28,21 @@ public class MainAdminController extends HttpServlet {
             String framePath = "views/Admin/admin.jsp";
             if (func != null) {
                 switch (func) {
-                    case "reference_statistics":
-                        framePath = "/views/Admin/reference_statistics.jsp";
+                    case "dashboard":
+//                        framePath = "/views/Admin/reference_statistics.jsp";
+                        framePath = "/views/Admin/dashboard.jsp";
                         break;
                     case "product_management":
                         framePath = "/views/Admin/product_management.jsp";
+                        break;
+                    case "add_product":
+                        framePath = "/views/Admin/add_product.jsp";
+                        break;
+                    case "discount_management":
+                        framePath = "/views/Admin/discount_management.jsp";
+                        break;
+                    case "category_management":
+                        framePath = "/views/Admin/category_management.jsp";
                         break;
                     case "order_management":
                         framePath = "/views/Admin/order_management.jsp";
@@ -59,8 +62,9 @@ public class MainAdminController extends HttpServlet {
                         break;
                 }
                 req.setAttribute("framePath", framePath);
+                req.setAttribute("func", func);
             }
-            req.getRequestDispatcher(framePath).forward(req, resp);
+            req.getRequestDispatcher("views/Admin/admin.jsp").forward(req, resp);
         } else {
             resp.sendRedirect("login");
         }
