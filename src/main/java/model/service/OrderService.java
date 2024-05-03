@@ -55,6 +55,8 @@ public class OrderService {
         OrderDAO.confirmOrder(orderId);
     }
 
+    public void packedOrder(String orderId) { OrderDAO.packedOrder(orderId);}
+
     public void deliveredOrder(String orderId) {
         OrderDAO.deliveredOrder(orderId);
     }
@@ -62,6 +64,7 @@ public class OrderService {
     public List<Order> getWaitConfirmOrders() {
         return OrderDAO.getWaitConfirmOrders();
     }
+    public List<Order> getPackingOrder() {return OrderDAO.getPackingOrder();}
 
     public List<Order> getDeliveringOrders() {
         return OrderDAO.getDeliveringOrders();

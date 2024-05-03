@@ -5,28 +5,43 @@
 <%@ page import="model.bean.OrderDetail" %>
 <%@ page import="model.bean.Product" %>
 <%@ page import="model.service.ProductService" %>
-<%@ page import="java.io.StringReader" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
+    /**
+     * FORMAT GIÁ TIỀN THEO ĐƠN VỊ CỦA VIỆT NAM.
+     */
     Locale locale = new Locale("vi", "VN");
     Currency currency = Currency.getInstance(locale);
     NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
-    numberFormat.setCurrency(currency);
-%>
+    numberFormat.setCurrency(currency); %>
 
 <%String currentFilter = (String) request.getAttribute("currentFilter");%>
-<%
-    System.out.println("ok: " + currentFilter);%>
+<% System.out.println("ok: " + currentFilter);%>
 <%String currentFindText = (String) request.getAttribute("currentFindText");%>
 <%
+    /** Sử dụng BIẾN currentFilter để chọn hiển thị theo các giá trị
+     *  + all = Tất cả đơn hàng. = TRẠNG THÁI MẶC ĐỊNH.
+     *  + waitConfirmOrders = Đơn hàng chờ xác nhận.
+     *  + packingOrders = Đơn hàng đang đóng gói
+     *  + delveringOrders = Đơn hàng đang vận chuyển.
+     *  + canceledOrders = Đơn hàng bị hủy.
+     *  + successfulOrders = Đơn hàng giao thành công.
+     *
+     *  - XỬ LÝ TÌM KIẾM ĐƠN HÀNG THEO TÌM KIẾM :
+     *  + orderId_rdo = mã đơn hàng.
+     *  + customerId_rdo = mã khách hàng.
+     *  + customerName_rdo = tên khách hàng.
+     */
     List<Order> orders = null;
     if (currentFilter != null) {
         if (currentFilter.equals("all")) {
             orders = OrderService.getInstance().getAllOrder();
         } else if (currentFilter.equals("waitConfirmOrders")) {
             orders = OrderService.getInstance().getWaitConfirmOrders();
+        } else if (currentFilter.equals("packingOrders")) {
+            orders = OrderService.getInstance().getPackingOrder();
         } else if (currentFilter.equals("deliveringOrders")) {
             orders = OrderService.getInstance().getDeliveringOrders();
         } else if (currentFilter.equals("canceledOrders")) {
@@ -56,6 +71,9 @@
     }
 %>
 <%
+    /** XEM CHI TIẾT ĐƠN HÀNG :
+     *  currentOrderId = mã đơn hàng muốn xem.
+     */
     String currentOrderId = (String) request.getAttribute("currentOrderId");
     Order currentOrder = OrderService.getInstance().getOrderById(currentOrderId);
     User currentOrderCustomer = (currentOrder != null) ? UserService.getInstance().getUserById(currentOrder.getUserId() + "") : null;
@@ -67,8 +85,88 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
+<%--Sử dụng dataTable--%>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+
+    <%--bootstrap4cdn--%>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous"><link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.5/datatables.min.css" rel="stylesheet">
+<%----%>
+    <script src="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.5/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <%-- jquery cdn--%>
+    <script
+            src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+            crossorigin="anonymous"></script>
     <title>Quản lý đơn hàng</title>
     <style>
+        body {
+            background-color: #393E46;
+        }
+
+        .form-check {
+            color: #EEEEEE;
+        }
+
+        /*CSS cho radio tìm kiếm theo tên khách hàng, mã đơn hàng*/
+        .searchId {
+            position: absolute;
+            z-index: 1000;
+            display: flex;
+            flex-wrap: wrap;
+            border-radius: 0.5rem;
+            background-color: #EEEEEE;
+            box-sizing: border-box;
+            box-shadow: 0 0 0px 1px rgba(0, 0, 0, 0.06);
+            /*padding: 0.25rem;*/
+            width: 300px;
+            font-size: 14px;
+        }
+
+        .searchId .form-check-label {
+            flex: 1 1 auto;
+            text-align: center;
+        }
+
+        .searchId .form-check-label input {
+            display: none;
+        }
+
+        .searchId .form-check-label .label-name {
+            display: flex;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem;
+            border: none;
+            padding: .5rem 0;
+            color: #393E46;
+            transition: all .15s ease-in-out;
+        }
+
+        .searchId .form-check-label input:checked + .label-name {
+            background-color: #00ADB5;
+            color:#EEEEEE ;
+            font-weight: 600;
+        }
+
+        /*Input */
+        .form-control {
+            padding-left: 310px;
+            padding-right: 20px;
+
+
+        }
+        .form-check-input:active {
+            border-bottom-color: #00ADB5;
+
+        }
+        .input-group-append {
+            position: absolute;
+        }
         #showBox, #cancelBox {
             position: fixed;
             top: 40%;
@@ -91,9 +189,27 @@
         .table-wrapper-scroll-y {
             display: block;
         }
+
+        /* Filter theo giai đoạn xử lý đơn hàng*/
+        .process-filter .btn {
+            background-color: #393E46;
+            border-bottom: solid 2px;
+            border-bottom-color: #EEEEEE;
+            color: #FFFFFF;
+            border-radius: 0;
+        }
+
+        .process-filter .btn:hover {
+            border-bottom-color: #00ADB5;
+        }
+
+
     </style>
 </head>
 <%
+    /** XỬ LÝ ĐỂ VÀO TÀI KHOẢN ADMIN.
+     * + check nếu không phải admin => quay trở về đăng nhập.
+     */
     boolean isAdmin = ((request.getSession().getAttribute("isAdmin") == null) ? false : ((boolean) request.getSession().getAttribute("isAdmin")));
     if (isAdmin) {
 %>
@@ -102,73 +218,77 @@
     <form action="<%=request.getContextPath()%>/admin/order" method="post" id="orderForm">
         <div class="customer_list  mt-5 ">
             <%--            form--%>
-            <div class="row d-flex">
+            <div class="row d-flex ">
                 <div class="col-lg-6 col-sm-12">
-                    <div class="d-flex">
-                        <div class="form-check mx-1">
+                    <div class="searchId">
+                        <%--                        <div class="form-check mx-1">--%>
+                        <%--                            <input class="form-check-input" type="radio" name="choiceFindType" id="orderId_rdo"--%>
+                        <%--                                   value="orderId_rdo"--%>
+                        <%--                                   checked--%>
+                        <%--                            >--%>
+                        <%--                            <label class="form-check-label" for="orderId_rdo">--%>
+                        <%--                                Tìm theo mã đơn hàng--%>
+                        <%--                            </label>--%>
+                        <%--                        </div>--%>
+                        <label class="form-check-label" for="orderId_rdo">
                             <input class="form-check-input" type="radio" name="choiceFindType" id="orderId_rdo"
                                    value="orderId_rdo"
-                                   checked
-                            >
-                            <label class="form-check-label" for="orderId_rdo">
-                                Tìm theo mã đơn hàng
-                            </label>
-                        </div>
-                        <div class="form-check mx-1">
+                                <%if(currentFilter!=null && currentFilter.startsWith("orderId_rdo")) {%>
+                                   checked <%}%>   >
+                            <span  class="label-name">Mã đơn hàng</span>
+                        </label>
+                        <label class="form-check-label" for="customerId_rdo">
                             <input class="form-check-input" type="radio" name="choiceFindType" id="customerId_rdo"
                                    value="customerId_rdo"
-                                <%if(currentFilter!=null && currentFilter.startsWith("customerId_rdo")){%>
-                                   checked
-                                <%}%>
-                            >
-                            <label class="form-check-label" for="customerId_rdo">
-                                Tìm theo mã khách hàng
-                            </label>
-                        </div>
-
-                        <div class="form-check mx-1">
+                                <%if(currentFilter!=null && currentFilter.startsWith("customerId_rdo")) {%>
+                                   checked <%}%>   >
+                            <span  class="label-name">Mã khách hàng</span>
+                        </label>
+                        <label class="form-check-label" for="customerName_rdo">
                             <input class="form-check-input" type="radio" name="choiceFindType" id="customerName_rdo"
                                    value="customerName_rdo"
-                                <%if(currentFilter!=null && currentFilter.startsWith("customerName_rdo")){%>
-                                   checked
-                                <%}%>
-                            >
-                            <label class="form-check-label" for="customerName_rdo">
-                                Tìm tên khách hàng
-                            </label>
-                        </div>
+                                <%if(currentFilter!=null && currentFilter.startsWith("orderId_rdo")) {%>
+                                   checked <%}%>   >
+                            <span class="label-name">Tên khách hàng</span>
+                        </label>
+
                     </div>
-                    <div class="d-flex">
+
                         <div class="input-group">
-                            <input type="text" class="form-control 1" name="findText"
+                            <input type="text" class="form-control 1" name="findText" placeholder="Lọc theo ..."
                                    value="<%=currentFindText!=null?currentFindText:""%>">
                             <div class="input-group-append">
                                 <button
-                                        class="btn btn-outline-secondary" type="submit" name="submit_filter"
-                                        value="submit_find">Tìm
+                                        class="btn " type="submit" name="submit_filter"
+                                        value="submit_find">
+                                    <i class="far fa-filter" style="color: #393e46;"></i>
                                 </button>
                             </div>
                         </div>
-                    </div>
+
                 </div>
-                <button type="submit" name="submit_filter" value="all" class="btn btn-secondary mx-2 col-lg-1 col-sm-1">Tất cả đơn
-                    hàng
-                </button>
-                <button type="submit" name="submit_filter" value="waitConfirmOrders" class="btn btn-warning mx-2 col-sm-1">
-                    Đơn
-                    hàng cần xác nhận
-                </button>
-                <button type="submit" name="submit_filter" value="deliveringOrders" class="btn btn-primary mx-2 col-sm-1">Đơn
-                    hàng đang giao
-                </button>
-                <button type="submit" name="submit_filter" value="canceledOrders" class="btn btn-danger mx-2 col-sm-1">Đơn
-                    hàng
-                    đã hủy
-                </button>
-                <button type="submit" name="submit_filter" value="succcessfulOrders" class="btn btn-success mx-2 col-sm-1">
-                    Đơn
-                    hàng thành công
-                </button>
+                <div class="process-filter mb-2">
+                    <button type="submit" name="submit_filter" value="all" class="btn  ms-2 col-lg-1 col-sm-2
+
+"
+                            id="btn-all">Tất cả
+                    </button>
+                    <button type="submit" name="submit_filter" value="waitConfirmOrders" class="btn col-sm-2"
+
+                            id="btn-confirm">
+                        Chờ xác nhận
+                    </button>
+                    <button type="submit" name="submit_filter" value="packingOrders" class="btn col-sm-2"
+                            id="btn-pack"> Đang đóng gói
+                    </button>
+                    <button type="submit" name="submit_filter" value="deliveringOrders" class="btn col-sm-2">Đang vận chuyển
+                    </button>
+                    <button type="submit" name="submit_filter" value="canceledOrders" class="btn col-sm-2">Hủy
+                    </button>
+                    <button type="submit" name="submit_filter" value="succcessfulOrders" class="btn me-2 col-sm-2">
+                        Thành công
+                    </button>
+                </div>
             </div>
             <div class="table-wrapper-scroll-y my-custom-scrollbar">
                 <table class="table table-striped table-hover">
@@ -193,8 +313,7 @@
                     %>
                     <tr class="text-center" style=" cursor: pointer;"
                         onclick="submit_showOrderDetails(event,this)"
-                        id="<%=o.getId()%>"
-                    >
+                        id="<%=o.getId()%>">
                         <td><%=o.getId()%>
                         </td>
                         <td><%=customer.getId()%>
@@ -220,6 +339,9 @@
                                     if (o.isDeliveringOrder()) {
                                         backgroundColor = "#0171d3";
                                         sttvalue = "Đang giao";
+                                    } else if (o.isPackingOrder()) {
+                                        backgroundColor = "#000000";
+                                        sttvalue = "Đang đóng gói";
                                     } else if (o.isWaitConfirmOrder()) {
                                         backgroundColor = "#ffcc00";
                                         sttvalue = "Cần xác nhận";
@@ -415,15 +537,40 @@
                href="<%=request.getContextPath()%>/admin/order?action=confirm&currentOrderId=<%=currentOrder.getId()%>&currentFilter=<%=currentFilter%>">
                 Xác nhận đơn hàng</a>
         </div>
-        <%} else if (currentOrder.isDeliveringOrder()) {%>
+        <% } else if (currentOrder.isPackingOrder()) {%>
+
         <div class="text-end">
             <%--                lý do hủy -> mail khách--%>
             <button class="btn btn-danger mx-2" onclick="showCancelBox()">
                 Hủy bỏ đơn hàng
             </button>
-            <a class="btn btn-success mx-2" title="Tạm thời dùng cách thủ công thay vì có API!"
+            <div id="loadingConfirmBox" style="display:none;">
+                <span class="spinner-border spinner-border-sm" role="status"
+                      aria-hidden="true"></span>
+                Đang đóng gói
+            </div>
+            <a class="btn btn-success mx-2" id="confirmButton" onclick="loadingConfirm()"
+               href="<%=request.getContextPath()%>/admin/order?action=packed&currentOrderId=<%=currentOrder.getId()%>&currentFilter=<%=currentFilter%>">
+                Đã đóng gói</a>
+
+        </div>
+
+        <% } else if (currentOrder.isDeliveringOrder()) {%>
+
+        <div class="text-end">
+            <%--                lý do hủy -> mail khách--%>
+            <button class="btn btn-danger mx-2" onclick="showCancelBox()">
+                Hủy bỏ đơn hàng
+            </button>
+            <div id="loadingConfirmBox" style="display:none;">
+                <span class="spinner-border spinner-border-sm" role="status"
+                      aria-hidden="true"></span>
+                Đang giao
+            </div>
+            <a class="btn btn-success mx-2" id="confirmButton" onclick="loadingConfirm()"
                href="<%=request.getContextPath()%>/admin/order?action=delivered&currentOrderId=<%=currentOrder.getId()%>&currentFilter=<%=currentFilter%>">
-                Đã giao</a>
+                Đã giao thành công</a>
+
         </div>
         <%}%>
     </div>

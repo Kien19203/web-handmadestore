@@ -54,6 +54,8 @@ public class OrderDAO {
                         .mapTo(Long.class).one());
     }
 
+    // HIỂN THỊ CÁC TRẠNG THÁI CỦA ĐƠN HÀNG.
+
     public static List<Order> getWaitConfirmOrders() {
         List<Order> orders = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from `order` where status='Chờ xác nhận' order by orderDate desc")
@@ -63,6 +65,15 @@ public class OrderDAO {
         return orders;
     }
 
+    public static List<Order> getPackingOrder() {
+        List<Order> orders = JDBIConnector.me().withHandle(
+                handle -> handle.createQuery("select * from `order` where status='Đang đóng gói' order by orderDate desc")
+                        .mapToBean(Order.class)
+                        .stream().collect(Collectors.toList())
+
+        );
+        return orders;
+    }
     public static List<Order> getDeliveringOrders() {
         List<Order> orders = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from `order` where status='Đang giao' order by orderDate desc")
@@ -111,6 +122,7 @@ public class OrderDAO {
         return orders;
     }
 
+// XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (CHỜ XÁC NHẬN -> ĐANG ĐÓNG GÓI -> ĐANG VẬN CHUYỂN -> HỦY / THÀNH CÔNG
     public static void cancelOrder(String orderId) {
         JDBIConnector.me().useHandle(handle ->
                 handle.createUpdate("UPDATE `order` SET status = 'Đã hủy' WHERE id=?")
@@ -121,11 +133,19 @@ public class OrderDAO {
 
     public static void confirmOrder(String orderId) {
         JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate("UPDATE `order` SET status = 'Đang giao' WHERE id=?")
+                handle.createUpdate("UPDATE `order` SET status = 'Đang đóng gói' WHERE id=?")
                         .bind(0, orderId)
                         .execute()
         );
     }
+
+    public static void packedOrder(String orderId) {
+        JDBIConnector.me().useHandle( handle ->
+                handle.createUpdate("UPDATE `order` SET status = 'Đang giao' where id=?")
+                        .bind(0, orderId)
+                        .execute()
+                );
+            }
 
     public static void deliveredOrder(String orderId) {
         JDBIConnector.me().useHandle(handle ->
