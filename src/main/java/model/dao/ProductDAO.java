@@ -408,9 +408,9 @@ public class ProductDAO {
     }
 
     //Trang chính xuất 15 sản phẩm trong từng category và phải còn hàng
-    public static List<Product> list15product(int idCategory) {
+    public static List<Product> list4product(int idCategory) {
         List<Product> productList = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE categoryId = :id AND quantity > 0 LIMIT 15")
+                handle.createQuery("SELECT * FROM product WHERE categoryId = :id AND quantity > 0 LIMIT 4")
                         .bind("id", idCategory)
                         .mapToBean(Product.class)
                         .stream().toList()

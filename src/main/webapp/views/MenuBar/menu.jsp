@@ -20,18 +20,6 @@
     NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
     numberFormat.setCurrency(currency);
 %>
-
-
-
-<%--<%--%>
-<%--    else {--%>
-<%--        if(cart == null) cart = new Cart();--%>
-<%--    Locale locale = new Locale("vi", "VN");--%>
-<%--    Currency currency = Currency.getInstance(locale);--%>
-<%--    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);--%>
-<%--    numberFormat.setCurrency(currency);--%>
-<%--%>--%>
-
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -47,30 +35,27 @@
         background: rgba(250, 244, 244, 0.92);
         border-bottom: 1px solid rgba(155, 158, 162, 0.7);
     }
-
     .menu ul a {
         text-decoration: none;
         color: #797974;
     }
-
+    .menu ul .name{
+        font-size: 30px;
+        font-weight: bold;
+        font-family: sans-serif;
+        position: absolute;
+        left: 160px;
+        top: 30px;
+    }
     .menu ul .item_a{
         padding: 25px 0;
+        position: absolute;
+        left: 40px;
+        top: -40px;
     }
 
     .menu ul li {
         list-style-type: none;
-    }
-
-    .menu ul .sanpham .sub_menu {
-        left: 0%;
-        padding: 0;
-        top: 100%;
-        border: 1px;
-        display: none;
-    }
-
-    .menu ul li.times {
-        border-left: #8b8b8b solid 1px;
     }
 
     .menu ul li.item:hover {
@@ -81,18 +66,8 @@
         color: white;
     }
 
-    .menu ul li.sanpham:hover .sub_menu {
-        display: block;
-    }
-
-    .menu ul li.sanpham .sub_menu li a {
-        color: #797974;
-    }
-
-    .menu ul li.sanpham .sub_menu li a:hover {
-        color: white;
-        background: red;
-        font-size: 17px;
+    .search{
+        margin-left: 55vh;
     }
 
     .menu ul li.search i {
@@ -100,15 +75,16 @@
         padding: 4%;
     }
 
-    .menu ul li.search {
-        border-left: 1px solid #8b8b8b;
+    #find{
+        margin: 0;
     }
 
     .menu ul li.search input {
         padding-left: 10px;
-        width: 85%;
+        width: 500px;
         border: none;
         height: 100%;
+        border-radius: 2px;
     }
 
     .menu ul li.login a:hover {
@@ -140,13 +116,22 @@
     .menu ul li.item {
         text-align: center;
     }
-
-    .search button {
-        padding: 12px;
-        border: none;
-        background: red;
+    input[type="search"] {
+        border: none; /* Border mặc định */
     }
 
+    input[type="search"]:focus {
+        outline: none; /* Loại bỏ outline khi focus */
+    }
+    .search button {
+        border: none;
+        padding: 12px;
+        background: red;
+        border-radius: 2px;
+    }
+    #find{
+        display: flex;
+    }
     .fa-solid {
         font-size: 20px;
 
@@ -180,6 +165,7 @@
 
     .cart:hover .top-cart-content {
         display: block;
+        z-index: 999;
     }
 
 
@@ -375,47 +361,22 @@
 
 </style>
 <body>
-<div id="menubar" class="menu sticky-top">
+<div id="menubar" class="menu">
     <ul class="d-flex m-0 justify-content-around">
-
-        <li class="logo me-4 my-auto">
-            <img src="<%=request.getContextPath()%>/images/logo.png" style="width: 12vh">
-
+        <li class="logo d-flex my-auto">
+            <a class="item_a" href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp"> <img src="<%=request.getContextPath()%>/images/logo.png" style="width: 18vh"></a>
+            <a class="name" href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">HEADQUARTERS</a>
         </li>
-        <li class="item times p-4 my-auto">
-            <a class="item_a" href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang chủ</a>
-        </li>
-        <li class="item sanpham p-4 dropdown my-auto">
-
-            <a class="item_a" href="<%=request.getContextPath()%>/product" class="title_sp">Sản phẩm
-                <i class="fa-solid fa-caret-down"></i></a>
-
-            <ul class="sub_menu dropdown-menu">
-                <%List<Category> categories = CategoryService.getInstance().getALl();%>
-                <%for (Category c : categories) {%>
-                <li><a href="#<%=c.getId()%>" class="item dropdown-item"><%=c.getName()%>
-                </a></li>
-                <%}%>
-            </ul>
-        </li>
-        <li class="item bikip p-4 my-auto">
-            <a class="item_a" href="#bikip">Bí kíp làm đồ HandMade</a>
-        </li>
-        <li class="item footers p-4 my-auto">
-            <a class="item_a" href="#footer ">Về chúng tôi</a>
-        </li>
-
         <li class="search d-flex p-4 my-auto">
             <form action="<%=request.getContextPath()%>/findProduct" method="post" id="find" class="d-flex">
-                <input name="findProducts" type="text" placeholder="Bạn tìm gì...">
+                <input name="findProducts" type="search" placeholder= "Bạn tìm gì..." >
                 <button><i class="fa-solid fa-magnifying-glass" style="color: white;"></i></button>
             </form>
         </li>
         <li class="login p-4 my-auto dropdown">
             <%if (u == null) {%>
             <i class="fa-solid fa-user" style="color: #496088;"></i>
-
-            <a class="item_a" href="<%=request.getContextPath()%>/login">Đăng Nhập</a>
+            <a class="item_login" href="<%=request.getContextPath()%>/login">Đăng Nhập</a>
             <%} else{%>
 
 
@@ -500,7 +461,7 @@
                             <span class="price"> <%=numberFormat.format(total)%></span>
                         </div>
                     </div>
-                     <%if (!cart.getItems().isEmpty()) {%>
+                    <%if (!cart.getItems().isEmpty()) {%>
                     <div class="pda rigth-ct">
 
                         <a href="<%=request.getContextPath()%>/views/CartPage/cart.jsp" class="btn"><span>Giỏ hàng</span></a>
@@ -513,10 +474,10 @@
 
 
                     </div>
-                     <%} else {%>
-                     <div class="align-content-center">
-                   <span>Giỏ hàng đang trống !</span></div>
-               <%}%>
+                    <%} else {%>
+                    <div class="align-content-center">
+                        <span>Giỏ hàng đang trống !</span></div>
+                    <%}%>
                 </ul>
 
             </div>
