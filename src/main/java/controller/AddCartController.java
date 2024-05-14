@@ -20,14 +20,12 @@ public class AddCartController extends HttpServlet {
             cart= new Cart();
         }
         sessions.setAttribute("cart", cart);
-
         doPost(req, resp);
 
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         HttpSession sessions = req.getSession();
         Cart cart = (Cart) sessions.getAttribute("cart");
         String action = req.getParameter("actionCart");
@@ -51,10 +49,10 @@ public class AddCartController extends HttpServlet {
                 break;
 
             case "post":
-            int id = Integer.parseInt(req.getParameter("id")); // lay id product
+                int id = Integer.parseInt(req.getParameter("id")); // lay id product
                 int num = Integer.parseInt(req.getParameter("num"));
-            cart.add(id, num);
-            sessions.setAttribute("cart", cart);
+                cart.add(id, num);
+                sessions.setAttribute("cart", cart);
                 resp.sendRedirect(referer);
             break;
             default:

@@ -326,7 +326,7 @@ public class ProductDAO {
 
     public static List<Product> discountProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE LIMIT 10")
+                handle.createQuery("SELECT  product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP LIMIT 5")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -481,7 +481,7 @@ public class ProductDAO {
     }
 
     public static void main(String[] args) {
-        System.out.println(getNumberRateStarsByUser(2, 3));
+        System.out.println(discountProduct());
     }
 }
 

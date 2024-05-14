@@ -14,6 +14,7 @@
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="<%=request.getContextPath()%>/views/MainPage/css/mainpage.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Cửa Hàng HandMade</title>
 </head>
 <body>
@@ -80,45 +81,41 @@
     <%-- Khuyến Mãi   --%>
     <%List<Product> listProductDiscount = ProductService.getInstance().productDiscountMainPage();%>
     <%if(!listProductDiscount.isEmpty()){%>
-    <div class="title_t" id="khuyenmai">
-        <p class="text-center fs-5 fw-bold">Sản Phẩm Khuyến Mãi
-        </p>
-    </div>
-    <div class="solid_t mb-3 m-auto"></div>
-    <div class="sp" id="sp_khuyenmai">
-        <ul class="products  m-2 d-flex flex-wrap">
-            <%
-                for (Product prd : listProductDiscount) {
-            %>
-            <%String pathImage = ImageService.getInstance().pathImageOnly(prd.getId());%>
-            <li class="product_list">
-                <div class="item_product  me-4">
-                    <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
-                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p class="pt-4 px-3"><%=prd.getName() %>
-                    </p></a>
-                    <%!double giaKhuyenMai;%>
-                    <% giaKhuyenMai = ProductService.getInstance().productPriceIncludeDiscount(prd);%>
-                    <%if (prd.getCategoryId() >= 0 && giaKhuyenMai != prd.getSellingPrice()) {%>
-                    <del><%=numberFormat.format(prd.getSellingPrice())%></del>
-                    <%}%>
-                    <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
-                    <div class="add-to-cart"><a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=prd.getId()%>"><span>Thêm vào giỏ hàng</span> </a></div>
-                </div>
-            </li>
-            <%}%>
+        <div class="title_t" id="khuyenmai"   >
+            <a href="<%=request.getContextPath()%>/product?category=khuyenmai"><p class="text-center fs-5 fw-bold">Sản Phẩm Khuyến Mãi
+            </p></a>
+        </div>
+        <div class="sp overflow-auto" id="sp_khuyenmai" style="width: 92%;margin: auto;margin-bottom: 50px;">
+            <ul class="products  m-2  d-flex flex-nowrap" style="padding: 5px;padding-left: 60px;">
+                <%
+                    for (Product prd : listProductDiscount) {
+                %>
+                <%String pathImage = ImageService.getInstance().pathImageOnly(prd.getId());%>
+                <li class="productkm">
 
-            <div class="load_produce text-center mt-5">
-                <a href="<%=request.getContextPath()%>/product?category=khuyenmai"><span>Xem tất cả sản phẩm</span></a>
-            </div>
-        </ul>
-    </div>
-    <%}%>
+                    <div class="item_product  me-4">
+                        <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
+                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p><%=prd.getName() %>
+                        </p></a>
+                        <%!double giaKhuyenMai;%>
+                        <% giaKhuyenMai = ProductService.getInstance().productPriceIncludeDiscount(prd);%>
+                        <%if (prd.getCategoryId() >= 0 && giaKhuyenMai != prd.getSellingPrice()) {%>
+                        <del><%=numberFormat.format(prd.getSellingPrice())%></del>
+                        <%}%>
+                        <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
+                        <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
+                    </div>
+                </li>
+                <%}%>
+            </ul>
+        </div>
+        <%}%>
     <%--  Sản Phẩm  --%>
     <% for (Category ca : categoryP) {%>
     <div class="list_product container_product<%=ca.getId()%> d-flex">
         <div class="title_t" id="<%=ca.getId()%>">
             <p class="text-center fs-5 fw-bold"><%=ca.getName()%></p>
-            <div class="button_seld"><a href="<%=request.getContextPath()%>/product?category=<%=ca.getId()%>">Mua Ngay!</a></div>
+            <div class="button_seld"><a href="<%=request.getContextPath()%>/product?category=<%=ca.getId()%>">Xem Ngay!</a></div>
         </div>
         <div class="sp" id="sp_<%=ca.getId()%>">
             <ul class="products  m-2 d-flex flex-wrap">
@@ -138,14 +135,11 @@
                         <del><%=numberFormat.format(pr.getSellingPrice())%></del>
                         <%}%>
                         <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
-                        <div class="add-to-cart"><a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=pr.getId()%>"><span>Thêm vào giỏ hàng</span> </a></div>
+                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
                     </div>
                 </li>
                 <%}%>
 
-                <%--                <div class="load_produce text-center mt-5">--%>
-                <%--                    <a href="<%=request.getContextPath()%>/product?category=<%=ca.getId()%>"><span>Xem tất cả sản phẩm</span></a>--%>
-                <%--                </div>--%>
             </ul>
         </div>
     </div>
@@ -162,8 +156,6 @@
     <div class="solid_bk mb-5 m-auto"></div>
     <div class="content_bk">
         <ul class="d-flex ">
-
-
             <%
                 List<Tip> tipsList = TipDAO.getAllTips();
                 for (Tip t : tipsList) {
@@ -215,5 +207,23 @@
     </div>
 </div>
 </body>
-
+<script>
+<%--    Chưa hoàn thành ajax cho add sản phẩm vào giỏ hàng--%>
+    function addCart(btn,id){
+        var actionCart = "post";
+        var num = 1;
+        $.ajax({
+            url: "/HandMadeStore/add-cart",
+            method: "GET",
+            data:{
+                id : id,
+                actionCart :actionCart,
+                num: num
+            },
+            success: function (response){
+                console.log("Hoàn Thành Thêm vào giỏ hàng!");
+            }
+        })
+    }
+</script>
 </html>
