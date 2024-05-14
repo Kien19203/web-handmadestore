@@ -92,7 +92,6 @@
                 %>
                 <%String pathImage = ImageService.getInstance().pathImageOnly(prd.getId());%>
                 <li class="productkm">
-
                     <div class="item_product  me-4">
                         <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
                         <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p><%=prd.getName() %>
@@ -139,7 +138,6 @@
                     </div>
                 </li>
                 <%}%>
-
             </ul>
         </div>
     </div>
