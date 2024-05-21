@@ -73,8 +73,10 @@
                   <%}%>">
                     <i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                 <div class="nav-item dropdown">
-                    <%if (func.equals("product_management") || func.equals("category_management")
-                            || func.equals("add_product") || func.equals("discount_management")) {%>
+                    <%
+                        if (func.equals("product_management") || func.equals("category_management")
+                                || func.equals("add_product") || func.equals("discount_management")) {
+                    %>
                     <a href="#" class="nav-link dropdown-toggle show active" data-bs-toggle="dropdown"
                        aria-expanded="true"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
@@ -121,13 +123,16 @@
                          <%}%>"><i
                                 class="fa-solid fa-list me-2"
                         ></i>Danh sách sản phẩm</a>
-                        <a href="<%=request.getContextPath()%>/admin?func=category_management" class="dropdown-item"><i class="fa-solid fa-layer-group me-2"></i>
+                        <a href="<%=request.getContextPath()%>/admin?func=category_management" class="dropdown-item"><i
+                                class="fa-solid fa-layer-group me-2"></i>
                             Quản lý danh mục
                         </a>
-                        <a href="<%=request.getContextPath()%>/admin?func=add_product" class="dropdown-item"><i class="fa-solid fa-circle-plus me-2"></i>
+                        <a href="<%=request.getContextPath()%>/admin?func=add_product" class="dropdown-item"><i
+                                class="fa-solid fa-circle-plus me-2"></i>
                             Thêm sản phẩm mới
                         </a>
-                        <a href="<%=request.getContextPath()%>/admin?func=discount_management" class="dropdown-item"><i class="fa-solid fa-tag me-2"></i>
+                        <a href="<%=request.getContextPath()%>/admin?func=discount_management" class="dropdown-item"><i
+                                class="fa-solid fa-tag me-2"></i>
                             Quản lý khuyến mãi
                         </a>
                     </div>
@@ -142,12 +147,12 @@
                     <%}%>"><i
                         class="bi bi-minecart me-2"
                 ></i>Quản lý đơn hàng
+                    <span id="waitConfirmOrdersNumber" style="color:white; font-size:small; text-align: center">
                     <%--                new order--%>
                     <%if (OrderService.getInstance().waitConfirmOrdersNumber() > 0) {%>
-                    <span style="color:white; font-size:small; text-align: center">
                         (<%=OrderService.getInstance().waitConfirmOrdersNumber()%>)
-                    </span>
                     <%}%>
+                    </span>
                 </a>
                 <a href="<%=request.getContextPath()%>/admin?func=customer_management"
                    class="nav-item nav-link

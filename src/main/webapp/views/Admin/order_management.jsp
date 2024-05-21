@@ -27,6 +27,8 @@
             orders = OrderService.getInstance().getAllOrder();
         } else if (currentFilter.equals("waitConfirmOrders")) {
             orders = OrderService.getInstance().getWaitConfirmOrders();
+        } else if (currentFilter.equals("preparingOrders")) {
+            orders = OrderService.getInstance().getPreparingOrders();
         } else if (currentFilter.equals("deliveringOrders")) {
             orders = OrderService.getInstance().getDeliveringOrders();
         } else if (currentFilter.equals("canceledOrders")) {
@@ -68,6 +70,16 @@
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
     <title>Quản lý đơn hàng</title>
+    <!--https://datatables.net/download/-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
+    <!--https://www.bootstrapcdn.com/-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <style>
         #showBox, #cancelBox {
             position: fixed;
@@ -91,6 +103,20 @@
         .table-wrapper-scroll-y {
             display: block;
         }
+
+        .pagination {
+            position: fixed;
+            overflow: auto;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+        }
+
+        #data th:nth-child(4),
+        #data td:nth-child(4) {
+            width: 20%; /* Điều chỉnh chiều rộng ở đây */
+        }
     </style>
 </head>
 <%
@@ -103,7 +129,7 @@
         <div class="customer_list  mt-5 ">
             <%--            form--%>
             <div class="row d-flex">
-                <div class="col-lg-6 col-sm-12">
+                <div class="col-lg-5 col-sm-12">
                     <div class="d-flex">
                         <div class="form-check mx-1">
                             <input class="form-check-input" type="radio" name="choiceFindType" id="orderId_rdo"
@@ -151,31 +177,40 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" name="submit_filter" value="all" class="btn btn-secondary mx-2 col-lg-1 col-sm-1">Tất cả đơn
+                <button type="submit" name="submit_filter" value="all" class="btn btn-secondary mx-2 col-lg-1 col-sm-1">
+                    Tất cả đơn
                     hàng
                 </button>
-                <button type="submit" name="submit_filter" value="waitConfirmOrders" class="btn btn-warning mx-2 col-sm-1">
+                <button type="submit" name="submit_filter" value="waitConfirmOrders"
+                        class="btn btn-warning mx-2 col-sm-1">
                     Đơn
                     hàng cần xác nhận
                 </button>
-                <button type="submit" name="submit_filter" value="deliveringOrders" class="btn btn-primary mx-2 col-sm-1">Đơn
+                <button type="submit" name="submit_filter" value="preparingOrders"
+                        class="btn mx-2 col-sm-1" style="background-color: cadetblue">
+                    Đơn hàng đang đóng gói
+                </button>
+                <button type="submit" name="submit_filter" value="deliveringOrders"
+                        class="btn btn-primary mx-2 col-sm-1">Đơn
                     hàng đang giao
                 </button>
-                <button type="submit" name="submit_filter" value="canceledOrders" class="btn btn-danger mx-2 col-sm-1">Đơn
+                <button type="submit" name="submit_filter" value="canceledOrders" class="btn btn-danger mx-2 col-sm-1">
+                    Đơn
                     hàng
                     đã hủy
                 </button>
-                <button type="submit" name="submit_filter" value="succcessfulOrders" class="btn btn-success mx-2 col-sm-1">
+                <button type="submit" name="submit_filter" value="succcessfulOrders"
+                        class="btn btn-success mx-2 col-sm-1">
                     Đơn
                     hàng thành công
                 </button>
             </div>
-            <div class="table-wrapper-scroll-y my-custom-scrollbar">
-                <table class="table table-striped table-hover">
+            <div class="table-wrapper-scroll-y my-custom-scrollbar d-flex justify-content-center">
+                <table id="data" class="table table-striped table-hover">
                     <thead>
                     <tr class="text-center sticky-top">
-                        <th class="text-nowrap">Mã Đơn Hàng</th>
-                        <th class="text-nowrap">Mã Khách Hàng</th>
+                        <th class="text-nowrap">Mã ĐH</th>
+                        <th class="text-nowrap">Mã KH</th>
                         <th class="text-nowrap">Tên Khách Hàng</th>
                         <th class="text-nowrap">Địa Chỉ Giao</th>
                         <th class="text-nowrap">Ngày Đặt Hàng</th>
@@ -195,9 +230,9 @@
                         onclick="submit_showOrderDetails(event,this)"
                         id="<%=o.getId()%>"
                     >
-                        <td><%=o.getId()%>
+                        <td class="text-center"><%=o.getId()%>
                         </td>
-                        <td><%=customer.getId()%>
+                        <td class="text-center"><%=customer.getId()%>
                         </td>
                         <td class="text-start"><%=customer.getName()%>
                         </td>
@@ -212,26 +247,8 @@
                         <td><%=numberFormat.format(o.getTotalPrice() + o.getShippingFee())%>
                         </td>
                         <td
-                                <%!
-                                    String backgroundColor = "";
-                                    String sttvalue = "";
-                                %>
-                                <%
-                                    if (o.isDeliveringOrder()) {
-                                        backgroundColor = "#0171d3";
-                                        sttvalue = "Đang giao";
-                                    } else if (o.isWaitConfirmOrder()) {
-                                        backgroundColor = "#ffcc00";
-                                        sttvalue = "Cần xác nhận";
-                                    } else if (o.isCanceledOrder()) {
-                                        backgroundColor = "#ff0000";
-                                        sttvalue = "Đã hủy";
-                                    } else if (o.isSucccessfulOrder()) {
-                                        backgroundColor = "#4d8a54";
-                                        sttvalue = "Thành công";
-                                    }%>
-                                style="background-color: <%=backgroundColor%>; color: #ffffff"
-                        ><%=sttvalue%>
+                                style="background-color: <%=o.getStatusAsColor()%>; color: #ffffff"
+                        ><%=o.getStatusAsName()%>
                         </td>
                     </tr>
                     <%
@@ -391,7 +408,10 @@
                             <div class="row">
                                 <div class="col-10">Trạng thái:</div>
                                 <div class="col-2" style="background-color: wheat">
-                                    <strong><%=currentOrder.getStatus()%>
+                                    <strong>
+                                        <p id="orderStatus">
+                                            <%=currentOrder.getStatusAsName()%>
+                                        </p>
                                     </strong>
                                 </div>
                             </div>
@@ -402,8 +422,7 @@
         </div>
         <%if (currentOrder.isWaitConfirmOrder()) {%>
         <div class="text-end">
-            <%--                lý do hủy -> mail khách--%>
-            <button class="btn btn-danger mx-2" onclick="showCancelBox()">
+            <button id="btn_cancel" type="button" class="btn btn-danger mx-2" onclick="showCancelBox()">
                 Hủy bỏ đơn hàng
             </button>
             <div id="loadingConfirmBox" style="display:none;">
@@ -411,66 +430,152 @@
                       aria-hidden="true"></span>
                 Đang xác nhận đơn hàng
             </div>
-            <a class="btn btn-success mx-2" id="confirmButton" onclick="loadingConfirm()"
-               href="<%=request.getContextPath()%>/admin/order?action=confirm&currentOrderId=<%=currentOrder.getId()%>&currentFilter=<%=currentFilter%>">
-                Xác nhận đơn hàng</a>
+            <button type="button" class="btn btn-success mx-2" id="confirmButton"
+                    onclick="confirmOrder(<%=currentOrder.getId()%>)">
+                Xác nhận đơn hàng
+            </button>
         </div>
         <%} else if (currentOrder.isDeliveringOrder()) {%>
         <div class="text-end">
-            <%--                lý do hủy -> mail khách--%>
             <button class="btn btn-danger mx-2" onclick="showCancelBox()">
                 Hủy bỏ đơn hàng
             </button>
-            <a class="btn btn-success mx-2" title="Tạm thời dùng cách thủ công thay vì có API!"
-               href="<%=request.getContextPath()%>/admin/order?action=delivered&currentOrderId=<%=currentOrder.getId()%>&currentFilter=<%=currentFilter%>">
-                Đã giao</a>
+            <button class="btn btn-success mx-2"
+                    onclick="deliveredOrder(<%=currentOrder.getId()%>)">
+                Đã giao
+            </button>
         </div>
         <%}%>
     </div>
     <%--        cancelBox--%>
-
     <div id="cancelBox" style="display: none">
-        <form action="<%=request.getContextPath()%>/admin/order" method="post">
-            <div style="font-size: 20px"><i class="fa-solid fa-triangle-exclamation"></i></div>
-            <div>Bạn có chắc chắn muốn hủy bỏ đơn hàng <strong>#<%=currentOrder.getId()%>
-            </strong>?
+        <div style="font-size: 20px"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div>Bạn có chắc chắn muốn hủy bỏ đơn hàng <strong>#<%=currentOrder.getId()%>
+        </strong>?
+        </div>
+        <div>
+            <div class="form-group">
+                <label for="exampleFormControlTextarea1">Lý do hủy đơn hàng:</label>
+                <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                          name="cancelReason"></textarea>
             </div>
-            <div>
-                <div class="form-group">
-                    <label for="exampleFormControlTextarea1">Lý do hủy đơn hàng:</label>
-                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
-                              name="cancelReason"></textarea>
-                </div>
-            </div>
-            <div class="d-flex justify-content-end">
-                <div id="loadingCancelBox" style="display:none;">
+        </div>
+        <div class="d-flex justify-content-end">
+            <div id="loadingCancelBox" style="display:none;">
                 <span class="spinner-border spinner-border-sm" role="status"
                       aria-hidden="true"></span>
-                    Đang hủy bỏ đơn hàng
-                </div>
-                <input type="hidden" name="action" value="cancel">
-                <input type="hidden" name="currentOrderId" value="<%=currentOrder.getId()%>">
-                <input type="hidden" name="currentFilter" value="<%=currentFilter%>">
-                <button type="submit" class="btn btn-danger mx-2" id="cancelButton" onclick="loadingCancel()">
-                    Xác nhận hủy bỏ
-                </button>
-                <button class="btn btn-success mx-2" onclick="hideCancelBox()">
-                    Thoát
-                </button>
+                Đang hủy bỏ đơn hàng
             </div>
-        </form>
+            <button type="button" class="btn btn-danger mx-2" id="cancelButton"
+                    onclick="cancelOrder(<%=currentOrder.getId()%>)">
+                Xác nhận hủy bỏ
+            </button>
+            <button type="button" class="btn btn-success mx-2" onclick="hideCancelBox()">
+                Thoát
+            </button>
+        </div>
     </div>
     <%}%>
-
+    <input type="hidden" id="currentPageNumber" name="currentPageNumber"
+           value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
 </div>
 <script>
+    $(document).ready(function () {
+        $(document).ready(function () {
+            var table = $('#data').DataTable({
+                "searching": false, // Không có tính năng tìm kiếm
+                "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
+                "pageLength": 10,
+                "displayStart": document.getElementById("currentPageNumber").value
+            });
+
+            function getCurrentPage() {
+                let pageInfo = table.page.info();
+                document.getElementById("currentPageNumber").value = pageInfo.page + 1;
+            }
+        });
+
+    })
+
+    function deliveredOrder(orderId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/confirmOrder", // Điều chỉnh URL tới Servlet của bạn
+            data: {
+                action: "deliveredOrder",
+                orderId: orderId
+            },
+            // Truyền dữ liệu cần thiết cho Servlet
+            success: function (response) {
+                document.getElementById("orderStatus").innerHTML = 'Thành công'
+            },
+            error: function () {
+                alert("Error deleting user!");
+            }
+        })
+    }
+
+    function confirmOrder(orderId) {
+        loadingConfirm();
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/confirmOrder", // Điều chỉnh URL tới Servlet của bạn
+            data: {
+                action: "confirmOrder",
+                orderId: orderId
+            },
+            // Truyền dữ liệu cần thiết cho Servlet
+            success: function (response) {
+                document.getElementById('loadingConfirmBox').style.display = 'none';
+                document.getElementById("orderStatus").innerHTML = 'Đang giao'
+
+                let parentDocument = window.parent.document;
+                let waitConfirmOrdersNumber = parentDocument.getElementById('waitConfirmOrdersNumber');
+                waitConfirmOrdersNumber.innerHTML =  response;
+                //     xóa dòng
+
+            },
+            error: function () {
+                alert("Error deleting user!");
+            }
+        })
+    }
+
+    function cancelOrder(orderId) {
+        loadingCancel();
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/confirmOrder",
+            data: {
+                action: "cancelOrder",
+                orderId: orderId
+            },
+            success: function (response) {
+                document.getElementById('loadingCancelBox').style.display = 'none';
+                document.getElementById("orderStatus").innerHTML = 'Đã hủy'
+                let parentDocument = window.parent.document;
+                let waitConfirmOrdersNumber = parentDocument.getElementById('waitConfirmOrdersNumber');
+                waitConfirmOrdersNumber.innerHTML =  response;
+            },
+            error: function () {
+                alert("Error deleting user!");
+            }
+        })
+    }
+
     function submit_showOrderDetails(event, clickedElement) {
+        var rowIndex = 0;
+        var row = clickedElement;
+        while ((row = row.previousElementSibling) != null) {
+            rowIndex++;
+        }
+        // alert("Chỉ số hàng: " + rowIndex);
         event.preventDefault();
         var orderId = clickedElement.id;
-        //set cho hide input
         document.getElementById("currentOrderId").value = orderId;
         document.getElementById("orderForm").submit();
     }
+
 
     function hideOrderBox() {
         document.getElementById("showBox").style.display = "none";
@@ -486,28 +591,22 @@
 
     function loadingCancel() {
         document.getElementById("cancelButton").style.display = "none";
-        // Hiển thị thẻ loading
         document.getElementById('loadingCancelBox').style.display = 'block';
-        // Thực hiện công việc cần thiết ở đây, có thể làm gì đó mất vài giây
-
-        // Sau khi hoàn thành công việc, ẩn thẻ loading
-        setTimeout(function () {
-            document.getElementById('loadingCancelBox').style.display = 'none';
-        }, 5000); // Đặt thời gian (2 giây) tùy thuộc vào công việc cần thực hiện
     };
 
     function loadingConfirm() {
         document.getElementById("confirmButton").style.display = "none";
-        // Hiển thị thẻ loading
         document.getElementById('loadingConfirmBox').style.display = 'block';
-        // Thực hiện công việc cần thiết ở đây, có thể làm gì đó mất vài giây
-
-        // Sau khi hoàn thành công việc, ẩn thẻ loading
-        setTimeout(function () {
-            document.getElementById('loadingConfirmBox').style.display = 'none';
-        }, 5000); // Đặt thời gian (2 giây) tùy thuộc vào công việc cần thực hiện
     };
 
+    function deleteRow(rowIndex) {
+        var table = document.getElementById("data");
+        if (rowIndex >= 0 && rowIndex < table.rows.length) {
+            table.deleteRow(rowIndex);
+        } else {
+            console.error("Chỉ số hàng không hợp lệ.");
+        }
+    }
 </script>
 </body>
 <%

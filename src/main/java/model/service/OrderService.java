@@ -62,6 +62,9 @@ public class OrderService {
     public List<Order> getWaitConfirmOrders() {
         return OrderDAO.getWaitConfirmOrders();
     }
+    public List<Order> getPreparingOrders() {
+        return OrderDAO.getPreparingOrders();
+    }
 
     public List<Order> getDeliveringOrders() {
         return OrderDAO.getDeliveringOrders();
