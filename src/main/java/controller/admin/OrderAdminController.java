@@ -24,6 +24,8 @@ public class OrderAdminController extends HttpServlet {
         resp.setContentType("text/jsp; charset=UTF-8");
         req.setCharacterEncoding("UTF-8");
         String currentFilter = req.getParameter("currentFilter");
+        String currentPageNumber = req.getParameter("currentPageNumber");
+        currentPageNumber = (currentPageNumber == null) ? "1" : currentPageNumber;
         char delim = ':';
         System.out.println("Controller>> IN: " + currentFilter);
 //        Find
@@ -48,6 +50,8 @@ public class OrderAdminController extends HttpServlet {
                 currentFilter = "all";
             } else if (submit_filter.equals("waitConfirmOrders")) {
                 currentFilter = "waitConfirmOrders";
+            } else if (submit_filter.equals("preparingOrders")) {
+                currentFilter = "preparingOrders";
             } else if (submit_filter.equals("deliveringOrders")) {
                 currentFilter = "deliveringOrders";
             } else if (submit_filter.equals("canceledOrders")) {
@@ -56,27 +60,14 @@ public class OrderAdminController extends HttpServlet {
                 currentFilter = "succcessfulOrders";
             }
         }
-//      confirm or cancel order: orderId + action: cancel/confirm
         String currentOrderId = req.getParameter("currentOrderId");
         if (currentOrderId != null) {
-            Order currentOrder = OrderService.getInstance().getOrderById(currentOrderId);
-            String action = req.getParameter("action");
-            if (action != null) {
-                if (action.equals("cancel")) {
-                    String cancelReason = req.getParameter("cancelReason");
-                    MailService.sendNotifyCanceledOrder(UserService.getInstance().getUserById(currentOrder.getUserId() + "").getEmail(), currentOrder, cancelReason);
-                    OrderService.getInstance().cancelOrder(currentOrderId);
-                } else if (action.equals("confirm")) {
-                    MailService.sendNotifyConfirmOrder(UserService.getInstance().getUserById(currentOrder.getUserId() + "").getEmail(), currentOrder);
-                    OrderService.getInstance().confirmOrder(currentOrderId);
-                } else if (action.equals("delivered")) {
-                    OrderService.getInstance().deliveredOrder(currentOrderId);
-                }
-            }
             req.setAttribute("currentOrderId", currentOrderId);
         }
         System.out.println("Controller>> out: " + currentFilter);
         req.setAttribute("currentFilter", currentFilter);
+        req.setAttribute("currentPageNumber", currentPageNumber);
+        System.out.println(currentPageNumber);
         req.getRequestDispatcher("/views/Admin/order_management.jsp").forward(req, resp);
     }
 }

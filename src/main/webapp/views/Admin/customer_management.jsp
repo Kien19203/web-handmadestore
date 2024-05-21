@@ -16,28 +16,25 @@
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
     <title>Quản lý khách hàng</title>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/views/Admin/css/table_style.css">
+    <!--https://datatables.net/download/-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
+    <!--https://www.bootstrapcdn.com/-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <style>
-        #showBox, #cancelBox {
+        .pagination {
             position: fixed;
-            top: 40%;
+            overflow: auto;
+            bottom: 20%;
             left: 50%;
-            transform: translate(-50%, -50%);
-            overflow: auto;
-            z-index: 1021;
-            background-color: #afe2ea;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .my-custom-scrollbar {
-            position: relative;
-            height: 60%;
-            overflow: auto;
-        }
-
-        .table-wrapper-scroll-y {
-            display: block;
+            transform: translateX(-50%);
+            z-index: 1000;
         }
     </style>
 </head>
@@ -66,25 +63,17 @@
     </form>
     <%--        table--%>
     <div class="table-wrapper-scroll-y my-custom-scrollbar">
-        <table class="table table-striped table-hover">
+        <table id="data" class="table table-striped table-hover">
             <thead>
             <tr class="text-center sticky-top">
                 <th class="text-nowrap">STT</th>
                 <th class="text-nowrap">
-                    <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=ascName"
-                       class="btn-primary text-decoration-none">A-Z</a>
                     Họ Và Tên
-                    <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=descName"
-                       class="btn-primary text-decoration-none">Z-A</a>
                 </th>
                 <th class="text-nowrap">Số điện thoại</th>
                 <th class="text-nowrap">Địa chỉ email</th>
                 <th class="text-nowrap">
-                    <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=ascCreatedDate"
-                       class="btn-primary text-decoration-none">A-Z</a>
-                    Ngày tạo tài khoản
-                    <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=descCreatedDate"
-                       class="btn-primary text-decoration-none">Z-A</a>
+                    Ngày đăng ký
                 </th>
                 <th class="text-nowrap">
                     Trạng thái
@@ -129,8 +118,24 @@
             </tbody>
         </table>
     </div>
+        <input type="hidden" id="currentPageNumber" name="currentPageNumber"
+               value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
 </div>
+<script>
+    $(document).ready(function () {
+        var table = $('#data').DataTable({
+            "searching": false, // Không có tính năng tìm kiếm
+            "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
+            "pageLength": 10,
+            "displayStart": document.getElementById("currentPageNumber").value
+        });
 
+        function getCurrentPage() {
+            let pageInfo = table.page.info();
+            document.getElementById("currentPageNumber").value = pageInfo.page + 1;
+        }
+    });
+</script>
 </body>
 <%
     } else {

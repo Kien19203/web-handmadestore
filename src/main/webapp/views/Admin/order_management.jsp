@@ -70,6 +70,7 @@
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
     <title>Quản lý đơn hàng</title>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/views/Admin/css/table_style.css">
     <!--https://datatables.net/download/-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
@@ -87,21 +88,11 @@
             left: 50%;
             transform: translate(-50%, -50%);
             overflow: auto;
-            z-index: 1021;
+            z-index: 1030;
             background-color: #afe2ea;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .my-custom-scrollbar {
-            position: relative;
-            height: 60%;
-            overflow: auto;
-        }
-
-        .table-wrapper-scroll-y {
-            display: block;
         }
 
         .pagination {
@@ -110,12 +101,11 @@
             bottom: 20%;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 9999;
+            z-index: 1000;
         }
-
         #data th:nth-child(4),
         #data td:nth-child(4) {
-            width: 20%; /* Điều chỉnh chiều rộng ở đây */
+            width: 20%;
         }
     </style>
 </head>
@@ -481,21 +471,18 @@
 </div>
 <script>
     $(document).ready(function () {
-        $(document).ready(function () {
-            var table = $('#data').DataTable({
-                "searching": false, // Không có tính năng tìm kiếm
-                "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
-                "pageLength": 10,
-                "displayStart": document.getElementById("currentPageNumber").value
-            });
-
-            function getCurrentPage() {
-                let pageInfo = table.page.info();
-                document.getElementById("currentPageNumber").value = pageInfo.page + 1;
-            }
+        var table = $('#data').DataTable({
+            "searching": false, // Không có tính năng tìm kiếm
+            "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
+            "pageLength": 10,
+            "displayStart": document.getElementById("currentPageNumber").value
         });
 
-    })
+        function getCurrentPage() {
+            let pageInfo = table.page.info();
+            document.getElementById("currentPageNumber").value = pageInfo.page + 1;
+        }
+    });
 
     function deliveredOrder(orderId) {
         $.ajax({
@@ -531,7 +518,7 @@
 
                 let parentDocument = window.parent.document;
                 let waitConfirmOrdersNumber = parentDocument.getElementById('waitConfirmOrdersNumber');
-                waitConfirmOrdersNumber.innerHTML =  response;
+                waitConfirmOrdersNumber.innerHTML = response;
                 //     xóa dòng
 
             },
@@ -555,7 +542,7 @@
                 document.getElementById("orderStatus").innerHTML = 'Đã hủy'
                 let parentDocument = window.parent.document;
                 let waitConfirmOrdersNumber = parentDocument.getElementById('waitConfirmOrdersNumber');
-                waitConfirmOrdersNumber.innerHTML =  response;
+                waitConfirmOrdersNumber.innerHTML = response;
             },
             error: function () {
                 alert("Error deleting user!");

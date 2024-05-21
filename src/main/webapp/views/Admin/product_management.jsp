@@ -33,7 +33,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
     <title>Quản lý sản phẩm</title>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/views/Admin/css/table_style.css">
+    <!--https://datatables.net/download/-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
+    <!--https://www.bootstrapcdn.com/-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+          integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
     <style>
+        .pagination {
+            position: fixed;
+            overflow: auto;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+        }
+
         #edit_product {
             position: fixed;
             top: 50%;
@@ -214,7 +233,8 @@
         <div class="col-6 align-content-center">
             <select class="form-select form-select-lg" id="optionFunction" onchange="location=this.value;">
                 </option>
-                <option class="fw-bold" value="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=all"
+                <option class="fw-bold"
+                        value="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=all"
                         <%if (selectedCategory == null || selectedCategory.equals("all")) {%>
                         selected
                         <%}%>
@@ -261,7 +281,8 @@
                 </option>
 
                 <%for (Category c : categories) {%>
-                <option class="fst-italic" value="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=<%=c.getId()%>"
+                <option class="fst-italic"
+                        value="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=<%=c.getId()%>"
                         <%if (selectedCategory != null && selectedCategory.equals(c.getId() + "")) {%>
                         selected
                         <%}%>
@@ -296,105 +317,109 @@
             </form>
         </div>
     </div>
+    <div class="table-wrapper-scroll-y my-custom-scrollbar  d-flex justify-content-center">
+        <table id="data" class="table table-striped table-hover">
+            <thead>
+            <tr class="text-center sticky-top">
+                <th class="text-nowrap fix-column" scope="col"
+                    style=" position: sticky;left: 0;z-index: 1;"
+                >Mã
+                </th>
+                <th scope="col">Tên sản phẩm</th>
+                <th class="text-nowrap" scope="col">Có sẵn</th>
+                <th class="text-nowrap" scope="col">Đã bán</th>
+                <th class="text-nowrap" scope="col">Giá nhập</th>
+                <th class="text-nowrap" scope="col">Giá bán</th>
+                <th class="text-nowrap" scope="col">Giảm giá</th>
+                <th class="text-nowrap" scope="col">Giá sản phẩm</th>
+                <th class="text-nowrap" scope="col">
+                    Trạng thái kinh doanh
+                </th>
+                <th class="text-nowrap" scope="col">Chức năng</th>
+            </tr>
+            </thead>
+            <tbody>
+            <%for (Product p : products) {%>
+            <tr class="text-center">
+                <td
+                >
+                    <%--                        show--%>
+                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=p.getId()%>" target="_blank"
+                       class="px-2 btn btn-primary">
+                        <%=p.getId()%>
+                    </a>
+                </td>
+                <td><%=p.getName()%>
+                </td>
+                <td><%=p.getQuantity()%>
+                </td>
+                <td><%=p.getSoldout()%>
+                </td>
+                <td><%=numberFormat.format(p.getCostPrice())%>
+                </td>
+                <td><%=numberFormat.format(p.getSellingPrice())%>
+                </td>
+                <%!double finalSellingPrice;%>
+                <%finalSellingPrice = ProductService.getInstance().productPriceIncludeDiscount(p);%>
+                <td>
 
-    <div class="solid"></div>
-    <div class="product_list m-auto" id="product">
-        <div class="table-wrapper-scroll-y my-custom-scrollbar">
-            <table class="table table-striped table-hover">
-                <thead>
-                <tr class="text-center sticky-top">
-                    <th class="text-nowrap fix-column" scope="col"
-                        style=" position: sticky;left: 0;z-index: 1;"
-                    >Mã sản phẩm
-                    </th>
-                    <th scope="col">Tên sản phẩm</th>
-                    <th class="text-nowrap" scope="col">Mô tả</th>
-                    <th class="text-nowrap" scope="col">Số lượng có sẵn</th>
-                    <th class="text-nowrap" scope="col">Số lượng đã bán</th>
-                    <th class="text-nowrap" scope="col">Giá nhập vào</th>
-                    <th class="text-nowrap" scope="col">Giá bán ra</th>
-                    <th class="text-nowrap" scope="col">Giảm giá được áp dụng</th>
-                    <th class="text-nowrap" scope="col">Giá sản phẩm hiện tại</th>
-                    <th class="text-nowrap" scope="col">
-                        Trạng thái kinh doanh
-                    </th>
-                    <th class="text-nowrap" scope="col">Chức năng</th>
-                </tr>
-                </thead>
-                <tbody>
-                <%for (Product p : products) {%>
-                <tr class="text-center">
-                    <td class="fix-column"
-                        style=" position: sticky;left: 0;z-index: 1;"
-                    >
-                        <%--                        show--%>
-                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=p.getId()%>" target="_blank"
-                           class="px-2 btn btn-primary">
-                            <%=p.getId()%>
-                        </a>
-                    </td>
-                    <td><%=p.getName()%>
-                    </td>
-                    <td>
-                        <%if (p.getDescription().length() > 9) {%>
-                        <%=p.getDescription().substring(0, 10) + "..."%>
-                        <%} else {%>
-                        <%=p.getDescription() + "..."%>
-                        <%}%>
-                    </td>
-                    <td><%=p.getQuantity()%>
-                    </td>
-                    <td><%=p.getSoldout()%>
-                    </td>
-                    <td><%=numberFormat.format(p.getCostPrice())%>
-                    </td>
-                    <td><%=numberFormat.format(p.getSellingPrice())%>
-                    </td>
-                    <%!double finalSellingPrice;%>
-                    <%finalSellingPrice = ProductService.getInstance().productPriceIncludeDiscount(p);%>
-                    <td>
-
-                        <%Discount d = DiscountService.getInstance().getDiscountById(p.getDiscountId() + "");%>
-                        <%if (finalSellingPrice == p.getSellingPrice()) {%>
-                        <del style="text-decoration-color: red;">
-                            <%=(d == null) ? "" : d.getName() + " - giảm " + (d.getPercentageOff() * 100) + "%"%>
-                        </del>
-                        <%} else {%>
+                    <%Discount d = DiscountService.getInstance().getDiscountById(p.getDiscountId() + "");%>
+                    <%if (finalSellingPrice == p.getSellingPrice()) {%>
+                    <del style="text-decoration-color: red;">
                         <%=(d == null) ? "" : d.getName() + " - giảm " + (d.getPercentageOff() * 100) + "%"%>
-                        <%}%>
-                    </td>
-                    <td><%=numberFormat.format(finalSellingPrice)%>
-                    <td>
-                        <%if (p.getIsSale() == 0) {%>
-                        <%--0: false--%>
-                        <a title="Nhấp vào để: Tiếp tục kinh doanh sản phẩm này" class="btn btn-outline-primary"
-                           href="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=<%=selectedCategory%>&switch_product_isSale=<%=p.getId()%>">
-                            <i class="fa-solid fa-xmark fs-4" style="color: red"></i>
-                        </a>
-                        <%} else {%>
-                        <%--1: true--%>
-                        <a title="Nhấp vào để: Ngừng kinh doanh sản phẩm này" class="btn btn-outline-primary"
-                           href="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=<%=selectedCategory%>&switch_product_isSale=<%=p.getId()%>">
-                            <i class="fa-solid fa-check fs-4"></i>
-                        </a>
-                        <%}%>
-                    </td>
-                    <td>
-                        <%--                        Delete product--%>
-                        <a href="<%=request.getContextPath()%>/admin/product?func=product_management&edit_product_id=<%=p.getId()%>"
-                           class="px-2">
-                            <i class="fa-solid fa-pen fs-4" style="color: #5c7093;"></i></a>
-                        <a href="<%=request.getContextPath()%>/admin/product?func=product_management&func_2=showConfirmBox&delete_product_id=<%=p.getId()%>&category_id=<%=selectedCategory%>"
-                           class="px-2">
-                            <i class="fa-solid fa-trash-can fs-4" style="color: #5c7093;"></i></a>
-                    </td>
-                </tr>
-                <%}%>
-                </tbody>
-            </table>
-        </div>
+                    </del>
+                    <%} else {%>
+                    <%=(d == null) ? "" : d.getName() + " - giảm " + (d.getPercentageOff() * 100) + "%"%>
+                    <%}%>
+                </td>
+                <td><%=numberFormat.format(finalSellingPrice)%>
+                <td>
+                    <%if (p.getIsSale() == 0) {%>
+                    <%--0: false--%>
+                    <a title="Nhấp vào để: Tiếp tục kinh doanh sản phẩm này" class="btn btn-outline-primary"
+                       href="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=<%=selectedCategory%>&switch_product_isSale=<%=p.getId()%>">
+                        <i class="fa-solid fa-xmark fs-4" style="color: red"></i>
+                    </a>
+                    <%} else {%>
+                    <%--1: true--%>
+                    <a title="Nhấp vào để: Ngừng kinh doanh sản phẩm này" class="btn btn-outline-primary"
+                       href="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=<%=selectedCategory%>&switch_product_isSale=<%=p.getId()%>">
+                        <i class="fa-solid fa-check fs-4"></i>
+                    </a>
+                    <%}%>
+                </td>
+                <td>
+                    <%--                        Delete product--%>
+                    <a href="<%=request.getContextPath()%>/admin/product?func=product_management&edit_product_id=<%=p.getId()%>"
+                       class="px-2">
+                        <i class="fa-solid fa-pen fs-4" style="color: #5c7093;"></i></a>
+                    <a href="<%=request.getContextPath()%>/admin/product?func=product_management&func_2=showConfirmBox&delete_product_id=<%=p.getId()%>&category_id=<%=selectedCategory%>"
+                       class="px-2">
+                        <i class="fa-solid fa-trash-can fs-4" style="color: #5c7093;"></i></a>
+                </td>
+            </tr>
+            <%}%>
+            </tbody>
+        </table>
     </div>
+    <input type="hidden" id="currentPageNumber" name="currentPageNumber"
+           value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
 </div>
+<script>
+    $(document).ready(function () {
+            var table = $('#data').DataTable({
+                "searching": false, // Không có tính năng tìm kiếm
+                "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
+                "pageLength": 10,
+                "displayStart": document.getElementById("currentPageNumber").value
+            });
+
+            function getCurrentPage() {
+                let pageInfo = table.page.info();
+                document.getElementById("currentPageNumber").value = pageInfo.page + 1;
+            }
+        });
+</script>
 </body>
 <%
     } else {

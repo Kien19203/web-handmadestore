@@ -25,7 +25,8 @@ public class ProductAdminController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/jsp; charset=UTF-8");
         req.setCharacterEncoding("UTF-8");
-
+        String currentPageNumber = req.getParameter("currentPageNumber");
+        currentPageNumber = (currentPageNumber == null) ? "1" : currentPageNumber;
         String categoty_id = req.getParameter("category_id");
 //                       Ngừng bán sản phẩm
         String switch_product_isSale = req.getParameter("switch_product_isSale");
@@ -79,6 +80,7 @@ public class ProductAdminController extends HttpServlet {
         //edit product
         editProduct(req, resp);
         // Hiển thị sản phẩm - Lọc Sản phẩm
+        req.setAttribute("currentPageNumber", currentPageNumber);
         product_management_filter(req, resp);
     }
 
