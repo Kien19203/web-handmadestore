@@ -81,34 +81,34 @@
     <%-- Khuyến Mãi   --%>
     <%List<Product> listProductDiscount = ProductService.getInstance().productDiscountMainPage();%>
     <%if(!listProductDiscount.isEmpty()){%>
-        <div class="title_t" id="khuyenmai"   >
-            <a href="<%=request.getContextPath()%>/product?category=khuyenmai"><p class="text-center fs-5 fw-bold">Sản Phẩm Khuyến Mãi
-            </p></a>
-        </div>
-        <div class="sp overflow-auto" id="sp_khuyenmai" style="width: 92%;margin: auto;margin-bottom: 50px;">
-            <ul class="products  m-2  d-flex flex-nowrap" style="padding: 5px;padding-left: 60px;">
-                <%
-                    for (Product prd : listProductDiscount) {
-                %>
-                <%String pathImage = ImageService.getInstance().pathImageOnly(prd.getId());%>
-                <li class="productkm">
-                    <div class="item_product  me-4">
-                        <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
-                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p><%=prd.getName() %>
-                        </p></a>
-                        <%!double giaKhuyenMai;%>
-                        <% giaKhuyenMai = ProductService.getInstance().productPriceIncludeDiscount(prd);%>
-                        <%if (prd.getCategoryId() >= 0 && giaKhuyenMai != prd.getSellingPrice()) {%>
-                        <del><%=numberFormat.format(prd.getSellingPrice())%></del>
-                        <%}%>
-                        <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
-                        <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
-                    </div>
-                </li>
-                <%}%>
-            </ul>
-        </div>
-        <%}%>
+    <div class="title_t" id="khuyenmai" style="width: 17%; margin: auto;"  >
+        <a style="text-decoration: none;" href="<%=request.getContextPath()%>/product?category=khuyenmai"><p class="text-center fs-5 fw-bold">Sản Phẩm Khuyến Mãi
+        </p></a>
+    </div>
+    <div class="sp overflow-auto" id="sp_khuyenmai" style="width: 92%;margin: auto;margin-bottom: 50px;">
+        <ul class="products  m-2  d-flex flex-nowrap" style="padding: 5px;padding-left: 60px;">
+            <%
+                for (Product prd : listProductDiscount) {
+            %>
+            <%String pathImage = ImageService.getInstance().pathImageOnly(prd.getId());%>
+            <li class="productkm">
+                <div class="item_product  me-4">
+                    <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
+                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p><%=prd.getName() %>
+                    </p></a>
+                    <%!double giaKhuyenMai;%>
+                    <% giaKhuyenMai = ProductService.getInstance().productPriceIncludeDiscount(prd);%>
+                    <%if (prd.getCategoryId() >= 0 && giaKhuyenMai != prd.getSellingPrice()) {%>
+                    <del><%=numberFormat.format(prd.getSellingPrice())%></del>
+                    <%}%>
+                    <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
+                    <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
+                </div>
+            </li>
+            <%}%>
+        </ul>
+    </div>
+    <%}%>
     <%--  Sản Phẩm  --%>
     <% for (Category ca : categoryP) {%>
     <div class="list_product container_product<%=ca.getId()%> d-flex">
@@ -205,8 +205,8 @@
     </div>
 </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-<%--    Chưa hoàn thành ajax cho add sản phẩm vào giỏ hàng--%>
     function addCart(btn,id){
         var actionCart = "post";
         var num = 1;
@@ -219,9 +219,18 @@
                 num: num
             },
             success: function (response){
-                console.log("Hoàn Thành Thêm vào giỏ hàng!");
+                handleAddToCart(response);
+                console.log("Hoàn Thành Thêm vào giỏ hàng! ");
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
         })
     }
+
 </script>
 </html>

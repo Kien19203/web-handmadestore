@@ -29,7 +29,7 @@ public class AddCartController extends HttpServlet {
         HttpSession sessions = req.getSession();
         Cart cart = (Cart) sessions.getAttribute("cart");
         String action = req.getParameter("actionCart");
-         String referer = req.getHeader("Referer");//Hàm lấy url của trang hiện tại để reload
+        String referer = req.getHeader("Referer");//Hàm lấy url của trang hiện tại để reload
         switch (action) {
             case "get":
 
@@ -41,7 +41,7 @@ public class AddCartController extends HttpServlet {
             case "delete":
                 DeleteP(req,resp);
                 resp.sendRedirect(referer);
-                            break;
+                break;
             case "put":
                 putP(req,resp);
 //                resp.sendRedirect(referer);
@@ -54,7 +54,7 @@ public class AddCartController extends HttpServlet {
                 cart.add(id, num);
                 sessions.setAttribute("cart", cart);
                 resp.sendRedirect(referer);
-            break;
+                break;
             default:
 
                 break;
@@ -71,7 +71,7 @@ public class AddCartController extends HttpServlet {
             cart.remove(id);
         }
         else {
-          cart.add(id, num);
+            cart.add(id, num);
         }
         sessions.setAttribute("cart", cart);
         req.getRequestDispatcher("/add-cart?actionCart=get").forward(req,resp);

@@ -47,8 +47,6 @@
             <span><a href="<%=request.getContextPath()%>/forgotpassword">Quên Mật Khẩu?</a></span>
         </div>
         <div class="submit dn">
-
-
             <button type="submit">Đăng Nhập</button>
         </div>
         <%--        Check error--%>
@@ -68,7 +66,14 @@
                 <a href="#" class="facebook"><i class='bx bxl-facebook facebook-icon'></i></a>
             </div>
             <div class="item-media">
-                <a href="#" class="google"><i class='bx bxl-google google-icon'></i></a>
+                <a href="https://accounts.google.com/o/oauth2/auth?scope=openid%20profile%20email
+                &redirect_uri=http://localhost:8080/LoginGoogleHandler
+                &response_type=code
+                &client_id=702770645854-2h013s0gl8fvopdaelt3bh3q8vf0e15k.apps.googleusercontent.com
+                &approval_prompt=force"
+                class="google"><i class='bx bxl-google google-icon'></i></a>
+
+
             </div>
         </div>
         <div class="submit dk">

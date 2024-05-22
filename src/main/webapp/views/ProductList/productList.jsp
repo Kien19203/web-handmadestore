@@ -123,7 +123,7 @@
             <%}%>
         </ul>
         <%--    Số Trang--%>
-        <div class="pagination mx-5">
+        <div class="pagination mx-5" style="padding: 0 40%;">
             <%int currentPage = (int) request.getAttribute("currentPage");%>
             <%int totalPage = (int) request.getAttribute("totalPage");%>
             <%
