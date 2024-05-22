@@ -217,7 +217,7 @@
 <div class="container-fluid mx-auto mt-2">
     <form action="<%=request.getContextPath()%>/admin/order" method="post" id="orderForm">
         <div class="customer_list  mt-5 ">
-            <%--            form--%>
+
             <div class="row d-flex ">
                 <div class="col-lg-6 col-sm-12">
                     <div class="searchId">
@@ -314,8 +314,7 @@
                     <tr class="text-center" style=" cursor: pointer;"
                         onclick="submit_showOrderDetails(event,this)"
                         id="<%=o.getId()%>">
-                        <td><%=o.getId()%>
-                        </td>
+                        <td><%=o.getId()%></td>
                         <td><%=customer.getId()%>
                         </td>
                         <td class="text-start"><%=customer.getName()%>
@@ -534,7 +533,8 @@
                 Đang xác nhận đơn hàng
             </div>
             <a class="btn btn-success mx-2" id="confirmButton" onclick="loadingConfirm()"
-               href="<%=request.getContextPath()%>/admin/order?action=confirm&currentOrderId=<%=currentOrder.getId()%>&currentFilter=<%=currentFilter%>">
+               href="<%=request.getContextPath()%>/admin/order?action=confirm&currentOrderId=<%=currentOrder.getId()%>
+               &currentFilter=<%=currentFilter%>">
                 Xác nhận đơn hàng</a>
         </div>
         <% } else if (currentOrder.isPackingOrder()) {%>

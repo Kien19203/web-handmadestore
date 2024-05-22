@@ -25,7 +25,6 @@ public class SignUp extends HttpServlet {
         doPost(req, resp);
     }
 
-
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         req.setCharacterEncoding("UTF-8");
@@ -68,24 +67,13 @@ public class SignUp extends HttpServlet {
         }
 
         else {
-
             User user = new User();
             user.setName(uname);
             user.setEmail(uemail);
             upass = HashPassword.toSHA1(upass);
             user.setPassword(upass);
             user.setPhoneNumber(utel);
-
-
-//
-//            UserDAO userDAO = new UserDAO();
-//
-//
-//            userDAO.insertUser(user);
-
             UserService.getInstance().insertUser(user);
-
-
             resp.sendRedirect(req.getContextPath() + "/views/Login/view_login/login.jsp");
         }
     }
