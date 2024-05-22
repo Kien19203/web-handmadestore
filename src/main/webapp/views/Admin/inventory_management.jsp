@@ -7,6 +7,8 @@
 <%@ page import="model.service.ProductService" %>
 <%@ page import="java.util.*" %>
 <%@ page import="java.text.NumberFormat" %>
+<%@ page import="model.adapter.InventoryProduct" %>
+<%@ page import="model.service.InventoryService" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     /**
@@ -18,17 +20,8 @@
     numberFormat.setCurrency(currency); %>
 
 <%
-    List<Order> orders =  OrderService.getInstance().getAllOrder();;
+    List<InventoryProduct> ipList = InventoryService.getInstance().showInventoryView();
 %>
-<%
-    /** XEM CHI TIẾT ĐƠN HÀNG :
-     *  currentOrderId = mã đơn hàng muốn xem.
-     */
-    String currentOrderId =  request.getAttribute("currentOrderId")==null?"": (String) request.getAttribute("currentOrder");
-
-    Order currentOrder = OrderService.getInstance().getOrderById(currentOrderId);
-%>
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -41,19 +34,47 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css">
+
     <%--   2. Cài Jquery v3--%>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
     <%-- 3. Cài datatables--%>
+
     <script src="https://cdn.datatables.net/v/dt/dt-2.0.6/datatables.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+<%--    Print excel, pdf, start  vv...v--%>
+    <script src="https://cdn.datatables.net/2.0.7/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/dataTables.buttons.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.dataTables.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.html5.min.js"></script>
+    <script src="https://cdn.datatables.net/buttons/3.0.2/js/buttons.print.min.js"></script>
+    <%--    Print excel, pdf, start  end--%>
+
 <%--    END DATATABLES.  --%>
     <title>Quản lý đơn hàng</title>
     <style>
         body {
-            background-color: #F0EDCF;
+            background-color: #e5e5e5;
+            color: #eb1616;
+            font-family: "Open Sans", sans-serif;
+            font-weight: bold;
+            font-size: 16px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
         }
+
 
         .header {
 
@@ -64,115 +85,18 @@
             text-align: center;
         }
 
-        /*.form-check {*/
-        /*    color: #EEEEEE;*/
-        /*}*/
-
-        /*CSS cho radio tìm kiếm theo tên khách hàng, mã đơn hàng*/
-        .searchId {
-            position: absolute;
-            z-index: 1000;
-            display: flex;
-            flex-wrap: wrap;
-            border-radius: 0.5rem;
-            background-color: #EEEEEE;
-            box-sizing: border-box;
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.06);
-            /*padding: 0.25rem;*/
-            width: 300px;
-            font-size: 14px;
+        .data_table {
+            background-color: #FFFFFF;
+            padding: 15px;
+            box-shadow: 1px 3px 5px #aaa;
+            border-radius: 5px;
         }
 
-        .searchId .form-check-label {
-            flex: 1 1 auto;
-            text-align: center;
-        }
-
-        .searchId .form-check-label input {
-            display: none;
-        }
-
-        .searchId .form-check-label .label-name {
-            display: flex;
-            cursor: pointer;
-            align-items: center;
-            justify-content: center;
-            border-radius: 0.5rem;
-            border: none;
-            padding: .5rem 0;
-            color: #393E46;
-            transition: all .15s ease-in-out;
-        }
-
-        .searchId .form-check-label input:checked + .label-name {
-            background-color: #00ADB5;
-            color:#EEEEEE ;
-            font-weight: 600;
-        }
-
-        /*Input */
-        .form-control {
-            padding-left: 310px;
-            padding-right: 20px;
-
-
-        }
-        .form-check-input:active {
-            border-bottom-color: #00ADB5;
-
-        }
-        .input-group-append {
-            position: absolute;
-        }
-        #showBox, #cancelBox {
-            position: fixed;
-            top: 40%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            overflow: auto;
-            z-index: 1021;
-            background-color: #afe2ea;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .my-custom-scrollbar {
-            position: relative;
-            height: 60%;
-            overflow: auto;
-        }
-
-        .table-wrapper-scroll-y {
-            display: block;
-        }
-
-        /* Filter theo giai đoạn xử lý đơn hàng*/
-        .process-filter .btn {
-            background-color: #393E46;
-            border-bottom: solid 2px;
-            border-bottom-color: #EEEEEE;
-            color: #FFFFFF;
-            border-radius: 0;
-        }
-
-        .process-filter .btn:hover {
-            border-bottom-color: #00ADB5;
-        }
-
-        #orderView {
-            display: none;
-            position : fixed;
-            top: 35%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            z-index: 1000;
-            background-color: #0d0d0d;
-            color: #FFFFFF;
 
 
 
-        }
+
+
 
         #overlay {
             display: none;
@@ -201,17 +125,17 @@
 %>
 <body>
 
-<div class="container-fluid mx-auto mt-2">
+<div class="container mx-auto mt-2">
+<div class="row">
     <div class="header">
-        <h2>Quản lý kho hàng</h2>
-
-
+        <h2>Kho hàng HandmadeStore</h2>
     </div>
 
     <form action="<%=request.getContextPath()%>/admin/order" method="post" id="orderForm">
-        <div class="customer_list  mt-5 ">
-                <table id="table-order"  class="display table table-striped table-hover table-bordered" style="width:100%">
-                    <thead>
+        <div class="col-12">
+        <div class="data_table  mt-5 ">
+                <table id="table-inventory"  class="display table table-striped table-hover table-bordered">
+                    <thead class="table-dark">
                     <tr>
                         <th>Xem</th>
                         <th>Mã sản phẩm</th>
@@ -221,87 +145,77 @@
                         <th>Số lượng tồn</th>
                         <th>Đã bán</th>
                         <th>Lần nhập gần nhất</th>
-
                     </tr>
                     </thead>
-                    <tfoot>
-                    <tr>
-                        <th>Xem</th>
-                        <th>Mã sản phẩm</th>
-                        <th>Tên sản phẩm</th>
-                        <th>Giá nhập</th>
-                        <th>Giá bán ra</th>
-                        <th>Số lượng tồn</th>
-                        <th>Đã bán</th>
-                        <th>Lần nhập gần nhất</th>
-                    </tr>
-                    </tfoot>
+
                 </table>
+        </div>
         </div>
 <%--    </form>--%>
 
 
-    <div id="orderView">
-        <%if(currentOrder!= null) {%>
-        <h3>Đơn hàng #<%=currentOrder.getId()%></h3>
-        <%}%>
-        <p>Trạng thái của đơn hàng: </p>
-    </div>
-
-
     <div id="overlay"></div>
-
-
+</div>
 </div>
 <script>
     let viewOrder = document.getElementById("orderView");
     let overlay =document.getElementById("overlay")
 <%-- BẮT ĐẦU LOAD DỮ LIỆU TỪ DB VÀO AJAX FILE -> HIỂN THỊ --%>
-let dataOrder = []
-let objectOrder;
+let dataInventory = []
+let objectInventory;
 <%
-    for(Order o : orders) {
-    if(o != null) { User customer = UserService.getInstance().getUserById(o.getUserId()+ "");
+    for(InventoryProduct o : ipList) {
  %>
 /* NOte về data-orderId : đây là dữ liệu tùy chỉnh, được lưu trữ trong phần tử button.
 - Lấy nó bằng cách .data(orderId).
 - Ta gán data-orderId = 15. -> data là dữ liệu của thẻ., orderId = 15 !.
 
  */
-objectOrder = {
-    'id' : '<%=o.getId()%>',
-    'userId': '<%=o.getUserId()%>',
-    'userName': '<%=customer.getName()%>',
-    'address': '<%=o.getAddress()%>',
-    'orderDate': '<%=o.getOrderDate()%>',
-    'priceNoneShip': '<%=numberFormat.format(o.getTotalPrice()-o.getShippingFee()) %>',
-    'shippingFee': '<%=numberFormat.format(o.getShippingFee())%>',
-    'totalPrice': '<%=numberFormat.format(o.getTotalPrice())%>',
-    'status': '<%=o.getStatus()%>',
+    objectInventory = {
+    'productId' : '<%=o.getId()%>',
+    'productName': '<%=o.getName()%>',
+    'costPrice': '<%=numberFormat.format(o.getCostPrice())%>',
+    'sellingPrice': '<%=numberFormat.format(o.getSellingPrice())%>',
+    'quantityRemaining': '<%=o.getQuantityRemaining()%>',
+    'soldOut': '<%=o.getSoldOut()%>',
+    'lastModified': '<%=o.getLastModified()%>',
     'detailButton' : '<button class="btn btn-primary btn-detail " data-orderId="<%=o.getId()%>"><i class="fa-solid fa-eye"></i></button>'
 }
-dataOrder.push(objectOrder);
-<%}}%>
+dataInventory.push(objectInventory);
+
+<%}%>
 
 
     $(document).ready(function () {
-        $("#table-order").DataTable(
-
+     var table =   $("#table-inventory").DataTable(
             {
-                data: dataOrder, columns: [
+                layout: {
+                    topStart: {
+                        buttons: ['copy', 'csv', 'excel', 'pdf', 'print']
+                    }
+                }
+                ,
+                paging: false,
+                scrollCollapse: true,
+                scrollY: '50vh',
+                order: [[5, 'desc']],
+
+                data: dataInventory, columns: [
                     {data: 'detailButton'},
-                    {data:'id' },
-                    {data:'userId'},
-                    {data: 'userName'},
-                    {data: 'address'},
-                    {data: 'orderDate'},
-                    {data: 'priceNoneShip'},
-                    {data: 'shippingFee'},
-                    {data: 'totalPrice'},
-                    {data: 'status'}
+                    {data: 'productId'},
+                    {data: 'productName'},
+                    {data: 'costPrice'},
+                    {data: 'sellingPrice'},
+                    {data: 'quantityRemaining'},
+                    {data: 'soldOut'},
+                    {data: 'lastModified'}
                 ]
-            }
-            );
+
+
+
+            } );
+
+
     }
     );
 
@@ -309,17 +223,12 @@ dataOrder.push(objectOrder);
 
 <%--BẮT ĐẦU XỬ LÝ NÚT XEM CHI TIẾT ĐƠN HÀNG--%>
 
-$('#table-order').on('click', '.btn-detail', function () {
+$('#table-inventory').on('click', '.btn-detail', function () {
    let orderId = $(this).data('orderId'); // lấy giá trị o.getId từ button.
     document.getElementById('currentOrderId').value = orderId;
     viewOrder.style.display = "block";
     overlay.style.display = "block";
     console.log("danbam");
-
-
-
-
-
 })
 
 <%--KẾT THÚC XỬ LÝ NÚT XEM CHI TIẾT ĐƠN HÀNG--%>

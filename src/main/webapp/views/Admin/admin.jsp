@@ -65,6 +65,7 @@
                 <h3 class="text-primary">HandMadeStore</h3>
             </a>
 
+
             <div class="navbar-nav w-100">
                 <a href="<%=request.getContextPath()%>/admin?func=dashboard"
                    class="nav-item nav-link
@@ -72,13 +73,25 @@
                    active
                   <%}%>">
                     <i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
+
+
+ <%--                QUẢN LÝ SẢN PHẨM - START     --%>
+
                 <div class="nav-item dropdown">
-                    <%if (func.equals("product_management") || func.equals("category_management")
+                    <%if (func.equals("product_management")|| func.equals("inventory_management") || func.equals("category_management")
                             || func.equals("add_product") || func.equals("discount_management")) {%>
                     <a href="#" class="nav-link dropdown-toggle show active" data-bs-toggle="dropdown"
                        aria-expanded="true"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
                     <div class="dropdown-menu bg-transparent border-0 show ms-5" data-bs-popper="none">
+                        <a href="<%=request.getContextPath()%>/admin?func=inventory_management"
+                           class="dropdown-item
+                                 <%if(func.equals("inventory_management")){%>
+                                     active
+                                 <%}%>">
+                            <i class="fa-solid fa-list me-2"></i>
+                            Kho lưu trữ hàng
+                        </a>
                         <a href="<%=request.getContextPath()%>/admin?func=product_management"
                            class="dropdown-item
                                  <%if(func.equals("product_management")){%>
@@ -114,13 +127,17 @@
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
                     <div class="dropdown-menu bg-transparent border-0 ms-5">
-                        <a href="<%=request.getContextPath()%>/admin?func=product_management"
+                        <a href="<%=request.getContextPath()%>/admin?func=inventory_management" class="dropdown-item"><i class="fa-solid fa-layer-group me-2"></i>
+                            Kho lưu trữ hàng
+                        </a>
+                                              <a href="<%=request.getContextPath()%>/admin?func=product_management"
                            class="dropdown-item
                          <%if(func.equals("product_management")){%>
                              active
                          <%}%>"><i
                                 class="fa-solid fa-list me-2"
                         ></i>Danh sách sản phẩm</a>
+
                         <a href="<%=request.getContextPath()%>/admin?func=category_management" class="dropdown-item"><i class="fa-solid fa-layer-group me-2"></i>
                             Quản lý danh mục
                         </a>
@@ -134,6 +151,7 @@
                     <%}%>
                 </div>
 
+<%--                QUẢN LÝ SẢN PHẨM - END     --%>
 
                 <a href="<%=request.getContextPath()%>/admin?func=order_management"
                    class="nav-item nav-link
@@ -295,7 +313,7 @@
         </nav>
         <!-- Navbar End -->
         <iframe src="<%=framePath%>"
-                frameborder="0" name="content" id="frame" width="100%" height="110%"
+                frameborder="0" name="content" id="frame" width="100%" height="100%"
                 scrolling="yes"
                 class="container-fluid mt-2"
         ></iframe>
