@@ -68,11 +68,6 @@
             <div class="item-media">
                 <a href="#"
                 class="google"><i class='bx bxl-google google-icon'></i></a>
-<%--                "https://accounts.google.com/o/oauth2/auth?scope=openid%20profile%20email
-                &redirect_uri=http://localhost:8080/LoginGoogleHandler
-                &response_type=code
-                &client_id=702770645854-2h013s0gl8fvopdaelt3bh3q8vf0e15k.apps.googleusercontent.com
-                &approval_prompt=force"--%>
 
 
             </div>
