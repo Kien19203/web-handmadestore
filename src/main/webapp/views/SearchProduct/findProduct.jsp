@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
     <link href="<%=request.getContextPath()%>/views/bootstrap-css/bootstrap.min.css">
     <link href="<%=request.getContextPath()%>/views/SearchProduct/findProduct.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <title>Tìm Kiếm</title>
 </head>
 <body>
@@ -57,15 +59,17 @@
                 <del><%=pfp.getSellingPrice()%>đ</del>
                 <%}%>
                 <p><%=ProductService.getInstance().productPriceIncludeDiscount(pfp)%>đ</p>
-                <div class="add-to-cart"><a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=pfp.getId()%>"><span>Thêm vào giỏ hàng</span> </a></div>
+                <div class="add-to-cart"><button onclick="addCart(this,<%=pfp.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
             </div>
         </li>
 
         <%}%>
+        
     </ul>
 </div>
 <%--    Số Trang--%>
-<div class="pagination mx-5">
+<div class="pagination mx-5" style="padding: 0 40%;">
+
     <%int currentPage = (int) request.getAttribute("currentPage1");%>
     <%int totalPage = (int) request.getAttribute("totalPage1");%>
     <%
@@ -93,4 +97,33 @@
     <%@include file="../Footer/footer.jsp" %>
 </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+<%--    Chưa khắc phục đc lỗi--%>
+    function addCart(btn,id){
+        let actionCart = "post";
+        let num = 1;
+        $.ajax({
+            url: "/HandMadeStore/add-cart",
+            method: "GET",
+            data:{
+                id : id,
+                actionCart :actionCart,
+                num: num
+            },
+            success: function (response){
+                handleAddToCart(response);
+                console.log("Hoàn Thành Thêm vào giỏ hàng! ");
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        })
+    }
+
+</script>
 </html>

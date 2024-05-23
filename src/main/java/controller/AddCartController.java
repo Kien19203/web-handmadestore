@@ -20,18 +20,16 @@ public class AddCartController extends HttpServlet {
             cart= new Cart();
         }
         sessions.setAttribute("cart", cart);
-
         doPost(req, resp);
 
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
         HttpSession sessions = req.getSession();
         Cart cart = (Cart) sessions.getAttribute("cart");
         String action = req.getParameter("actionCart");
-         String referer = req.getHeader("Referer");//Hàm lấy url của trang hiện tại để reload
+        String referer = req.getHeader("Referer");//Hàm lấy url của trang hiện tại để reload
         switch (action) {
             case "get":
 
@@ -43,7 +41,7 @@ public class AddCartController extends HttpServlet {
             case "delete":
                 DeleteP(req,resp);
                 resp.sendRedirect(referer);
-                            break;
+                break;
             case "put":
                 putP(req,resp);
 //                resp.sendRedirect(referer);
@@ -51,12 +49,12 @@ public class AddCartController extends HttpServlet {
                 break;
 
             case "post":
-            int id = Integer.parseInt(req.getParameter("id")); // lay id product
+                int id = Integer.parseInt(req.getParameter("id")); // lay id product
                 int num = Integer.parseInt(req.getParameter("num"));
-            cart.add(id, num);
-            sessions.setAttribute("cart", cart);
+                cart.add(id, num);
+                sessions.setAttribute("cart", cart);
                 resp.sendRedirect(referer);
-            break;
+                break;
             default:
 
                 break;
@@ -73,7 +71,7 @@ public class AddCartController extends HttpServlet {
             cart.remove(id);
         }
         else {
-          cart.add(id, num);
+            cart.add(id, num);
         }
         sessions.setAttribute("cart", cart);
         req.getRequestDispatcher("/add-cart?actionCart=get").forward(req,resp);
