@@ -382,7 +382,7 @@
         }
         var products_checkboxes = document.querySelectorAll('.product');
         for (var i = 0; i < products_checkboxes.length; i++) {
-            let id = categories_checkboxes[i].id;
+            let id = products_checkboxes[i].id;
             if (products_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
                 products_checkboxes[i].checked = true;
         }
