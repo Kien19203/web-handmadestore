@@ -1,6 +1,7 @@
 package model.service;
 
 import model.bean.Image;
+import model.bean.Product;
 import model.dao.ImageDAO;
 import model.db.JDBIConnector;
 
@@ -16,9 +17,11 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.regex.Pattern;
 
 public class ImageService {
     public static ImageService instance;
@@ -68,6 +71,7 @@ public class ImageService {
                         .execute()
         );
     }
+
     public static void deleteImageById(String imageId) {
         JDBIConnector.me().useHandle(handle ->
                 handle.createUpdate("DELETE FROM image WHERE id=?")
@@ -75,6 +79,7 @@ public class ImageService {
                         .execute()
         );
     }
+
     public static List<Image> getImagesForProduct(String productId) {
         List<Image> imageList = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("SELECT * from image where productId = :productId ")
@@ -139,8 +144,9 @@ public class ImageService {
             String fileName = getSubmittedFileName(part);
             if (!(fileName.endsWith("unknown"))) {
                 count++;
+                String cleanedProductName = removeDiacritics(productName.replaceAll("\\s", "")).replace(" ", "");
                 String newFileName = count + "_"
-                        + (productName.replaceAll("\\s", ""))
+                        + cleanedProductName
                         + getFileExtension(fileName);
                 String filePath = Path.of(absolutePath, newFileName).toString();
                 System.out.println("filePath: " + filePath);
@@ -150,7 +156,11 @@ public class ImageService {
         }
         return uploadedFiles;
     }
-
+    public static String removeDiacritics(String str) {
+        String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
+        Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
+        return pattern.matcher(nfdNormalizedString).replaceAll("");
+    }
     public static String writeBannerTipImagesFromClient(Part part, HttpServletRequest req, HttpServletResponse resp, ServletContext servletContext) throws ServletException, IOException {
         String uploadedFile = null;
 
@@ -177,5 +187,22 @@ public class ImageService {
             uploadedFile = ("images/banner_tip/" + newFileName);
         }
         return uploadedFile;
+    }
+
+    public static void insertImages(String productId, List<String> imagesPath) {
+        Product product = ProductService.getInstance().getProductById(productId);
+        System.out.println("------------> "+productId);
+        if (product != null)
+            JDBIConnector.me().useHandle(handle -> {
+                        for (String imagePath : imagesPath) {
+                            handle.createUpdate("INSERT INTO image (name, path, productId) VALUES (:name, :path, :productId)")
+                                    .bind("name", product.getName())
+                                    .bind("path", imagePath)
+                                    .bind("productId", productId)
+                                    .executeAndReturnGeneratedKeys("id")
+                                    .mapTo(Integer.class).one();
+                        }
+                    }
+            );
     }
 }

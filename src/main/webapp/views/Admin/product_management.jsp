@@ -91,7 +91,7 @@
 <body>
 <%--edit--%>
 <%if (edit_product != null) {%>
-<form action="<%=request.getContextPath()%>/admin/product">
+<form action="<%=request.getContextPath()%>/admin/product"  method="post" enctype="multipart/form-data">
     <div id="edit_product" class="w-100 bg-secondary p-3 rounded"
          style="display: block">
         <div class="text-center fw-bold p-3" style="font-size: 30px; color: #0dcaf0">Chỉnh sửa thông tin sản phẩm có
@@ -217,8 +217,14 @@
                                      src="<%=request.getContextPath()%>/<%=image.getPath()%>">
                             </div>
                             <%}%>
-                            <button class="mt-3 border-2 btn btn-outline-dark" style="width: 80px; height: 80px;"><i
-                                    style="font-size: 30px" class="fa-solid fa-circle-plus"></i></button>
+                            <div class="col-8">
+                                <label for="uploadImage">Chọn File Ảnh ít hơn 5MB</label>
+                                <input id="uploadImage" type="file" name="images" placeholder="Chọn File Ảnh ít hơn 5MB"
+                                       multiple onchange="displayFileNames(this)" accept="image/*">
+                                <div id="fileNamesContainer"></div>
+<%--                                <button class="mt-3 border-2 btn btn-outline-dark" style="width: 80px; height: 80px;"><i--%>
+<%--                                        style="font-size: 30px" class="fa-solid fa-circle-plus"></i></button>--%>
+                            </div>
                         </div>
                     </div>
                     <div id="delete_image_box"></div>
@@ -496,6 +502,21 @@
                 alert("lỗi")
             }
         })
+    }
+    function displayFileNames(input) {
+        var fileNamesContainer = document.getElementById("fileNamesContainer");
+        fileNamesContainer.innerHTML = "";
+
+        if (input.files.length > 0) {
+            for (var i = 0; i < input.files.length; i++) {
+                var fileName = input.files[i].name;
+                var fileNameElement = document.createElement("span");
+                fileNameElement.textContent = fileName + "; ";
+                fileNamesContainer.appendChild(fileNameElement);
+            }
+        } else {
+            fileNamesContainer.innerHTML = "Không có file được chọn";
+        }
     }
 </script>
 </body>
