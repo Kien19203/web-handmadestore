@@ -103,6 +103,7 @@
             transform: translateX(-50%);
             z-index: 1000;
         }
+
         #data th:nth-child(4),
         #data td:nth-child(4) {
             width: 20%;
@@ -251,6 +252,8 @@
         </div>
         <input type="hidden" id="currentOrderId" name="currentOrderId">
         <input type="hidden" id="currentFilter" name="currentFilter" value="<%=currentFilter%>">
+        <input type="hidden" id="currentPageNumber" name="currentPageNumber"
+               value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
     </form>
     <%if (currentOrder != null) {%>
     <%--        showbox--%>
@@ -466,8 +469,6 @@
         </div>
     </div>
     <%}%>
-    <input type="hidden" id="currentPageNumber" name="currentPageNumber"
-           value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
 </div>
 <script>
     $(document).ready(function () {
@@ -477,17 +478,16 @@
             "pageLength": 10,
             "displayStart": document.getElementById("currentPageNumber").value
         });
-
-        function getCurrentPage() {
+        table.on('page.dt', function () {
             let pageInfo = table.page.info();
-            document.getElementById("currentPageNumber").value = pageInfo.page + 1;
-        }
+            document.getElementById("currentPageNumber").value = pageInfo.page;
+        });
     });
 
     function deliveredOrder(orderId) {
         $.ajax({
             method: "POST",
-            url: "/HandMadeStore/confirmOrder", // Điều chỉnh URL tới Servlet của bạn
+            url: "/HandMadeStore/order-ajax-handle", // Điều chỉnh URL tới Servlet của bạn
             data: {
                 action: "deliveredOrder",
                 orderId: orderId
@@ -506,7 +506,7 @@
         loadingConfirm();
         $.ajax({
             method: "POST",
-            url: "/HandMadeStore/confirmOrder", // Điều chỉnh URL tới Servlet của bạn
+            url: "/HandMadeStore/order-ajax-handle", // Điều chỉnh URL tới Servlet của bạn
             data: {
                 action: "confirmOrder",
                 orderId: orderId
@@ -532,7 +532,7 @@
         loadingCancel();
         $.ajax({
             method: "POST",
-            url: "/HandMadeStore/confirmOrder",
+            url: "/HandMadeStore/order-ajax-handle",
             data: {
                 action: "cancelOrder",
                 orderId: orderId

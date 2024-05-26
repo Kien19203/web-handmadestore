@@ -101,4 +101,29 @@ public class User implements Serializable {
                 ", status='" + status + '\'' +
                 '}';
     }
+
+    public boolean isOwn() {
+        return (this.roleId == 0) ? true : false;
+    }
+
+    public boolean isAdmin() {
+        return (this.roleId == 1) ? true : false;
+    }
+
+    public boolean isUser() {
+        return (this.roleId == 2) ? true : false;
+    }
+    public boolean isLock() {
+        return (this.getStatus().equals("Bình Thường")) ? false : true;
+    }
+
+    public String nameAsRole(){
+        if(isOwn()){
+            return "Chủ hệ thống";
+        }else if(isAdmin()){
+            return "Quản trị viên";
+        }else{
+            return "Người dùng";
+        }
+    }
 }

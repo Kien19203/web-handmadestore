@@ -1,6 +1,8 @@
-package controller.admin;
+package controller.ajax_handle;
 
+import com.google.gson.Gson;
 import model.bean.Order;
+import model.bean.OrderDetail;
 import model.service.JavaMail.MailService;
 import model.service.OrderService;
 import model.service.UserService;
@@ -11,9 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 
-@WebServlet("/confirmOrder")
-public class ConfirmOrderAjax extends HttpServlet {
+@WebServlet("/order-ajax-handle")
+public class OrderAjaxHandle extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
@@ -36,6 +39,6 @@ public class ConfirmOrderAjax extends HttpServlet {
                 OrderService.getInstance().cancelOrder(orderId);
             }
         }
-        resp.getWriter().write("("+OrderService.getInstance().waitConfirmOrdersNumber()+")");
+        resp.getWriter().write("(" + OrderService.getInstance().waitConfirmOrdersNumber() + ")");
     }
 }

@@ -102,7 +102,22 @@ public class UserDAO {
 
     public static List<User> getAllUsers() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user").mapToBean(User.class).stream().collect(Collectors.toList()));
+                handle.createQuery("select * from user order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
+        return users;
+    }
+    public static List<User> getOwnerList() {
+        List<User> users = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from user where roleId=0 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
+        return users;
+    }
+    public static List<User> getAdminList() {
+        List<User> users = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from user where roleId=1 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
+        return users;
+    }
+    public static List<User> getUserList() {
+        List<User> users = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from user where roleId=2 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
 

@@ -9,6 +9,7 @@
 <%
     String currentFilter = (String) request.getAttribute("currentFilter");
 %>
+<%User user = (User) session.getAttribute("auth");%>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -49,20 +50,32 @@
         <input type="text" name="func" value="customer_management" style="display: none"></p>
         <input type="text" name="filter" value="findCustomer" style="display: none"></p>
 
-        <div class="row input-group mb-3">
-            <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=allCustomer"
-               class="btn btn-outline-secondary col-12 mb-3" type="button">Tất cả</a>
-            <input type="text" class="form-control col-lg-3 col-12 col-sm-12" placeholder="Tìm kiếm theo Tên hoặc Số điện thoại, Email khách hàng"
+        <div class="row input-group mb-3 justify-content-center">
+            <div class="d-flex justify-content-center">
+                <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=allCustomer"
+                   class="btn btn-outline-secondary" type="button">Tất cả</a>
+                <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=owner"
+                   class="btn btn-outline-secondary" type="button">Chủ hệ thống</a>
+                <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=admin"
+                   class="btn btn-outline-secondary" type="button">Quản trị viên</a>
+                <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=user"
+                   class="btn btn-outline-secondary" type="button">Người dùng</a>
+            </div>
+            <input type="text" class="form-control col-lg-6 col-12 col-sm-12"
+                   placeholder="Tìm kiếm theo Tên hoặc Số điện thoại, Email khách hàng"
                    name="findCustomer"
-                   <%String kw =(String) request.getAttribute("kw");%>
+                <%String kw =(String) request.getAttribute("kw");%>
                    value="<%=(kw==null)?"":kw%>">
             <button
                     class="btn btn-outline-secondary col-lg-2" type="submit">Tìm kiếm khách hàng
             </button>
+            <button
+                    class="btn btn-outline-secondary col-lg-2" type="submit">Thêm quản lý
+            </button>
         </div>
     </form>
     <%--        table--%>
-    <div class="table-wrapper-scroll-y my-custom-scrollbar">
+    <div class="table-wrapper-scroll-y my-custom-scrollbar d-flex justify-content-center">
         <table id="data" class="table table-striped table-hover">
             <thead>
             <tr class="text-center sticky-top">
@@ -70,6 +83,7 @@
                 <th class="text-nowrap">
                     Họ Và Tên
                 </th>
+                <th class="text-nowrap">Quyền hạn</th>
                 <th class="text-nowrap">Số điện thoại</th>
                 <th class="text-nowrap">Địa chỉ email</th>
                 <th class="text-nowrap">
@@ -85,12 +99,21 @@
             </thead>
             <tbody>
             <%int stt = 0;%>
-            <% for (User u : users) {%>
-            <%stt++;%>
-            <tr class="text-center">
+            <% for (User u : users) {
+                stt++;
+            %>
+            <tr class="text-center"
+                    <%
+                        if (user.getId() == u.getId()) {
+                    %>
+                    style="font-weight: bold"
+                    <%}%>
+            >
                 <td class="text-center"><%=stt%>
                 </td>
                 <td class="text-center"><%=u.getName()%>
+                </td>
+                <td class="text-center"><%=u.nameAsRole()%>
                 </td>
                 <td class="text-center"><%=u.getPhoneNumber()%>
                 </td>
@@ -101,12 +124,22 @@
                 <td class="text-center"><%=u.getStatus()%>
                 </td>
                 <td class="text-center">
-                    <%if (!RoleService.getInstance().checkRole(u).equals("admin")) {%>
-                    <%if (u.getStatus().trim().equalsIgnoreCase("Bình Thường")) {%>
+                    <%if (user.isOwn() && !u.isOwn()) {%>
+                    <%if (!u.isLock()) {%>
                     <a title="Khóa tải khoản"
                        href="<%=request.getContextPath()%>/admin/customer?func=customer_management&user_id=<%=u.getId()%>&currentFilter=<%=currentFilter%>"><i
                             class="fa-solid fa-unlock fs-4"></i></a>
-                    <%} else if (u.getStatus().trim().equalsIgnoreCase("Bị khóa")) {%>
+                    <%} else {%>
+                    <a title="Bỏ khóa tải khoản"
+                       href="<%=request.getContextPath()%>/admin/customer?func=customer_management&user_id=<%=u.getId()%>&currentFilter=<%=currentFilter%>"><i
+                            class="fa-solid fa-lock fs-4"></i></a>
+                    <%}%>
+                    <%} else if (user.isAdmin() && u.isUser()) {%>
+                    <%if (!u.isLock()) {%>
+                    <a title="Khóa tải khoản"
+                       href="<%=request.getContextPath()%>/admin/customer?func=customer_management&user_id=<%=u.getId()%>&currentFilter=<%=currentFilter%>"><i
+                            class="fa-solid fa-unlock fs-4"></i></a>
+                    <%} else {%>
                     <a title="Bỏ khóa tải khoản"
                        href="<%=request.getContextPath()%>/admin/customer?func=customer_management&user_id=<%=u.getId()%>&currentFilter=<%=currentFilter%>"><i
                             class="fa-solid fa-lock fs-4"></i></a>
@@ -114,12 +147,14 @@
                     <%}%>
                 </td>
             </tr>
-            <%}%>
+            <%
+                }
+            %>
             </tbody>
         </table>
     </div>
-        <input type="hidden" id="currentPageNumber" name="currentPageNumber"
-               value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
+    <input type="hidden" id="currentPageNumber" name="currentPageNumber"
+           value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
 </div>
 <script>
     $(document).ready(function () {
@@ -132,7 +167,7 @@
 
         function getCurrentPage() {
             let pageInfo = table.page.info();
-            document.getElementById("currentPageNumber").value = pageInfo.page + 1;
+            document.getElementById("currentPageNumber").value = pageInfo.page;
         }
     });
 </script>

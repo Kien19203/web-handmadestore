@@ -22,8 +22,7 @@ public class UserService {
 
     public User checkLogin(String email, String password) {
         User userByEmail = UserDAO.getUserByEmail(email);
-
-        if (userByEmail != null && userByEmail.getEmail().equals(email)
+        if (userByEmail != null && !userByEmail.isLock() && userByEmail.getEmail().equals(email)
                 && userByEmail.getPassword().equals(password))
             return userByEmail;
         else return null;
@@ -45,6 +44,22 @@ public class UserService {
         List<User> users = UserDAO.getAllUsers();
         return users;
     }
+
+    public List<User> getOwnerList() {
+        List<User> users = UserDAO.getOwnerList();
+        return users;
+    }
+
+    public List<User> getAdminList() {
+        List<User> users = UserDAO.getAdminList();
+        return users;
+    }
+
+    public List<User> getUserList() {
+        List<User> users = UserDAO.getUserList();
+        return users;
+    }
+
 
     public List<User> getNewUsersTop(int number) {
         List<User> users = UserDAO.getNewUsersTop(number);

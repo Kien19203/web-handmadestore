@@ -9,6 +9,8 @@
 <%@ page import="java.util.Locale" %>
 <%@ page import="java.util.Currency" %>
 <%@ page import="java.text.NumberFormat" %>
+<%@ page import="model.service.ImageService" %>
+<%@ page import="model.bean.Image" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     Locale locale = new Locale("vi", "VN");
@@ -66,6 +68,20 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
         }
+
+        #delete_image_box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: auto;
+            display: none;
+            z-index: 1033;
+            background-color: #2c3e50; /* Adjust the background color as needed */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
+        }
     </style>
 </head>
 <%
@@ -76,7 +92,7 @@
 <%--edit--%>
 <%if (edit_product != null) {%>
 <form action="<%=request.getContextPath()%>/admin/product">
-    <div id="edit_product" class="w-75 bg-secondary p-3 rounded"
+    <div id="edit_product" class="w-100 bg-secondary p-3 rounded"
          style="display: block">
         <div class="text-center fw-bold p-3" style="font-size: 30px; color: #0dcaf0">Chỉnh sửa thông tin sản phẩm có
             mã: <%=edit_product.getId()%>
@@ -116,7 +132,7 @@
             <div class="col-md-6 mb-5">
                 <div class="mt-4">
                     <div class="m-0 border alert alert-dismissible d-flex align-items-center  mx-5 my-2 p-2">
-                        <div class="me-4">
+                        <div class="me-4 ms-3">
                             <input class="form-check-input fs-5" style="cursor: pointer" type="radio"
                                    name="choiceCategory" id="case1"
                                 <%if (edit_product.getCategoryId()>0){%>
@@ -189,6 +205,23 @@
                         </select>
                         <label for="discountId">Chọn giảm giá áp dụng</label>
                     </div>
+                    <div class="mx-5" style=" display: block;position: relative;height: 110px;overflow: auto;">
+                        <div class="d-flex justify-content-start">
+                            <%for (Image image : ImageService.getImagesForProduct(edit_product.getId() + "")) {%>
+                            <div class="mx-3" id="image_<%=image.getId()%>">
+                                <%--                                haha--%>
+                                <div class="text-danger fw-bold text-end" style="cursor: pointer"
+                                     onclick="showDeleteImageBox(<%=image.getId()%>)">Xóa
+                                </div>
+                                <img class="border-2" width="80px" , height="80px"
+                                     src="<%=request.getContextPath()%>/<%=image.getPath()%>">
+                            </div>
+                            <%}%>
+                            <button class="mt-3 border-2 btn btn-outline-dark" style="width: 80px; height: 80px;"><i
+                                    style="font-size: 30px" class="fa-solid fa-circle-plus"></i></button>
+                        </div>
+                    </div>
+                    <div id="delete_image_box"></div>
                 </div>
             </div>
         </div>
@@ -389,10 +422,9 @@
                     <%}%>
                 </td>
                 <td>
-                    <%--                        Delete product--%>
-                    <a href="<%=request.getContextPath()%>/admin/product?func=product_management&edit_product_id=<%=p.getId()%>"
-                       class="px-2">
-                        <i class="fa-solid fa-pen fs-4" style="color: #5c7093;"></i></a>
+                    <button onclick="showEdit(<%=p.getId()%>)"
+                            class="px-2">
+                        <i class="fa-solid fa-pen fs-4" style="color: #5c7093;"></i></button>
                     <a href="<%=request.getContextPath()%>/admin/product?func=product_management&func_2=showConfirmBox&delete_product_id=<%=p.getId()%>&category_id=<%=selectedCategory%>"
                        class="px-2">
                         <i class="fa-solid fa-trash-can fs-4" style="color: #5c7093;"></i></a>
@@ -407,18 +439,64 @@
 </div>
 <script>
     $(document).ready(function () {
-            var table = $('#data').DataTable({
-                "searching": false, // Không có tính năng tìm kiếm
-                "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
-                "pageLength": 10,
-                "displayStart": document.getElementById("currentPageNumber").value
-            });
-
-            function getCurrentPage() {
-                let pageInfo = table.page.info();
-                document.getElementById("currentPageNumber").value = pageInfo.page + 1;
-            }
+        var table = $('#data').DataTable({
+            "searching": false, // Không có tính năng tìm kiếm
+            "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
+            "pageLength": 10,
+            "displayStart": document.getElementById("currentPageNumber").value * 10
         });
+        table.on('page.dt', function () {
+            let pageInfo = table.page.info();
+            document.getElementById("currentPageNumber").value = pageInfo.page;
+        });
+    });
+
+    function showEdit(productId) {
+        let currentPageNumber = document.getElementById("currentPageNumber").value;
+        window.location.href = "<%=request.getContextPath()%>/admin/product?func=product_management&edit_product_id=" + productId + "&currentPageNumber=" + currentPageNumber;
+    }
+
+    function showDeleteImageBox(imageId) {
+        const container = document.getElementById('delete_image_box');
+        container.innerHTML = `
+        <div>
+            <h4 class="text-danger">Bạn sẽ không thể hoàn tác thao tác này!</h1>
+            <button type="button" class="btn btn-outline-secondary" onclick="removeDeleteImageBox()">Hủy</button>
+            <button type="button" class="btn btn-outline-danger" onclick="deleteImageBox(${imageId})">Tiếp tục xóa ảnh</button>
+        </div>`;
+        container.style.display = 'block';
+    }
+
+    function removeDeleteImageBox() {
+        const container = document.getElementById('delete_image_box');
+        if (container) {
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+        }
+        container.style.display = 'none';
+    }
+
+    function deleteImageBox(imageId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/image-ajax-handle",
+            data: {
+                action: "deleteImage",
+                imageId: imageId
+            },
+            success: function (response) {
+                const imageDiv = document.getElementById('image_'+response);
+                if (imageDiv) {
+                    imageDiv.remove();
+                }
+                removeDeleteImageBox();
+            },
+            error: function () {
+                alert("lỗi")
+            }
+        })
+    }
 </script>
 </body>
 <%

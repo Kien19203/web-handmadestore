@@ -25,7 +25,7 @@ public class OrderAdminController extends HttpServlet {
         req.setCharacterEncoding("UTF-8");
         String currentFilter = req.getParameter("currentFilter");
         String currentPageNumber = req.getParameter("currentPageNumber");
-        currentPageNumber = (currentPageNumber == null) ? "1" : currentPageNumber;
+        currentPageNumber = (currentPageNumber == null) ? "0" : currentPageNumber;
         char delim = ':';
         System.out.println("Controller>> IN: " + currentFilter);
 //        Find

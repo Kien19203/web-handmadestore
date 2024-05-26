@@ -68,7 +68,13 @@ public class ImageService {
                         .execute()
         );
     }
-
+    public static void deleteImageById(String imageId) {
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate("DELETE FROM image WHERE id=?")
+                        .bind(0, imageId)
+                        .execute()
+        );
+    }
     public static List<Image> getImagesForProduct(String productId) {
         List<Image> imageList = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("SELECT * from image where productId = :productId ")
@@ -97,7 +103,6 @@ public class ImageService {
             }
         } catch (
                 InvalidPathException e) {
-
         }
     }
 

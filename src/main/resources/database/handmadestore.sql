@@ -94,7 +94,7 @@ CREATE TABLE `rate`
 
 CREATE TABLE `role`
 (
-    `id`   int(11) NOT NULL DEFAULT 1,
+    `id`   int(11) NOT NULL DEFAULT 2,
     `name` varchar(20) DEFAULT 'user'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -1609,8 +1609,9 @@ VALUES (1, 1, 4, 'Sản phẩm tốt', '2023-11-29 00:00:00'),
        (118, 9, 5, 'Quá ưng ý với sản phẩm này!', '2023-12-03 00:00:00');
 
 INSERT INTO `role` (`id`, `name`)
-VALUES (0, 'admin'),
-       (1, 'user');
+VALUES (0, 'owner'),
+       (1, 'admin'),
+       (2, 'user');
 
 INSERT INTO `tips` (`title`, `description`, `img_path`, `video_link`)
 VALUES ('Cách cắm hoa khô đẹp trong 5 phút',
@@ -1631,41 +1632,41 @@ VALUES (1, 'admin', '0865266994', 'handmadestore@gmail.com', 'j5Y57UE67Etm9o/3bu
         'Bình Thường', 0),
        (2, 'Nguyễn Trung Kiên', '0336677141', '	21130408@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
         '2023-12-21 11:55:58',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (3, 'Nguyễn Trọng Nghĩa', '0336677141', '21130452@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
         '2023-12-21 11:55:58',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (4, 'Lê Bá Phụng', '0336677141', '21130482@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
         '2023-12-21 11:55:58',
         'Bình Thường', 0),
        (5, 'Pblues', '0336677141', 'lungbaphe772003@gmail.com', 'j5Y57UE67Etm9o/3budppVPs26Y=', '2023-12-21 11:55:58',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (6, 'Giàng A Phò', '0383301249', 'gioaphang10@gmail.com', 'bzEG9mi+7P1TKsq8TWaJPvLB/rA=', '2023-12-21 11:57:42',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (7, 'Giàng A Lữ', '0383331294', 'alu122@gmail.com', 'tmJ8E7v+JZxOlCpaUDHANskmiFQ=', '2023-12-21 11:58:07',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (8, 'Cáp Tần', '0747712817', 'captanam12@gmail.com', 'FT2mYccNA0jxMv5hr7KHMPThfsk=', '2023-12-21 11:58:36',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (9, 'Nguyễn Thị Nghĩa', '0846992305', 'nghiarunner1@gmail.com', 'gkwSuLZQX5Uw2621/gVpx+MXpCo=',
-        '2023-12-21 11:59:30', 'Bình Thường', 1),
+        '2023-12-21 11:59:30', 'Bình Thường', 2),
        (10, 'Lê Ngọc Phụng', '0932100348', 'chanden12@gmail.com', 'YG1YVf8v5O2tVb8w6XgN9aFm/Jo=', '2023-12-21 12:00:08',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (11, 'Nguyễn Quang Hải', '0875244129', 'quanghai19@gmail.com', 'JxcrosuODLiKLbKuTAEOJuQrzTg=',
-        '2023-12-21 12:00:49', 'Bình Thường', 1),
+        '2023-12-21 12:00:49', 'Bình Thường', 2),
        (12, 'Phan Thanh Hòa', '0324712889', 'pdl199@gmail.com', 'PT/lnWok0bM7NAadn1sCWRqTjUg=', '2023-12-21 12:01:28',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (13, 'Tôn Ngộ Không', '0671821176', 'wukong99@gmail.com', 'HcAWujhP8PZAsYe/3icfc9N4b1s=', '2023-12-21 12:02:03',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (14, 'Đường Tăng Tạng', '0315821901', 'thinhkinh008@gmail.com', 'jHdhq9r1HYxgovt/ST+OaNAaF/w=',
-        '2023-12-21 12:02:30', 'Bình Thường', 1),
+        '2023-12-21 12:02:30', 'Bình Thường', 2),
        (15, 'Trư Bát Giới', '0871881103', 'packgioi77@gmail.com', 'SIBC9HV8hbf63+dVHRSjRaV+TWk=', '2023-12-21 12:03:06',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (16, 'Người Cồn', '0341007611', 'nguoicon88@gmail.com', 'En4OJjjx1rRcqPxSFAgmP4/82/w=', '2023-12-21 12:05:41',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (17, 'Nguyễn Khư', '0765 122 822', 'coko@gmail.com', 'bkB6UP/uoLhvBxphkqHaxgRUGxU=', '2023-12-25 00:04:10',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (18, 'Ngô Huy', '0756 788 192', 'huyngu92@go.vn', '3BMxq3cwKG/6fhkEG1SJMySX+58=', '2023-12-25 00:14:09',
-        'Bình Thường', 1);
+        'Bình Thường', 2);
 
 ALTER TABLE `banner_items`
     ADD PRIMARY KEY (`title`) USING BTREE;

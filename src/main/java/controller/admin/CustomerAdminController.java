@@ -41,19 +41,7 @@ public class CustomerAdminController extends HttpServlet {
         if (currentFilter != null) filter = currentFilter;
 
         if (filter != null) {
-            if (filter.equals("ascCreatedDate")) {
-                currentFilter = filter;
-                users = UserService.getInstance().ascCreateDateFilter();
-            } else if (filter.equals("descCreatedDate")) {
-                currentFilter = filter;
-                users = UserService.getInstance().descCreateDateFilter();
-            } else if (filter.equals("ascName")) {
-                currentFilter = filter;
-                users = UserService.getInstance().ascNameFilter();
-            } else if (filter.equals("descName")) {
-                currentFilter = filter;
-                users = UserService.getInstance().descNameFilter();
-            } else if (filter.equals("lockUsers")) {
+            if (filter.equals("lockUsers")) {
                 currentFilter = filter;
                 users = UserService.getInstance().getLockUsers();
             } else if (filter.equals("findCustomer")) {
@@ -67,6 +55,12 @@ public class CustomerAdminController extends HttpServlet {
                 } else {
                     users = UserService.getInstance().findUsersByName(kw);
                 }
+            } else if (filter.equals("owner")) {
+                users = UserService.getInstance().getOwnerList();
+            } else if (filter.equals("admin")) {
+                users = UserService.getInstance().getAdminList();
+            } else if (filter.equals("user")) {
+                users = UserService.getInstance().getUserList();
             } else users = UserService.getInstance().getAllUsers();
         } else {
             users = UserService.getInstance().getAllUsers();

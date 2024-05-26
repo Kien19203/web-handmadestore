@@ -159,39 +159,14 @@
                    <%if(func.equals("customer_management")){%>
                    active
                     <%}%>">
-                    <i class="fa-regular fa-address-book me-2"></i>Quản lý khách hàng</a>
-                <div class="nav-item dropdown">
-                    <%if (func.equals("banners_tips") || func.equals("theme_setting")) {%>
-                    <a href="#" class="nav-link dropdown-toggle show active" data-bs-toggle="dropdown"
-                       aria-expanded="true"><i
-                            class="fa-solid fa-palette me-2"></i>Giao diện bán hàng</a>
-                    <div class="dropdown-menu bg-transparent border-0 show ms-5" data-bs-popper="none">
-                        <a href="<%=request.getContextPath()%>/admin?func=banners_tips"
-                           class="dropdown-item
-                                 <%if(func.equals("banners_tips")){%>
+                    <i class="fa-regular fa-address-book me-2"></i>Quản lý tài khoản</a>
+                <a href="<%=request.getContextPath()%>/admin?func=banners_tips"
+                   class="nav-item nav-link
+                  <%if(func.equals("banners_tips")){%>
                                      active
                                  <%}%>"><i
-                                class="fa-brands fa-gratipay me-2"
-                        ></i>Thay đổi banners, tips</a>
-                        <a href="chart.html" class="dropdown-item"><i class="fa fa-chart-bar me-2"></i>Điều
-                            chỉnh giao diện</a>
-                    </div>
-                    <%} else {%>
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                            class="fa-solid fa-palette me-2"></i>Giao diện bán hàng</a>
-                    <div class="dropdown-menu bg-transparent border-0 ms-5">
-                        <a href="<%=request.getContextPath()%>/admin?func=banners_tips"
-                           class="dropdown-item
-                         <%if(func.equals("banners_tips")){%>
-                             active
-                         <%}%>"><i
-                                class="fa-brands fa-gratipay me-2"
-                        ></i>Thay đổi banners, tips</a>
-                        <a href="chart.html" class="dropdown-item"><i class="fa fa-chart-bar me-2"></i>
-                            Điều chỉnh giao diện</a>
-                    </div>
-                    <%}%>
-                </div>
+                        class="fa-brands fa-gratipay me-2"
+                ></i>Thay đổi banners, tips</a>
                 <a href="<%=request.getContextPath()%>/admin?func=support"
                    class="nav-item nav-link
                     <%if(func.equals("support")){%>
