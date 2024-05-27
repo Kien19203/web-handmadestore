@@ -152,6 +152,16 @@ public class ProductService {
         return ProductDAO.getNumberRateStarsByUser(productId, userId);
     }
 
+    public List<Rate> getRatesByStarNumber(int productId, int starRatings) {
+        return ProductDAO.getRatesByStarNumber(productId,starRatings);
+    }
+    public Integer getStarNumberCount(int productId, int starRatings) {
+        return ProductDAO.getStarNumberCount(productId,starRatings);
+    }
+    public Integer getStarNumberCount(int productId) {
+        return ProductDAO.getStarNumberCount(productId);
+    }
+
     public void editProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId, String discountId) {
         ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId, discountId);
     }

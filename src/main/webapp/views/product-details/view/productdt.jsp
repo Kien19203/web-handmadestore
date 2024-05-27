@@ -3,7 +3,8 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="model.service.ImageService" %>
 <%@ page import="model.bean.*" %>
-<%@ page import="model.dao.UserDAO" %><%--
+<%@ page import="model.dao.UserDAO" %>
+<%@ page import="model.service.ProductService" %><%--
   Created by IntelliJ IDEA.
   User: Kien Nguyen
   Date: 12/11/2023
@@ -20,8 +21,15 @@
 <% String description = product.getDescription();%>
 <% List<Product> relatedProduct = (List<Product>) request.getAttribute("productRelated");%>
 <%List<Rate> rateList = (List<Rate>) request.getAttribute("listRate");%>
-
-
+<%
+    int allStarsCount = ProductService.getInstance().getStarNumberCount(product.getId());
+    int fiveStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 5);
+    int fourStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 4);
+    int threeStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 3);
+    int twoStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 2);
+    int oneStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 1);
+    int zeroStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 0);
+%>
 
 <html>
 <head>
@@ -37,6 +45,20 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Inline+One&display=swap" rel="stylesheet">
+    <!--https://datatables.net/download/-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <!--https://releases.jquery.com/-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+            integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+            crossorigin="anonymous"></script>
     <style>
 
         <%@include file="../css/product.css"%>
@@ -55,7 +77,8 @@
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb ">
-            <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
+            <li class="breadcrumb-item"><a
+                    href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
             <li class="breadcrumb-item"><a
                     href="product?category=<%=categoryByProduct.getId()%>"><%=categoryByProduct.getName()%>
             </a></li>
@@ -176,12 +199,13 @@
             <div class="col info-item mx-3">
                 <div class="info-img ">
                     <img src="<%=request.getContextPath()%>/<%=pathImage%>" alt=""
-                    class="img-fluid d-block mx-auto mt-2">
+                         class="img-fluid d-block mx-auto mt-2">
 
 
                     <div class="row btns w-100 mx-auto ">
                         <button type="button" class="col-6 py-2">
-                            <a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=pr.getId()%>">     <i class="bi bi-cart-plus"></i>
+                            <a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=pr.getId()%>">
+                                <i class="bi bi-cart-plus"></i>
                             </a>
                         </button>
                         <button type="button" class="col-6 py-2">
@@ -191,10 +215,10 @@
                 </div>
                 <div class="info-product p-3">
                     <a href="product-detail?id=<%=pr.getId()%>"
-                    class="d-block text-dark text-decoration-none py-2 info-name">
+                       class="d-block text-dark text-decoration-none py-2 info-name">
                         <%=pr.getName()%>
                     </a>
-                    <span class="info-price fw-bold"><%=numberFormat.format( pr.getSellingPrice()) %></span>
+                    <span class="info-price fw-bold"><%=numberFormat.format(pr.getSellingPrice()) %></span>
                     <div class="info-rating d-flex mt-1">
 
                         <span>(<%=rateList.size()%> đánh giá)</span>
@@ -213,37 +237,71 @@
 
 </section>
 <%--</section>--%>
-
+<%if (!rateList.isEmpty()) {%>
 <section id="rating-comment" class="rating container mb-5">
-    <h4 pb-1>Đánh giá - Bình luận </h4>
+    <h4 pb-1>Đánh giá sản phẩm</h4>
+    <div class="d-flex">
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer; width: 70px"
+             onclick="renderRateByStarNumber(0)">Tất cả (<%=allStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer; width: 70px"
+             onclick="renderRateByStarNumber(5)">5 sao (<%=fiveStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             onclick="renderRateByStarNumber(4)">4 sao (<%=fourStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             onclick="renderRateByStarNumber(3)">3 sao (<%=threeStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             onclick="renderRateByStarNumber(2)">2 sao (<%=twoStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             onclick="renderRateByStarNumber(1)">1 sao (<%=oneStarsCount%>)
+        </div>
+    </div>
     <hr class="mx-auto">
     <!-- Các bình luận sẽ được hiển thị ở đây -->
-<% for(Rate r : rateList) {%>
-    <div class="d-flex flex-column mx-2 comments">
-     <div class="p-1 d-flex flex-row">
-         <h6 class="pe-5 m-0 "><%=UserDAO.getUserNameById(r.getUserId())%></h6>
-         <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào lúc   <%=" " + r.getCreateDate()%> </p>
-     </div>
+    <table id="rate_table" style="width: 100%;">
+        <thead style="display: none">
+        <tr>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% for (Rate r : rateList) {%>
+        <tr>
+            <td>
+                <div class="d-flex flex-column mx-2 comments">
+                    <div class="p-1 d-flex flex-row">
+                        <h6 class="pe-2 m-0 "><%=UserDAO.getUserNameById(r.getUserId())%>
+                        </h6>
+                        <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào
+                            lúc   <%=" " + r.getCreateDate()%>
+                        </p>
+                    </div>
 
-        <div class=" p-1 ratings ">
-            <%  int star = r.getStarRatings();
-                for(int i =1 ; i <= 5; i++) {   %>
-            <%if(i <= star) {%>
-            <i class="bi bi-star-fill " style="color: #ffcc00"></i>
-            <%}
-            else {%>
-            <i class="bi bi-star-fill "></i>
-          <%}
-                }%>
-              </div>
-        <p class="p-1"><%=r.getComment()%></p>
-    </div>
-    <%}%>
-
-
-
+                    <div class=" p-1 ratings ">
+                        <% int star = r.getStarRatings();
+                            for (int i = 1; i <= 5; i++) { %>
+                        <%if (i <= star) {%>
+                        <i class="bi bi-star-fill " style="color: #ffcc00"></i>
+                        <%} else {%>
+                        <i class="bi bi-star-fill "></i>
+                        <%
+                                }
+                            }
+                        %>
+                    </div>
+                    <p class="p-1"><%=r.getComment()%>
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <%}%>
+        </tbody>
+    </table>
     <div class="ratings mb-3">
-
         <i class="bi bi-star-fill "></i>
         <i class="bi bi-star-fill "></i>
         <i class="bi bi-star-fill"></i>
@@ -252,17 +310,11 @@
     </div>
     <div class="d-flex comment-pd">
     <textarea class="comment-input p-2" rows="3" placeholder="Viết bình luận" maxlength="350">
-
     </textarea>
         <button type="button" class="submit-comment btn  btn-outline-success btn-sm shadow-sm ">Gửi</button>
     </div>
-
-
-
-
-
 </section>
-
+<%}%>
 <!--    Footer-->
 <%@include file="/views/Footer/footer.jsp" %>
 
@@ -315,10 +367,75 @@
             const productId = <%=product.getId()%>;
             const quantity = parseInt(quantityInput.value);
             const URL = `<%=request.getContextPath()%>/add-cart?actionCart=post&num=${quantity}&id=${productId}`;
-            window.location.href =URL;
+            window.location.href = URL;
             quantityInput.value = 1;
         });
     });
+    $(document).ready(function () {
+        $(document).ready(function () {
+            $('#rate_table').DataTable({
+                "paging": true, // Phân trang
+                "searching": false, // Không có tính năng tìm kiếm
+                "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
+                "pageLength": 5,
+                "info": false
+            });
+        });
+    });
+
+    function renderRateByStarNumber(starNumber) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/rate-ajax-handle",
+            data: {
+                productId: <%=product.getId()%>,
+                action: "filterStar",
+                starNumber: starNumber
+            },
+            success: function (response) {
+                const table = $('#rate_table').DataTable();
+                table.clear().draw();
+                response.forEach(function (r) {
+                    const starHtml = renderStars(r.starRatings);
+                    const rowHtml = `
+                    <tr>
+                        <td>
+                             <div class="d-flex flex-column mx-2 comments">
+                                <div class="p-1 d-flex flex-row">
+                                    <h6 class="pe-2 m-0 ">${r.userId}
+                                    </h6>
+                                    <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào
+                                        lúc   ${r.createDate}
+                                    </p>
+                                </div>
+                                <div class=" p-1 ratings ">
+                                    ${starHtml}
+                                </div>
+                                <p class="p-1">${r.comment}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                    table.row.add($(rowHtml)).draw();
+                });
+            },
+            error: function () {
+                alert("error")
+            }
+        })
+    }
+    function renderStars(star) {
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= star) {
+                starsHtml += '<i class="bi bi-star-fill" style="color: #ffcc00"></i>';
+            } else {
+                starsHtml += '<i class="bi bi-star-fill"></i>';
+            }
+        }
+        return starsHtml;
+    }
 </script>
 </body>
 </html>

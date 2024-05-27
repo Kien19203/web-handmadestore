@@ -480,8 +480,30 @@ public class ProductDAO {
         return products;
     }
 
-    public static void main(String[] args) {
-        System.out.println(getNumberRateStarsByUser(2, 3));
+    public static List<Rate> getRatesByStarNumber(int productId, int starRatings) {
+        Integer star = starRatings;
+        List<Rate> rateList = JDBIConnector.me().withHandle(
+                handle -> handle.createQuery("SELECT * FROM `rate`  where productId =:productId and starRatings=:star")
+                        .bind("productId", productId)
+                        .bind("star", (star == 1 || star == 2 || star == 3 || star == 4 || star == 5) ? star : null)
+                        .mapToBean(Rate.class)
+                        .stream().toList());
+        return rateList;
+    }
+
+    public static Integer getStarNumberCount(int productId, int starRatings) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select count(userId) from rate where productId=? and starRatings=?")
+                        .bind(0, productId)
+                        .bind(1, starRatings)
+                        .mapTo(Integer.class).one());
+    }
+
+    public static Integer getStarNumberCount(int productId) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select count(userId) from rate where productId=?")
+                        .bind(0, productId)
+                        .mapTo(Integer.class).one());
     }
 }
 
