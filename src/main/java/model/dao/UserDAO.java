@@ -105,16 +105,19 @@ public class UserDAO {
                 handle.createQuery("select * from user order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
+
     public static List<User> getOwnerList() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from user where roleId=0 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
+
     public static List<User> getAdminList() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from user where roleId=1 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
+
     public static List<User> getUserList() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from user where roleId=2 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
@@ -222,18 +225,21 @@ public class UserDAO {
         );
     }
 
-    public static void main(String[] args) {
-//        List<User> users = JDBIConnector.me().withHandle(handle ->
-//                handle.createQuery("select * from user").mapToBean(User.class).collect(Collectors.toList())
-//        );
-//        System.out.println(users);
-//        User u = UserDAO.getUserByEmail("nghia@gmail.com");
-//        System.out.println(getAllUsers());
-//        lockUser("u10");
-//        System.out.println(getNewUsersTop(3));
-//        System.out.println(findUserByEmail("admin@gmail.com"));
-//        setPasswordByEmail("lungbaphe772003@gmail.com", "haha");
-        int userId = 7;
-        System.out.println(UserDAO.getUserNameById(7));
+    public static boolean checkUserAllowedToRate(int userId, int productId) {
+        String sql = "select 1 from `order` o" +
+                " join `order_details` d on o.id = d.orderId" +
+                " where d.productId=:productId and o.status=3 and o.userId=:userId" +
+                " and (select count(userId) from `rate`" +
+                " where productId=:productId and userId=:userId)<2";
+        try {
+            return JDBIConnector.me().withHandle(handle ->
+                    handle.createQuery(sql)
+                            .bind("userId", userId)
+                            .bind("productId", productId)
+                            .mapTo(Integer.class)
+                            .one() > 0);
+        } catch (Exception e) {
+            return false;
+        }
     }
 }

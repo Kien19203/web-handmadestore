@@ -4,7 +4,8 @@
 <%@ page import="model.service.ImageService" %>
 <%@ page import="model.bean.*" %>
 <%@ page import="model.dao.UserDAO" %>
-<%@ page import="model.service.ProductService" %><%--
+<%@ page import="model.service.ProductService" %>
+<%@ page import="model.service.UserService" %><%--
   Created by IntelliJ IDEA.
   User: Kien Nguyen
   Date: 12/11/2023
@@ -29,6 +30,9 @@
     int twoStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 2);
     int oneStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 1);
     int zeroStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 0);
+%>
+<%
+    User sessionUser = (User) request.getSession().getAttribute("auth");
 %>
 
 <html>
@@ -62,7 +66,9 @@
     <style>
 
         <%@include file="../css/product.css"%>
-
+        .dt-empty {
+            display: none;
+        }
     </style>
 
 </head>
@@ -301,18 +307,20 @@
         <%}%>
         </tbody>
     </table>
-    <div class="ratings mb-3">
-        <i class="bi bi-star-fill "></i>
-        <i class="bi bi-star-fill "></i>
-        <i class="bi bi-star-fill"></i>
-        <i class="bi bi-star-fill"></i>
-        <i class="bi bi-star-fill"></i>
-    </div>
-    <div class="d-flex comment-pd">
-    <textarea class="comment-input p-2" rows="3" placeholder="Viết bình luận" maxlength="350">
-    </textarea>
-        <button type="button" class="submit-comment btn  btn-outline-success btn-sm shadow-sm ">Gửi</button>
-    </div>
+    <%if (sessionUser != null && UserService.getInstance().checkUserAllowedToRate(sessionUser.getId(), product.getId())) {%>
+        <div class="ratings mb-3">
+            <i class="bi bi-star-fill" id="rate_1"></i>
+            <i class="bi bi-star-fill" id="rate_2"></i>
+            <i class="bi bi-star-fill" id="rate_3"></i>
+            <i class="bi bi-star-fill" id="rate_4"></i>
+            <i class="bi bi-star-fill" id="rate_5"></i>
+        </div>
+        <div class="d-flex comment-pd">
+        <textarea class="comment-input p-2" rows="3" placeholder="Viết bình luận" maxlength="350">
+        </textarea>
+            <button type="button" class="submit-comment btn  btn-outline-success btn-sm shadow-sm ">Gửi</button>
+        </div>
+    <%}%>
 </section>
 <%}%>
 <!--    Footer-->
@@ -425,6 +433,7 @@
             }
         })
     }
+
     function renderStars(star) {
         let starsHtml = '';
         for (let i = 1; i <= 5; i++) {
