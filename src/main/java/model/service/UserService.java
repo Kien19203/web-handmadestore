@@ -125,7 +125,7 @@ public class UserService {
         UserDAO.updatePhoneNumber(userId, phoneNumber);
     }
 
-    public boolean checkUserAllowedToRate(int userId, int productId) {
+    public int checkUserAllowedToRate(int userId, int productId) {
         return UserDAO.checkUserAllowedToRate(userId, productId);
     }
 }

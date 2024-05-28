@@ -69,6 +69,49 @@
         .dt-empty {
             display: none;
         }
+
+        .rate {
+            float: left;
+            height: 46px;
+            padding: 0 10px;
+        }
+
+        .rate:not(:checked) > input {
+            position: absolute;
+            top: -9999px;
+            display: none;
+        }
+
+        .rate:not(:checked) > label {
+            float: right;
+            width: 1em;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 30px;
+            color: #ccc;
+        }
+
+        .rate:not(:checked) > label:before {
+            content: '★ ';
+        }
+
+        .rate > input:checked ~ label {
+            color: #ffc700;
+        }
+
+        .rate:not(:checked) > label:hover,
+        .rate:not(:checked) > label:hover ~ label {
+            color: #deb217;
+        }
+
+        .rate > input:checked + label:hover,
+        .rate > input:checked + label:hover ~ label,
+        .rate > input:checked ~ label:hover,
+        .rate > input:checked ~ label:hover ~ label,
+        .rate > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
     </style>
 
 </head>
@@ -266,7 +309,7 @@
              onclick="renderRateByStarNumber(1)">1 sao (<%=oneStarsCount%>)
         </div>
     </div>
-    <hr class="mx-auto">
+    <hr class="m-0">
     <!-- Các bình luận sẽ được hiển thị ở đây -->
     <table id="rate_table" style="width: 100%;">
         <thead style="display: none">
@@ -279,8 +322,15 @@
         <tr>
             <td>
                 <div class="d-flex flex-column mx-2 comments">
+                    <%if (sessionUser.getId() == r.getUserId()) {%>
+                    <div class="text-success mt-3">
+                                      Cảm ơn đánh giá của bạn!
+                                     <i class="fa-regular fa-face-smile-beam"></i>
+                    </div>
+                    <%}%>
                     <div class="p-1 d-flex flex-row">
-                        <h6 class="pe-2 m-0 "><%=UserDAO.getUserNameById(r.getUserId())%>
+                        <h6 class="pe-2 m-0 ">
+                            <%=UserDAO.getUserNameById(r.getUserId())%>
                         </h6>
                         <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào
                             lúc   <%=" " + r.getCreateDate()%>
@@ -307,19 +357,41 @@
         <%}%>
         </tbody>
     </table>
-    <%if (sessionUser != null && UserService.getInstance().checkUserAllowedToRate(sessionUser.getId(), product.getId())) {%>
-        <div class="ratings mb-3">
-            <i class="bi bi-star-fill" id="rate_1"></i>
-            <i class="bi bi-star-fill" id="rate_2"></i>
-            <i class="bi bi-star-fill" id="rate_3"></i>
-            <i class="bi bi-star-fill" id="rate_4"></i>
-            <i class="bi bi-star-fill" id="rate_5"></i>
+    <%
+        int check = UserService.getInstance().checkUserAllowedToRate(sessionUser.getId(), product.getId());
+        if (sessionUser != null
+                && (check == 0 || check == 1)
+        ) {%>
+    <div class="my-3">
+        <div class="rate">
+            <input type="radio" id="star5" name="rate" value="5"/>
+            <label for="star5" title="text">5 stars</label>
+            <input type="radio" id="star4" name="rate" value="4"/>
+            <label for="star4" title="text">4 stars</label>
+            <input type="radio" id="star3" name="rate" value="3"/>
+            <label for="star3" title="text">3 stars</label>
+            <input type="radio" id="star2" name="rate" value="2"/>
+            <label for="star2" title="text">2 stars</label>
+            <input type="radio" id="star1" name="rate" value="1"/>
+            <label for="star1" title="text">1 star</label>
         </div>
-        <div class="d-flex comment-pd">
-        <textarea class="comment-input p-2" rows="3" placeholder="Viết bình luận" maxlength="350">
-        </textarea>
-            <button type="button" class="submit-comment btn  btn-outline-success btn-sm shadow-sm ">Gửi</button>
+        <div class="border rounded-3">
+            <div class="text-danger mt-3" id="rate_validate" style="display: none">
+                <i class="fa-regular fa-hand-point-left"></i> Bạn chưa chọn sao đánh giá!
+            </div>
+            <textarea class="form-control mx-auto w-70" id="comment" name="comment"
+                      rows="3" placeholder="Viết bình luận"></textarea>
         </div>
+        <%if (check == 1) {%>
+        <button type="button" class="btn  btn-outline-warning w-100" id="btn_editRating" onclick="addRating()">
+            Hoàn tất chỉnh sửa đánh giá
+        </button>
+        <%} else {%>
+        <button type="button" class="btn  btn-outline-success w-100" id="btn_addRating" onclick="addRating()">
+            Hoàn tất đánh giá
+        </button>
+        <%}%>
+    </div>
     <%}%>
 </section>
 <%}%>
@@ -444,6 +516,34 @@
             }
         }
         return starsHtml;
+    }
+
+    function addRating() {
+        let rating = document.querySelector('input[name="rate"]:checked');
+        let ratingValue = rating ? rating.value : null;
+        let comment = document.getElementById('comment').value;
+        if (ratingValue == null) {
+            document.getElementById("rate_validate").style.display = "block"
+        } else {
+            document.getElementById("rate_validate").style.display = "none";
+            $.ajax({
+                method: "POST",
+                url: "/HandMadeStore/rate-ajax-handle",
+                data: {
+                    productId: <%=product.getId()%>,
+                    action: "addRating",
+                    ratingValue: ratingValue,
+                    comment: comment
+                },
+                success: function (response) {
+                    const table = $('#rate_table').DataTable();
+
+                },
+                error: function () {
+                    alert("error")
+                }
+            })
+        }
     }
 </script>
 </body>

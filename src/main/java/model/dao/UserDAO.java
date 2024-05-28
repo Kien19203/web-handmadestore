@@ -225,7 +225,7 @@ public class UserDAO {
         );
     }
 
-    public static boolean checkUserAllowedToRate(int userId, int productId) {
+    public static int checkUserAllowedToRate(int userId, int productId) {
         String sql = "select 1 from `order` o" +
                 " join `order_details` d on o.id = d.orderId" +
                 " where d.productId=:productId and o.status=3 and o.userId=:userId" +
@@ -237,9 +237,9 @@ public class UserDAO {
                             .bind("userId", userId)
                             .bind("productId", productId)
                             .mapTo(Integer.class)
-                            .one() > 0);
+                            .one());
         } catch (Exception e) {
-            return false;
+            return -1;
         }
     }
 }
