@@ -23,7 +23,7 @@ public class login extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/jsp; charset=UTF-8");
-
+        req.getSession().invalidate();
         req.removeAttribute("auth");
         req.getSession().removeAttribute("isAdmin");
         String email = req.getParameter("email");// nhận input từ ng dùng

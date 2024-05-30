@@ -109,6 +109,10 @@ public class UserService {
         return UserDAO.getUserById(id);
     }
 
+    public String getNameById(int id) {
+        return UserDAO.getNameById(id);
+    }
+
     public void lockUser(String id) {
         UserDAO.lockUser(id);
     }
@@ -125,7 +129,7 @@ public class UserService {
         UserDAO.updatePhoneNumber(userId, phoneNumber);
     }
 
-    public int checkUserAllowedToRate(int userId, int productId) {
-        return UserDAO.checkUserAllowedToRate(userId, productId);
+    public boolean checkUserAllowedToRate(int productId, int userId) {
+        return UserDAO.checkUserAllowedToRate(productId, userId);
     }
 }

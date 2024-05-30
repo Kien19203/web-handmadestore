@@ -225,21 +225,38 @@ public class UserDAO {
         );
     }
 
-    public static int checkUserAllowedToRate(int userId, int productId) {
+    public static boolean checkUserAllowedToRate(int productId, int userId) {
         String sql = "select 1 from `order` o" +
                 " join `order_details` d on o.id = d.orderId" +
                 " where d.productId=:productId and o.status=3 and o.userId=:userId" +
-                " and (select count(userId) from `rate`" +
-                " where productId=:productId and userId=:userId)<2";
+                " and exists (select count(userId) from `rate`" +
+                " where productId=:productId and userId=:userId)";
         try {
             return JDBIConnector.me().withHandle(handle ->
                     handle.createQuery(sql)
                             .bind("userId", userId)
                             .bind("productId", productId)
                             .mapTo(Integer.class)
-                            .one());
+                            .one() > 0);
         } catch (Exception e) {
-            return -1;
+            return false;
         }
+    }
+
+    public static String getNameById(int id) {
+        try {
+            String sql = "Select name from user where id= :userId";
+            String userName = JDBIConnector.me().withHandle(
+                    handle -> handle.createQuery(sql).bind("userId", id).mapTo(String.class).findOne().orElse(null)
+            );
+            return userName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getNameById(4));
     }
 }

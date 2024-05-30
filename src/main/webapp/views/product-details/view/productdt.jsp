@@ -29,7 +29,6 @@
     int threeStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 3);
     int twoStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 2);
     int oneStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 1);
-    int zeroStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 0);
 %>
 <%
     User sessionUser = (User) request.getSession().getAttribute("auth");
@@ -291,21 +290,27 @@
     <h4 pb-1>Đánh giá sản phẩm</h4>
     <div class="d-flex">
         <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer; width: 70px"
+             id="filter_all_star"
              onclick="renderRateByStarNumber(0)">Tất cả (<%=allStarsCount%>)
         </div>
         <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer; width: 70px"
+             id="filter_5_star"
              onclick="renderRateByStarNumber(5)">5 sao (<%=fiveStarsCount%>)
         </div>
         <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             id="filter_4_star"
              onclick="renderRateByStarNumber(4)">4 sao (<%=fourStarsCount%>)
         </div>
         <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             id="filter_3_star"
              onclick="renderRateByStarNumber(3)">3 sao (<%=threeStarsCount%>)
         </div>
         <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             id="filter_2_star"
              onclick="renderRateByStarNumber(2)">2 sao (<%=twoStarsCount%>)
         </div>
         <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             id="filter_1_star"
              onclick="renderRateByStarNumber(1)">1 sao (<%=oneStarsCount%>)
         </div>
     </div>
@@ -324,8 +329,8 @@
                 <div class="d-flex flex-column mx-2 comments">
                     <%if (sessionUser.getId() == r.getUserId()) {%>
                     <div class="text-success mt-3">
-                                      Cảm ơn đánh giá của bạn!
-                                     <i class="fa-regular fa-face-smile-beam"></i>
+                        Cảm ơn đánh giá của bạn!
+                        <i class="fa-regular fa-face-smile-beam"></i>
                     </div>
                     <%}%>
                     <div class="p-1 d-flex flex-row">
@@ -358,11 +363,12 @@
         </tbody>
     </table>
     <%
-        int check = UserService.getInstance().checkUserAllowedToRate(sessionUser.getId(), product.getId());
-        if (sessionUser != null
-                && (check == 0 || check == 1)
-        ) {%>
-    <div class="my-3">
+        if (sessionUser != null && UserService.getInstance().checkUserAllowedToRate(product.getId(), sessionUser.getId())) {
+            //kiểm tra user đã mua chưa & chưa chỉnh sửa
+            int changeNumber = ProductService.getInstance().getChangeNumber(product.getId(), sessionUser.getId());
+            if (changeNumber == 0 || changeNumber == -1) {
+    %>
+    <div class="my-3" id="rate-box">
         <div class="rate">
             <input type="radio" id="star5" name="rate" value="5"/>
             <label for="star5" title="text">5 stars</label>
@@ -382,19 +388,26 @@
             <textarea class="form-control mx-auto w-70" id="comment" name="comment"
                       rows="3" placeholder="Viết bình luận"></textarea>
         </div>
-        <%if (check == 1) {%>
+        <% if (changeNumber == 0) {%>
         <button type="button" class="btn  btn-outline-warning w-100" id="btn_editRating" onclick="addRating()">
             Hoàn tất chỉnh sửa đánh giá
         </button>
-        <%} else {%>
+        <%} else if (changeNumber == -1) {%>
         <button type="button" class="btn  btn-outline-success w-100" id="btn_addRating" onclick="addRating()">
             Hoàn tất đánh giá
         </button>
         <%}%>
     </div>
     <%}%>
+    <%}%>
 </section>
 <%}%>
+<input type="hidden"
+       value="<%=ProductService.getInstance().getNumberRateStarsByUser(product.getId(), sessionUser.getId())%>"
+       id="oldRatingValue">
+<input type="hidden"
+       value="<%=sessionUser.getId()%>"
+       id="userId">
 <!--    Footer-->
 <%@include file="/views/Footer/footer.jsp" %>
 
@@ -477,12 +490,20 @@
                 table.clear().draw();
                 response.forEach(function (r) {
                     const starHtml = renderStars(r.starRatings);
+
+                    const cssForUser = (userId == r.userId) ?
+                        `<div class="text-success mt-3">
+                                Cảm ơn đánh giá của bạn!
+                                <i class="fa-regular fa-face-smile-beam"></i>
+                            </div>` : ``;
                     const rowHtml = `
                     <tr>
                         <td>
                              <div class="d-flex flex-column mx-2 comments">
+                             ${cssForUser}
                                 <div class="p-1 d-flex flex-row">
-                                    <h6 class="pe-2 m-0 ">${r.userId}
+                                    <h6 class="pe-2 m-0 ">
+                                    ${r.userFullName}
                                     </h6>
                                     <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào
                                         lúc   ${r.createDate}
@@ -537,7 +558,92 @@
                 },
                 success: function (response) {
                     const table = $('#rate_table').DataTable();
+                    table.clear().draw();
+                    response.forEach(function (r) {
+                        const starHtml = renderStars(r.starRatings);
+                        const userId = document.getElementById("userId").value;
+                        const cssForUser = (userId == r.userId) ?
+                            `<div class="text-success mt-3">
+                                Cảm ơn đánh giá của bạn!
+                                <i class="fa-regular fa-face-smile-beam"></i>
+                            </div>` : ``;
+                        const rowHtml = `
+                    <tr>
+                        <td>
+                             <div class="d-flex flex-column mx-2 comments">
+                             ${cssForUser}
+                                <div class="p-1 d-flex flex-row">
+                                    <h6 class="pe-2 m-0 ">${r.userFullName}
+                                    </h6>
+                                    <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào
+                                        lúc   ${r.createDate}
+                                    </p>
+                                </div>
+                                <div class=" p-1 ratings ">
+                                    ${starHtml}
+                                </div>
+                                <p class="p-1">${r.comment}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                        table.row.add($(rowHtml)).draw();
+                    });
+                    const changeNumber = response[0].changeNumber; // Assuming changeNumber is part of the response
+                    console.log(response.length, changeNumber)
+                    if (changeNumber === 1) {
+                        const rateBox = document.querySelector("#rate-box");
+                        rateBox.remove();
+                        // ratingValue cũ
+                        let oldRatingValue = document.querySelector("#oldRatingValue").value;
+                        console.log("check", oldRatingValue);
+                        let oldFilterStar = document.querySelector("#" + "filter_" + oldRatingValue + "_star")
+                        let starText = oldFilterStar.innerText; //ex: 5 sao (4)
+                        // Sử dụng biểu thức chính quy để tách giá trị số trong dấu ngoặc đơn
+                        let matches = starText.match(/\((\d+)\)/);//lấy 4
+                        if (matches) {
+                            const starsCount = parseInt(matches[1], 10);
+                            oldFilterStar.innerHTML = ratingValue + " sao (" + (starsCount - 1) + ")"
+                        }
+                        // ratingValue mới
+                        let filterStar = document.querySelector("#" + "filter_" + ratingValue + "_star")
+                        starText = filterStar.innerText; //ex: 5 sao (4)
+                        // Sử dụng biểu thức chính quy để tách giá trị số trong dấu ngoặc đơn
+                        matches = starText.match(/\((\d+)\)/);//lấy 4
+                        if (matches) {
+                            const starsCount = parseInt(matches[1], 10);
+                            filterStar.innerHTML = ratingValue + " sao (" + (starsCount + 1) + ")"
+                        }
+                    } else if (changeNumber === 0) {
+                        let all = document.querySelector("#filter_all_star");
+                        all.innerHTML = "Tất cả (" + response.length + ")"
+                        let filterStar = document.querySelector("#" + "filter_" + ratingValue + "_star")
+                        const starText = filterStar.innerText; //ex: 5 sao (4)
+                        // Sử dụng biểu thức chính quy để tách giá trị số trong dấu ngoặc đơn
+                        var matches = starText.match(/\((\d+)\)/);//lấy 4
+                        if (matches) {
+                            const starsCount = parseInt(matches[1], 10);
+                            filterStar.innerHTML = ratingValue + " sao (" + (starsCount + 1) + ")"
+                            document.getElementById("oldRatingValue").value = (starsCount + 1);
+                        } else {
+                            console.log("Không tìm thấy giá trị trong dấu ngoặc đơn");
+                        }
+                        let btnAddRating = document.querySelector("#btn_addRating");
+                        let btnEditRating = document.querySelector("#btn_editRating");
+                        if (!btnEditRating) {
+                            btnEditRating = document.createElement("button");
+                            btnEditRating.type = "button";
+                            btnEditRating.className = "btn btn-outline-warning w-100";
+                            btnEditRating.id = "btn_editRating";
+                            btnEditRating.innerText = "Hoàn tất chỉnh sửa đánh giá";
+                            btnEditRating.onclick = addRating;
 
+                            if (btnAddRating) {
+                                btnAddRating.replaceWith(btnEditRating);
+                            }
+                        }
+                    }
                 },
                 error: function () {
                     alert("error")
