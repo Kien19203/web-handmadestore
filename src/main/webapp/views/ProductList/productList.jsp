@@ -61,30 +61,13 @@
 
         <%--Hiển thị theo việc sắp xếp. --%>
         <div class="sort ms-5 d-flex">
+            <div id="categorySort" style="display: none"><%=request.getParameter("category")%></div>
             <span>Sắp xếp: </span>
-            <ul class="menu_sort">
-                <li class="list_sort dropdown">
-                    <span id="sortTitle"><%=filter%></span>
-                    <ul class="sort_submenu list-group dropdown-menu">
-                        <%
-                            String category = request.getParameter("category");
-                            if (category == null) {
-                        %>
-                        <li><a class="sort_item dropdown-item" href="<%=request.getContextPath()%>/product">Mặc định</a>
-                        </li>
-                        <li><a class="sort_item dropdown-item" href="?filter=descPrice">Giá giảm dần</a></li>
-                        <li><a class="sort_item dropdown-item" href="?filter=ascPrice">Giá tăng dần</a></li>
-                        <%} else {%>
-                        <li><a class="sort_item dropdown-item" href="?category=<%=category%>">Mặc định</a></li>
-                        <li><a class="sort_item dropdown-item" href="?category=<%=category%>&filter=descPrice">Giá giảm
-                            dần</a></li>
-                        <li><a class="sort_item dropdown-item" href="?category=<%=category%>&filter=ascPrice">Giá tăng
-                            dần</a></li>
-                        <%}%>
-
-                    </ul>
-                </li>
-            </ul>
+            <select id="sort_price" style="text-align: center">
+                <option value="">Mặc Định</option>
+                <option value="descPrice">Giá Giảm Dần</option>
+                <option value="ascPrice">Giá Tăng Dần</option>
+            </select>
         </div>
 
         <%-- Hiển thị sản phẩm theo category.   --%>
@@ -100,7 +83,7 @@
             <%} else {%>
             <%for (Product p : allProduct) {%>
             <%String pathImage = ImageService.getInstance().pathImageOnly(p.getId());%>
-            <li class="product_li">
+            <li id="product_list" class="product_li">
                 <div class="item_product  me-4">
                     <a class="image" href="product-detail?id=<%=p.getId()%>">
                         <img src="<%=request.getContextPath()%>/<%=pathImage%>">
@@ -195,17 +178,17 @@
                    href="./product?category=<%=categorys%>&filter=<%=filters%>&page=<%=(currentPage + 1)%>"> Tiếp</a>
                     <%}%>
                     <%}%>
-
                     <%}%>
 
         </div>
     </div>
-</div>
+    </div>
 <%--footer--%>
 <div class="footer">
     <%@include file="./../Footer/footer.jsp" %>
 </div>
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
     let urlParagram = new URLSearchParams(window.location.search);
     let categoryParam = urlParagram.get('category');
@@ -224,5 +207,9 @@
     }
     <%}%>
 
+
+    $(document).ready(function (){
+       
+    })
 </script>
 </html>

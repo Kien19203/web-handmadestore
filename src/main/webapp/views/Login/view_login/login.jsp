@@ -66,7 +66,7 @@
                 <a href="#" class="facebook"><i class='bx bxl-facebook facebook-icon'></i></a>
             </div>
             <div class="item-media">
-                <a href="#"
+                <a href= "#"
                 class="google"><i class='bx bxl-google google-icon'></i></a>
 
 
