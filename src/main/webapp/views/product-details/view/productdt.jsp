@@ -285,7 +285,6 @@
 
 </section>
 <%--</section>--%>
-<%if (!rateList.isEmpty()) {%>
 <section id="rating-comment" class="rating container mb-5">
     <h4 pb-1>Đánh giá sản phẩm</h4>
     <div class="d-flex">
@@ -327,7 +326,7 @@
         <tr>
             <td>
                 <div class="d-flex flex-column mx-2 comments">
-                    <%if (sessionUser.getId() == r.getUserId()) {%>
+                    <%if (sessionUser != null && sessionUser.getId() == r.getUserId()) {%>
                     <div class="text-success mt-3">
                         Cảm ơn đánh giá của bạn!
                         <i class="fa-regular fa-face-smile-beam"></i>
@@ -401,13 +400,14 @@
     <%}%>
     <%}%>
 </section>
-<%}%>
+<%if (sessionUser != null) {%>
 <input type="hidden"
        value="<%=ProductService.getInstance().getNumberRateStarsByUser(product.getId(), sessionUser.getId())%>"
        id="oldRatingValue">
 <input type="hidden"
        value="<%=sessionUser.getId()%>"
        id="userId">
+<%}%>
 <!--    Footer-->
 <%@include file="/views/Footer/footer.jsp" %>
 
@@ -432,10 +432,6 @@
         MainImg.src = smallimg[3].src;
     }
 
-
-</script>
-
-<script>
     document.addEventListener("DOMContentLoaded", function () {
         const incrementButton = document.querySelector(".pd-inc");
         const decrementButton = document.querySelector(".pd-des");
@@ -465,14 +461,12 @@
         });
     });
     $(document).ready(function () {
-        $(document).ready(function () {
-            $('#rate_table').DataTable({
-                "paging": true, // Phân trang
-                "searching": false, // Không có tính năng tìm kiếm
-                "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
-                "pageLength": 5,
-                "info": false
-            });
+        $('#rate_table').DataTable({
+            "paging": true, // Phân trang
+            "searching": false, // Không có tính năng tìm kiếm
+            "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
+            "pageLength": 5,
+            "info": false
         });
     });
 
@@ -486,11 +480,15 @@
                 starNumber: starNumber
             },
             success: function (response) {
-                const table = $('#rate_table').DataTable();
-                table.clear().draw();
+                // Xóa bỏ DataTable nếu đã tồn tại
+                if ($.fn.dataTable.isDataTable('#rate_table')) {
+                    $('#rate_table').DataTable().clear().destroy();
+                }
+                $('#rate_table tbody').empty();
+                const userIdElement = document.getElementById("userId");
+                const userId = userIdElement ? userIdElement.value : null;
                 response.forEach(function (r) {
                     const starHtml = renderStars(r.starRatings);
-
                     const cssForUser = (userId == r.userId) ?
                         `<div class="text-success mt-3">
                                 Cảm ơn đánh giá của bạn!
@@ -518,7 +516,15 @@
                         </td>
                     </tr>
                 `;
-                    table.row.add($(rowHtml)).draw();
+                    $('#rate_table tbody').append(rowHtml);
+                });
+                // Khởi tạo lại DataTable với các thiết lập cần thiết
+                $('#rate_table').DataTable({
+                    "paging": true,
+                    "searching": false,
+                    "lengthChange": false,
+                    "pageLength": 5,
+                    "info": false
                 });
             },
             error: function () {
@@ -557,8 +563,11 @@
                     comment: comment
                 },
                 success: function (response) {
-                    const table = $('#rate_table').DataTable();
-                    table.clear().draw();
+                    // Xóa bỏ DataTable nếu đã tồn tại
+                    if ($.fn.dataTable.isDataTable('#rate_table')) {
+                        $('#rate_table').DataTable().clear().destroy();
+                    }
+                    $('#rate_table tbody').empty();
                     response.forEach(function (r) {
                         const starHtml = renderStars(r.starRatings);
                         const userId = document.getElementById("userId").value;
@@ -588,8 +597,18 @@
                         </td>
                     </tr>
                 `;
-                        table.row.add($(rowHtml)).draw();
+                        $('#rate_table tbody').append(rowHtml);
                     });
+                    // Khởi tạo lại DataTable với các thiết lập cần thiết
+                    $('#rate_table').DataTable({
+                        "paging": true,
+                        "searching": false,
+                        "lengthChange": false,
+                        "pageLength": 5,
+                        "info": false
+                    });
+
+
                     const changeNumber = response[0].changeNumber; // Assuming changeNumber is part of the response
                     console.log(response.length, changeNumber)
                     if (changeNumber === 1) {

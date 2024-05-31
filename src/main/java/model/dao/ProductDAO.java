@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import model.service.ImageService;
+import model.service.ProductService;
 
 import java.sql.Connection;
 import java.util.*;
@@ -574,7 +575,7 @@ public class ProductDAO {
     }
 
     public static void main(String[] args) {
-        System.out.println(getRatesFirstUser(118,4));
+        List<Rate> rates = ProductService.getInstance().getRatesByStarNumber(118,5 , null);
     }
 }
 

@@ -153,7 +153,7 @@ public class ProductService {
         return ProductDAO.getNumberRateStarsByUser(productId, userId);
     }
 
-    public List<Rate> getRatesByStarNumber(int productId, int starRatings, int userId) {
+    public List<Rate> getRatesByStarNumber(int productId, int starRatings, Integer userId) {
         return ProductDAO.getRatesByStarNumber(productId, starRatings, userId);
     }
 

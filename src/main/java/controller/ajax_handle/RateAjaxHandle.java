@@ -34,7 +34,7 @@ public class RateAjaxHandle extends HttpServlet {
                 try {
                     int p = Integer.parseInt(productId);
                     int s = Integer.parseInt(starNumber);
-                    int u = sessionUser != null ? sessionUser.getId() : null;
+                    Integer u = sessionUser != null ? sessionUser.getId() : null;
                     List<Rate> rates = (s != 0) ? ProductService.getInstance().getRatesByStarNumber(p, s, u) : ProductService.getInstance().getRateForProduct(p);
                     List<RateResponse> rateResponses = new ArrayList<>();
                     String name = "";
