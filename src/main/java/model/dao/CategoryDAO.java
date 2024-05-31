@@ -1,6 +1,7 @@
 package model.dao;
 
 import model.bean.Category;
+import model.bean.Product;
 import model.db.JDBIConnector;
 
 import java.util.List;
@@ -71,6 +72,18 @@ public class CategoryDAO {
                         .execute()
         );
     }
+    //    Lấy ra 1 id sản phẩm của category
+    public static int oneProductofCategory(int idCategory){
+        Optional<Product> product = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("SELECT product.* FROM product JOIN category on product.categoryId = :id LIMIT 1")
+                        .bind("id", idCategory)
+                        .mapToBean(Product.class)
+                        .stream()
+                        .findFirst()
+        );
+        return product.isEmpty() ? null : product.get().getId();
+    }
+
 
     public static void main(String[] args) {
         updateCategoryNameById("2", "haha");
