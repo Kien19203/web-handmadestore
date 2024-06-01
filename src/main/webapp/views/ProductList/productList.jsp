@@ -32,6 +32,8 @@
 <div class="sticky-top">
     <%@include file="../MenuBar/menu.jsp" %>
 </div>
+<%--Thẻ chua caegory--%>
+<%----%>
 <div class="content d-flex flex-row p-3">
     <div class="category col-3">
         <div class="title fw-bold fs-5">
@@ -60,23 +62,47 @@
     <div class="productList">
 
         <%--Hiển thị theo việc sắp xếp. --%>
-        <div class="sort ms-5 d-flex">
-            <div id="categorySort" style="display: none"><%=request.getParameter("category")%></div>
-            <span>Sắp xếp: </span>
-            <select id="sort_price" style="text-align: center">
-                <option value="">Mặc Định</option>
-                <option value="descPrice">Giá Giảm Dần</option>
-                <option value="ascPrice">Giá Tăng Dần</option>
-            </select>
-        </div>
+<%--        <div class="sort ms-5 d-flex">--%>
+<%--            <div id="categorySort" style="display: none"><%=request.getParameter("category")%></div>--%>
+<%--            <span>Sắp xếp: </span>--%>
+<%--            <select id="sort_price" style="text-align: center">--%>
+<%--                <option value="">Mặc Định</option>--%>
+<%--                <option value="descPrice">Giá Giảm Dần</option>--%>
+<%--                <option value="ascPrice">Giá Tăng Dần</option>--%>
+<%--            </select>--%>
+<%--        </div>--%>
+            <%--Hiển thị theo việc sắp xếp. --%>
+            <div class="sort ms-5 d-flex">
+                <span>Sắp xếp: </span>
+                <ul class="menu_sort">
+                    <li class="list_sort dropdown">
+                        <span id="sortTitle"><%=filter%></span>
+                        <ul class="sort_submenu list-group dropdown-menu">
+                            <%
+                                String category = request.getParameter("category");
+                                if (category == null) {
+                            %>
+                            <li><a class="sort_item dropdown-item" href="<%=request.getContextPath()%>/product">Mặc định</a>
+                            </li>
+                            <li><a class="sort_item dropdown-item" href="?filter=descPrice">Giá giảm dần</a></li>
+                            <li><a class="sort_item dropdown-item" href="?filter=ascPrice">Giá tăng dần</a></li>
+                            <%} else {%>
+                            <li><a class="sort_item dropdown-item" href="?category=<%=category%>">Mặc định</a></li>
+                            <li><a class="sort_item dropdown-item" href="?category=<%=category%>&filter=descPrice">Giá giảm
+                                dần</a></li>
+                            <li><a class="sort_item dropdown-item" href="?category=<%=category%>&filter=ascPrice">Giá tăng
+                                dần</a></li>
+                            <%}%>
 
+                        </ul>
+                    </li>
+                </ul>
+            </div>
         <%-- Hiển thị sản phẩm theo category.   --%>
         <ul id="allProduct" class="products m-2 me-5 ms-3 d-flex flex-wrap">
             <%  List<Product> allProduct = (List<Product>) request.getAttribute("productInPage");%>
             <%
                 if (allProduct == null) allProduct = new ArrayList<>();
-
-
             %>
             <%if (allProduct == null) {%>
             <p>Không có dữ liệu</p>
@@ -97,7 +123,8 @@
                     <del><%=numberFormat.format(p.getSellingPrice())%></del>
                     <%}%>
                     <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
-                    <div class="add-to-cart"><a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=p.getId()%>"><span>Thêm vào giỏ hàng</span> </a></div>
+<%--                    <div class="add-to-cart"><a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=p.getId()%>"><span>Thêm vào giỏ hàng</span> </a></div>--%>
+                    <div class="add-to-cart"><button onclick="addcart(this,<%=p.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
 
                 </div>
             </li>
@@ -189,6 +216,7 @@
 </div>
 </body>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
     let urlParagram = new URLSearchParams(window.location.search);
     let categoryParam = urlParagram.get('category');
@@ -207,9 +235,59 @@
     }
     <%}%>
 
+<%--    Add sản phẩm vào giỏ hàng--%>
+    function addcart(btn,idProduct){
+        let actionCart = "post";
+        let num = 1;
+        $.ajax({
+            url: "/HandMadeStore/add-cart",
+            method: "GET",
+            data:{
+                id: idProduct,
+                actionCart: actionCart,
+                num: num
+            },
+            success:function(response){
+                console.log("thanh cong");
+                handleAddToCart(response);
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        })
+    }
 
-    $(document).ready(function (){
-       
-    })
+    // $(document).ready(function () {
+    //     console.log(categoryParam);
+    //     $("$categorySort").change(function () {
+    //         let option = $(this).val();
+    //         let loadfile = "true";
+    //         $.ajax({
+    //             url: "/HandMadeStore/productList",
+    //             type: "POST",
+    //             data: {
+    //                 filter: option,
+    //                 category: categoryParam,
+    //                 loadfile : loadfile,
+    //             },
+    //             success: function (response) {
+    //                 console.log(response);
+    //                 for(var Product of response ){
+    //                     renderProduct(Product);
+    //                 }
+    //             }
+    //         })
+    //     })
+    // });
+    // function renderProduct(products) {
+    //     let template = $("#allProduct").html();
+    // }
+
+
+
 </script>
 </html>

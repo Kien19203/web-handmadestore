@@ -82,15 +82,6 @@ public class productList extends HttpServlet {
         } else {
             productList = ProductService.getInstance().getAll();
         }
-// ----------------------------
-        boolean loadfile = req.getParameter("loadfile") != null;
-       if(loadfile){
-           ObjectMapper mapper = new ObjectMapper();
-           String jsonReponse = mapper.writeValueAsString(productList);
-           resp.setContentType("application/json");
-           resp.getWriter().write(jsonReponse);
-       }
-// ----------------------------
         req.setAttribute("filter", filter);
         int itemPerPage = 16; // số lượng sp trên mỗi trang
         //lấy số trang hiện tại từ tham số yêu cầu
@@ -110,5 +101,19 @@ public class productList extends HttpServlet {
         req.setAttribute("productInPage", currentPageItems);
         String path = "./views/ProductList/productList.jsp";
         req.getRequestDispatcher(path).forward(req, resp);
+        // ----------------------------
+//        boolean loadfile = req.getParameter("loadfile") != null;
+//        if(loadfile){
+//            System.out.println("Load");
+//            ObjectMapper mapper = new ObjectMapper();
+//            String jsonReponse = mapper.writeValueAsString(productList);
+//            resp.setContentType("application/json");
+//            resp.getWriter().write(jsonReponse);
+//            resp.getWriter().flush();
+//            resp.getWriter().close();
+//        }
+//        System.out.println("Ko Load");
+
+// ----------------------------
     }
 }

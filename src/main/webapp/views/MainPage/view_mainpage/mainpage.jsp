@@ -65,7 +65,7 @@
         crossorigin="anonymous"></script>
 
 <%--Danh Mục--%>
-<div class="categorys d-flex">
+<div class="categorys d-flex overflow-auto" style="white-space: nowrap">
     <%for(Category cate : categoryP){%>
     <%int idProImage = CategoryDAO.oneProductofCategory(cate.getId());%>
     <%String pathImg = ImageService.getInstance().pathImageOnly(idProImage);%>

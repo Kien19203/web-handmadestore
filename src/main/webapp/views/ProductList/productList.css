@@ -88,31 +88,25 @@ body {
 .content .productList .products .product_li .item_product p {
     color: red;
 }
-
 .content .productList .products .product_li .item_product .add-to-cart {
-    background: #8b8b8b;
-    font-size: 1rem;
-    height: 10vh;
-    padding: 0;
     cursor: pointer;
     visibility: hidden;
-    border: 0;
-}
-.content .productList .products .product_li .item_product .add-to-cart a{
-    height: 9vh;
 }
 .content .productList .products .product_li .item_product .add-to-cart span{
     color: white;
 }
-
+.content .productList .products .product_li .item_product .add-to-cart button {
+    padding: 10px;
+    background: #989b9a;
+    width: 100%;
+    border: 0;
+}
 .content .productList .products .product_li .item_product:hover .add-to-cart {
     visibility: visible;
 }
-
-.content .productList .products .product_li .item_product .add-to-cart:hover {
+.content .productList .products .product_li .item_product .add-to-cart:hover button{
     background: red;
 }
-
 .add-to-cart {
     position: absolute;
     left: 0;

@@ -97,30 +97,32 @@
     <%@include file="../Footer/footer.jsp" %>
 </div>
 </body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 <%--    Chưa khắc phục đc lỗi--%>
-    function addCart(btn,id){
+    function addCart(btn,ids){
         let actionCart = "post";
+        console.log(ids);
         let num = 1;
         $.ajax({
             url: "/HandMadeStore/add-cart",
             method: "GET",
             data:{
-                id : id,
+                id : ids,
                 actionCart :actionCart,
                 num: num
             },
             success: function (response){
                 handleAddToCart(response);
                 console.log("Hoàn Thành Thêm vào giỏ hàng! ");
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                // Swal.fire({
+                //     position: "center",
+                //     icon: "success",
+                //     title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                //     showConfirmButton: false,
+                //     timer: 1500
+                // });
             }
         })
     }
