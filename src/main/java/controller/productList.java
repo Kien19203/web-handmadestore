@@ -83,7 +83,7 @@ public class productList extends HttpServlet {
             productList = ProductService.getInstance().getAll();
         }
         req.setAttribute("filter", filter);
-        int itemPerPage = 16; // số lượng sp trên mỗi trang
+        int itemPerPage = 15; // số lượng sp trên mỗi trang
         //lấy số trang hiện tại từ tham số yêu cầu
         int currentPage = 1;
         String paraParam = req.getParameter("page");

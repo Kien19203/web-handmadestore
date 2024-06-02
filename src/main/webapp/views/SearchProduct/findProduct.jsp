@@ -24,6 +24,9 @@
 <div class="header">
     <%@include file="/views/MenuBar/menu.jsp" %>
 </div>
+<%----%>
+<div id="findProducts" style="display: none"><%=resultFind%></div>
+<%----%>
 <div class="find">
     <p>Nhập từ khóa tìm kiếm</p>
     <div class="box_find">
@@ -59,7 +62,9 @@
                 <del><%=pfp.getSellingPrice()%>đ</del>
                 <%}%>
                 <p><%=ProductService.getInstance().productPriceIncludeDiscount(pfp)%>đ</p>
-                <div class="add-to-cart"><button onclick="addCart(this,<%=pfp.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
+                <div class="add-to-cart">
+                    <button onclick="addcart(this,<%=pfp.getId()%>)"><span>Thêm vào giỏ hàng</span></button>
+                </div>
             </div>
         </li>
 
@@ -101,30 +106,29 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 <%--    Chưa khắc phục đc lỗi--%>
-    function addCart(btn,ids){
-        let actionCart = "post";
-        console.log(ids);
-        let num = 1;
-        $.ajax({
-            url: "/HandMadeStore/add-cart",
-            method: "GET",
-            data:{
-                id : ids,
-                actionCart :actionCart,
-                num: num
-            },
-            success: function (response){
-                handleAddToCart(response);
-                console.log("Hoàn Thành Thêm vào giỏ hàng! ");
-                // Swal.fire({
-                //     position: "center",
-                //     icon: "success",
-                //     title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                //     showConfirmButton: false,
-                //     timer: 1500
-                // });
-            }
-        })
+        function addcart(btn,idProduct){
+            let actionCart = "post";
+            let num = 1;
+            $.ajax({
+                url: "/HandMadeStore/add-cart",
+                method: "GET",
+                data:{
+                    id: idProduct,
+                    actionCart: actionCart,
+                    num: num
+                },
+                success:function(response){
+                    console.log("thanh cong");
+                    handleAddToCart(response);
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+            })
     }
 
 </script>
