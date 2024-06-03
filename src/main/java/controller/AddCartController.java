@@ -30,6 +30,7 @@ public class AddCartController extends HttpServlet {
         Cart cart = (Cart) sessions.getAttribute("cart");
         String action = req.getParameter("actionCart");
         String referer = req.getHeader("Referer");//Hàm lấy url của trang hiện tại để reload
+
         switch (action) {
             case "get":
 

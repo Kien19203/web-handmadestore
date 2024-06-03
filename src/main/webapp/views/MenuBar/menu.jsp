@@ -51,7 +51,7 @@
     }
 
     .menu ul .item_a {
-        padding: 25px 0;
+        padding-top: 25px;
         position: absolute;
         left: 40px;
         top: -40px;
