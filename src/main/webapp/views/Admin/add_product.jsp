@@ -76,7 +76,7 @@
         <div class="col-md-6 mb-5">
             <div class="mt-4">
                 <div class="m-0 border alert alert-dismissible d-flex align-items-center w-75 mx-5 my-2 p-2">
-                    <div class="me-4">
+                    <div class="me-4 ms-3">
                         <input class="form-check-input fs-5" style="cursor: pointer" type="radio"
                                name="choiceCategory" id="case1"
                             <%if (radio_choiceCategory.equals("choiceAvailableCategory")){%>

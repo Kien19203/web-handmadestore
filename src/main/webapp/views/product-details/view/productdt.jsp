@@ -3,7 +3,9 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="model.service.ImageService" %>
 <%@ page import="model.bean.*" %>
-<%@ page import="model.dao.UserDAO" %><%--
+<%@ page import="model.dao.UserDAO" %>
+<%@ page import="model.service.ProductService" %>
+<%@ page import="model.service.UserService" %><%--
   Created by IntelliJ IDEA.
   User: Kien Nguyen
   Date: 12/11/2023
@@ -20,8 +22,17 @@
 <% String description = product.getDescription();%>
 <% List<Product> relatedProduct = (List<Product>) request.getAttribute("productRelated");%>
 <%List<Rate> rateList = (List<Rate>) request.getAttribute("listRate");%>
-
-
+<%
+    int allStarsCount = ProductService.getInstance().getStarNumberCount(product.getId());
+    int fiveStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 5);
+    int fourStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 4);
+    int threeStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 3);
+    int twoStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 2);
+    int oneStarsCount = ProductService.getInstance().getStarNumberCount(product.getId(), 1);
+%>
+<%
+    User sessionUser = (User) request.getSession().getAttribute("auth");
+%>
 
 <html>
 <head>
@@ -37,10 +48,69 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Inline+One&display=swap" rel="stylesheet">
+    <!--https://datatables.net/download/-->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <!--https://releases.jquery.com/-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+            integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+            crossorigin="anonymous"></script>
     <style>
 
         <%@include file="../css/product.css"%>
+        .dt-empty {
+            display: none;
+        }
 
+        .rate {
+            float: left;
+            height: 46px;
+            padding: 0 10px;
+        }
+
+        .rate:not(:checked) > input {
+            position: absolute;
+            top: -9999px;
+            display: none;
+        }
+
+        .rate:not(:checked) > label {
+            float: right;
+            width: 1em;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+            font-size: 30px;
+            color: #ccc;
+        }
+
+        .rate:not(:checked) > label:before {
+            content: '★ ';
+        }
+
+        .rate > input:checked ~ label {
+            color: #ffc700;
+        }
+
+        .rate:not(:checked) > label:hover,
+        .rate:not(:checked) > label:hover ~ label {
+            color: #deb217;
+        }
+
+        .rate > input:checked + label:hover,
+        .rate > input:checked + label:hover ~ label,
+        .rate > input:checked ~ label:hover,
+        .rate > input:checked ~ label:hover ~ label,
+        .rate > label:hover ~ input:checked ~ label {
+            color: #c59b08;
+        }
     </style>
 
 </head>
@@ -55,7 +125,8 @@
 
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb ">
-            <li class="breadcrumb-item"><a href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
+            <li class="breadcrumb-item"><a
+                    href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
             <li class="breadcrumb-item"><a
                     href="product?category=<%=categoryByProduct.getId()%>"><%=categoryByProduct.getName()%>
             </a></li>
@@ -176,12 +247,13 @@
             <div class="col info-item mx-3">
                 <div class="info-img ">
                     <img src="<%=request.getContextPath()%>/<%=pathImage%>" alt=""
-                    class="img-fluid d-block mx-auto mt-2">
+                         class="img-fluid d-block mx-auto mt-2">
 
 
                     <div class="row btns w-100 mx-auto ">
                         <button type="button" class="col-6 py-2">
-                            <a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=pr.getId()%>">     <i class="bi bi-cart-plus"></i>
+                            <a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=pr.getId()%>">
+                                <i class="bi bi-cart-plus"></i>
                             </a>
                         </button>
                         <button type="button" class="col-6 py-2">
@@ -191,10 +263,10 @@
                 </div>
                 <div class="info-product p-3">
                     <a href="product-detail?id=<%=pr.getId()%>"
-                    class="d-block text-dark text-decoration-none py-2 info-name">
+                       class="d-block text-dark text-decoration-none py-2 info-name">
                         <%=pr.getName()%>
                     </a>
-                    <span class="info-price fw-bold"><%=numberFormat.format( pr.getSellingPrice()) %></span>
+                    <span class="info-price fw-bold"><%=numberFormat.format(pr.getSellingPrice()) %></span>
                     <div class="info-rating d-flex mt-1">
 
                         <span>(<%=rateList.size()%> đánh giá)</span>
@@ -213,56 +285,129 @@
 
 </section>
 <%--</section>--%>
-
 <section id="rating-comment" class="rating container mb-5">
-    <h4 pb-1>Đánh giá - Bình luận </h4>
-    <hr class="mx-auto">
+    <h4 pb-1>Đánh giá sản phẩm</h4>
+    <div class="d-flex">
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer; width: 70px"
+             id="filter_all_star"
+             onclick="renderRateByStarNumber(0)">Tất cả (<%=allStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer; width: 70px"
+             id="filter_5_star"
+             onclick="renderRateByStarNumber(5)">5 sao (<%=fiveStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             id="filter_4_star"
+             onclick="renderRateByStarNumber(4)">4 sao (<%=fourStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             id="filter_3_star"
+             onclick="renderRateByStarNumber(3)">3 sao (<%=threeStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             id="filter_2_star"
+             onclick="renderRateByStarNumber(2)">2 sao (<%=twoStarsCount%>)
+        </div>
+        <div class="p-1 m-3 rounded-2 bg-light border text-center" style="cursor: pointer;  width: 70px"
+             id="filter_1_star"
+             onclick="renderRateByStarNumber(1)">1 sao (<%=oneStarsCount%>)
+        </div>
+    </div>
+    <hr class="m-0">
     <!-- Các bình luận sẽ được hiển thị ở đây -->
-<% for(Rate r : rateList) {%>
-    <div class="d-flex flex-column mx-2 comments">
-     <div class="p-1 d-flex flex-row">
-         <h6 class="pe-5 m-0 "><%=UserDAO.getUserNameById(r.getUserId())%></h6>
-         <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào lúc   <%=" " + r.getCreateDate()%> </p>
-     </div>
+    <table id="rate_table" style="width: 100%;">
+        <thead style="display: none">
+        <tr>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% for (Rate r : rateList) {%>
+        <tr>
+            <td>
+                <div class="d-flex flex-column mx-2 comments">
+                    <%if (sessionUser != null && sessionUser.getId() == r.getUserId()) {%>
+                    <div class="text-success mt-3">
+                        Cảm ơn đánh giá của bạn!
+                        <i class="fa-regular fa-face-smile-beam"></i>
+                    </div>
+                    <%}%>
+                    <div class="p-1 d-flex flex-row">
+                        <h6 class="pe-2 m-0 ">
+                            <%=UserDAO.getUserNameById(r.getUserId())%>
+                        </h6>
+                        <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào
+                            lúc   <%=" " + r.getCreateDate()%>
+                        </p>
+                    </div>
 
-        <div class=" p-1 ratings ">
-            <%  int star = r.getStarRatings();
-                for(int i =1 ; i <= 5; i++) {   %>
-            <%if(i <= star) {%>
-            <i class="bi bi-star-fill " style="color: #ffcc00"></i>
-            <%}
-            else {%>
-            <i class="bi bi-star-fill "></i>
-          <%}
-                }%>
-              </div>
-        <p class="p-1"><%=r.getComment()%></p>
+                    <div class=" p-1 ratings ">
+                        <% int star = r.getStarRatings();
+                            for (int i = 1; i <= 5; i++) { %>
+                        <%if (i <= star) {%>
+                        <i class="bi bi-star-fill " style="color: #ffcc00"></i>
+                        <%} else {%>
+                        <i class="bi bi-star-fill "></i>
+                        <%
+                                }
+                            }
+                        %>
+                    </div>
+                    <p class="p-1"><%=r.getComment()%>
+                    </p>
+                </div>
+            </td>
+        </tr>
+        <%}%>
+        </tbody>
+    </table>
+    <%
+        if (sessionUser != null && UserService.getInstance().checkUserAllowedToRate(product.getId(), sessionUser.getId())) {
+            //kiểm tra user đã mua chưa & chưa chỉnh sửa
+            int changeNumber = ProductService.getInstance().getChangeNumber(product.getId(), sessionUser.getId());
+            if (changeNumber == 0 || changeNumber == -1) {
+    %>
+    <div class="my-3" id="rate-box">
+        <div class="rate">
+            <input type="radio" id="star5" name="rate" value="5"/>
+            <label for="star5" title="text">5 stars</label>
+            <input type="radio" id="star4" name="rate" value="4"/>
+            <label for="star4" title="text">4 stars</label>
+            <input type="radio" id="star3" name="rate" value="3"/>
+            <label for="star3" title="text">3 stars</label>
+            <input type="radio" id="star2" name="rate" value="2"/>
+            <label for="star2" title="text">2 stars</label>
+            <input type="radio" id="star1" name="rate" value="1"/>
+            <label for="star1" title="text">1 star</label>
+        </div>
+        <div class="border rounded-3">
+            <div class="text-danger mt-3" id="rate_validate" style="display: none">
+                <i class="fa-regular fa-hand-point-left"></i> Bạn chưa chọn sao đánh giá!
+            </div>
+            <textarea class="form-control mx-auto w-70" id="comment" name="comment"
+                      rows="3" placeholder="Viết bình luận"></textarea>
+        </div>
+        <% if (changeNumber == 0) {%>
+        <button type="button" class="btn  btn-outline-warning w-100" id="btn_editRating" onclick="addRating()">
+            Hoàn tất chỉnh sửa đánh giá
+        </button>
+        <%} else if (changeNumber == -1) {%>
+        <button type="button" class="btn  btn-outline-success w-100" id="btn_addRating" onclick="addRating()">
+            Hoàn tất đánh giá
+        </button>
+        <%}%>
     </div>
     <%}%>
-
-
-
-    <div class="ratings mb-3">
-
-        <i class="bi bi-star-fill "></i>
-        <i class="bi bi-star-fill "></i>
-        <i class="bi bi-star-fill"></i>
-        <i class="bi bi-star-fill"></i>
-        <i class="bi bi-star-fill"></i>
-    </div>
-    <div class="d-flex comment-pd">
-    <textarea class="comment-input p-2" rows="3" placeholder="Viết bình luận" maxlength="350">
-
-    </textarea>
-        <button type="button" class="submit-comment btn  btn-outline-success btn-sm shadow-sm ">Gửi</button>
-    </div>
-
-
-
-
-
+    <%}%>
 </section>
-
+<%if (sessionUser != null) {%>
+<input type="hidden"
+       value="<%=ProductService.getInstance().getNumberRateStarsByUser(product.getId(), sessionUser.getId())%>"
+       id="oldRatingValue">
+<input type="hidden"
+       value="<%=sessionUser.getId()%>"
+       id="userId">
+<%}%>
 <!--    Footer-->
 <%@include file="/views/Footer/footer.jsp" %>
 
@@ -287,10 +432,6 @@
         MainImg.src = smallimg[3].src;
     }
 
-
-</script>
-
-<script>
     document.addEventListener("DOMContentLoaded", function () {
         const incrementButton = document.querySelector(".pd-inc");
         const decrementButton = document.querySelector(".pd-des");
@@ -315,10 +456,220 @@
             const productId = <%=product.getId()%>;
             const quantity = parseInt(quantityInput.value);
             const URL = `<%=request.getContextPath()%>/add-cart?actionCart=post&num=${quantity}&id=${productId}`;
-            window.location.href =URL;
+            window.location.href = URL;
             quantityInput.value = 1;
         });
     });
+    $(document).ready(function () {
+        $('#rate_table').DataTable({
+            "paging": true, // Phân trang
+            "searching": false, // Không có tính năng tìm kiếm
+            "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
+            "pageLength": 5,
+            "info": false
+        });
+    });
+
+    function renderRateByStarNumber(starNumber) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/rate-ajax-handle",
+            data: {
+                productId: <%=product.getId()%>,
+                action: "filterStar",
+                starNumber: starNumber
+            },
+            success: function (response) {
+                // Xóa bỏ DataTable nếu đã tồn tại
+                if ($.fn.dataTable.isDataTable('#rate_table')) {
+                    $('#rate_table').DataTable().clear().destroy();
+                }
+                $('#rate_table tbody').empty();
+                const userIdElement = document.getElementById("userId");
+                const userId = userIdElement ? userIdElement.value : null;
+                response.forEach(function (r) {
+                    const starHtml = renderStars(r.starRatings);
+                    const cssForUser = (userId == r.userId) ?
+                        `<div class="text-success mt-3">
+                                Cảm ơn đánh giá của bạn!
+                                <i class="fa-regular fa-face-smile-beam"></i>
+                            </div>` : ``;
+                    const rowHtml = `
+                    <tr>
+                        <td>
+                             <div class="d-flex flex-column mx-2 comments">
+                             ${cssForUser}
+                                <div class="p-1 d-flex flex-row">
+                                    <h6 class="pe-2 m-0 ">
+                                    ${r.userFullName}
+                                    </h6>
+                                    <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào
+                                        lúc   ${r.createDate}
+                                    </p>
+                                </div>
+                                <div class=" p-1 ratings ">
+                                    ${starHtml}
+                                </div>
+                                <p class="p-1">${r.comment}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                    $('#rate_table tbody').append(rowHtml);
+                });
+                // Khởi tạo lại DataTable với các thiết lập cần thiết
+                $('#rate_table').DataTable({
+                    "paging": true,
+                    "searching": false,
+                    "lengthChange": false,
+                    "pageLength": 5,
+                    "info": false
+                });
+            },
+            error: function () {
+                alert("error")
+            }
+        })
+    }
+
+    function renderStars(star) {
+        let starsHtml = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= star) {
+                starsHtml += '<i class="bi bi-star-fill" style="color: #ffcc00"></i>';
+            } else {
+                starsHtml += '<i class="bi bi-star-fill"></i>';
+            }
+        }
+        return starsHtml;
+    }
+
+    function addRating() {
+        let rating = document.querySelector('input[name="rate"]:checked');
+        let ratingValue = rating ? rating.value : null;
+        let comment = document.getElementById('comment').value;
+        if (ratingValue == null) {
+            document.getElementById("rate_validate").style.display = "block"
+        } else {
+            document.getElementById("rate_validate").style.display = "none";
+            $.ajax({
+                method: "POST",
+                url: "/HandMadeStore/rate-ajax-handle",
+                data: {
+                    productId: <%=product.getId()%>,
+                    action: "addRating",
+                    ratingValue: ratingValue,
+                    comment: comment
+                },
+                success: function (response) {
+                    // Xóa bỏ DataTable nếu đã tồn tại
+                    if ($.fn.dataTable.isDataTable('#rate_table')) {
+                        $('#rate_table').DataTable().clear().destroy();
+                    }
+                    $('#rate_table tbody').empty();
+                    response.forEach(function (r) {
+                        const starHtml = renderStars(r.starRatings);
+                        const userId = document.getElementById("userId").value;
+                        const cssForUser = (userId == r.userId) ?
+                            `<div class="text-success mt-3">
+                                Cảm ơn đánh giá của bạn!
+                                <i class="fa-regular fa-face-smile-beam"></i>
+                            </div>` : ``;
+                        const rowHtml = `
+                    <tr>
+                        <td>
+                             <div class="d-flex flex-column mx-2 comments">
+                             ${cssForUser}
+                                <div class="p-1 d-flex flex-row">
+                                    <h6 class="pe-2 m-0 ">${r.userFullName}
+                                    </h6>
+                                    <p style="font-style: italic ; color: #898989 ; font-family: Arial" class="m-0"> Đã đăng vào
+                                        lúc   ${r.createDate}
+                                    </p>
+                                </div>
+                                <div class=" p-1 ratings ">
+                                    ${starHtml}
+                                </div>
+                                <p class="p-1">${r.comment}
+                                </p>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+                        $('#rate_table tbody').append(rowHtml);
+                    });
+                    // Khởi tạo lại DataTable với các thiết lập cần thiết
+                    $('#rate_table').DataTable({
+                        "paging": true,
+                        "searching": false,
+                        "lengthChange": false,
+                        "pageLength": 5,
+                        "info": false
+                    });
+
+
+                    const changeNumber = response[0].changeNumber; // Assuming changeNumber is part of the response
+                    console.log(response.length, changeNumber)
+                    if (changeNumber === 1) {
+                        const rateBox = document.querySelector("#rate-box");
+                        rateBox.remove();
+                        // ratingValue cũ
+                        let oldRatingValue = document.querySelector("#oldRatingValue").value;
+                        console.log("check", oldRatingValue);
+                        let oldFilterStar = document.querySelector("#" + "filter_" + oldRatingValue + "_star")
+                        let starText = oldFilterStar.innerText; //ex: 5 sao (4)
+                        // Sử dụng biểu thức chính quy để tách giá trị số trong dấu ngoặc đơn
+                        let matches = starText.match(/\((\d+)\)/);//lấy 4
+                        if (matches) {
+                            const starsCount = parseInt(matches[1], 10);
+                            oldFilterStar.innerHTML = ratingValue + " sao (" + (starsCount - 1) + ")"
+                        }
+                        // ratingValue mới
+                        let filterStar = document.querySelector("#" + "filter_" + ratingValue + "_star")
+                        starText = filterStar.innerText; //ex: 5 sao (4)
+                        // Sử dụng biểu thức chính quy để tách giá trị số trong dấu ngoặc đơn
+                        matches = starText.match(/\((\d+)\)/);//lấy 4
+                        if (matches) {
+                            const starsCount = parseInt(matches[1], 10);
+                            filterStar.innerHTML = ratingValue + " sao (" + (starsCount + 1) + ")"
+                        }
+                    } else if (changeNumber === 0) {
+                        let all = document.querySelector("#filter_all_star");
+                        all.innerHTML = "Tất cả (" + response.length + ")"
+                        let filterStar = document.querySelector("#" + "filter_" + ratingValue + "_star")
+                        const starText = filterStar.innerText; //ex: 5 sao (4)
+                        // Sử dụng biểu thức chính quy để tách giá trị số trong dấu ngoặc đơn
+                        var matches = starText.match(/\((\d+)\)/);//lấy 4
+                        if (matches) {
+                            const starsCount = parseInt(matches[1], 10);
+                            filterStar.innerHTML = ratingValue + " sao (" + (starsCount + 1) + ")"
+                            document.getElementById("oldRatingValue").value = (starsCount + 1);
+                        } else {
+                            console.log("Không tìm thấy giá trị trong dấu ngoặc đơn");
+                        }
+                        let btnAddRating = document.querySelector("#btn_addRating");
+                        let btnEditRating = document.querySelector("#btn_editRating");
+                        if (!btnEditRating) {
+                            btnEditRating = document.createElement("button");
+                            btnEditRating.type = "button";
+                            btnEditRating.className = "btn btn-outline-warning w-100";
+                            btnEditRating.id = "btn_editRating";
+                            btnEditRating.innerText = "Hoàn tất chỉnh sửa đánh giá";
+                            btnEditRating.onclick = addRating;
+
+                            if (btnAddRating) {
+                                btnAddRating.replaceWith(btnEditRating);
+                            }
+                        }
+                    }
+                },
+                error: function () {
+                    alert("error haizz")
+                }
+            })
+        }
+    }
 </script>
 </body>
 </html>

@@ -23,7 +23,7 @@ public class login extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/jsp; charset=UTF-8");
-
+        req.getSession().invalidate();
         req.removeAttribute("auth");
         req.getSession().removeAttribute("isAdmin");
         String email = req.getParameter("email");// nhận input từ ng dùng
@@ -39,18 +39,19 @@ public class login extends HttpServlet {
             req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
         }
         if (user != null) {
-            HttpSession session = req.getSession();
-            session.setAttribute("auth", user);
-
-            String c = RoleService.getInstance().checkRole(user);
-
-            if (c.equals("admin")) {
-                req.getSession().setAttribute("isAdmin", true);
-                resp.sendRedirect(req.getContextPath() + "/views/Admin/admin.jsp");
-            } else {
-                req.getSession().setAttribute("isAdmin", false);
-                resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
-
+            if(user.isLock()){
+                req.setAttribute("result", "Tài khoản đã bị vô hiệu hóa!");
+                req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
+            }else{
+                HttpSession session = req.getSession();
+                session.setAttribute("auth", user);
+                if (user.isOwn() || user.isAdmin()) {
+                    req.getSession().setAttribute("isAdmin", true);
+                    resp.sendRedirect(req.getContextPath() + "/views/Admin/admin.jsp");
+                } else {
+                    req.getSession().setAttribute("isAdmin", false);
+                    resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
+                }
             }
         } else {
             req.setAttribute("result", "Mật khẩu không chính xác!");

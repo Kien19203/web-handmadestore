@@ -3,9 +3,11 @@ package controller.admin;
 import model.bean.Category;
 import model.bean.Product;
 import model.service.CategoryService;
+import model.service.ImageService;
 import model.service.ProductService;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +16,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-@WebServlet(name = "AddProductForAdmin", value = "/admin/product")
+@WebServlet(name = "ProductForAdmin", value = "/admin/product")
+@MultipartConfig(
+        fileSizeThreshold = 1024 * 1024,
+        maxFileSize = 1024 * 1024 * 10,
+        maxRequestSize = 1024 * 1024 * 100
+)
 public class ProductAdminController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -25,7 +32,8 @@ public class ProductAdminController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/jsp; charset=UTF-8");
         req.setCharacterEncoding("UTF-8");
-
+        String currentPageNumber = req.getParameter("currentPageNumber");
+        currentPageNumber = (currentPageNumber == null) ? "0" : currentPageNumber;
         String categoty_id = req.getParameter("category_id");
 //                       Ngừng bán sản phẩm
         String switch_product_isSale = req.getParameter("switch_product_isSale");
@@ -79,6 +87,8 @@ public class ProductAdminController extends HttpServlet {
         //edit product
         editProduct(req, resp);
         // Hiển thị sản phẩm - Lọc Sản phẩm
+        req.setAttribute("currentPageNumber", currentPageNumber);
+        System.out.println("currentPageNumber " + currentPageNumber);
         product_management_filter(req, resp);
     }
 
@@ -159,6 +169,11 @@ public class ProductAdminController extends HttpServlet {
                 Chưa -> forward kèm attribute để khỏi nhập lại,
                 Đủ -> forward nếu parse không thành công (DL sai), ngược lại update db và forward thành công
  */
+            //write
+            List<String> paths = ImageService.writeProductImagesFromClient(productName, req, resp, getServletContext());
+            if (!paths.isEmpty()) {
+                ImageService.insertImages(last_edit_product_id, paths);
+            }
             if (!(productName.equals("") || quantity.equals("") || costPrice.equals("") || sellingPrice.equals("") || description.equals("") ||
                     (radio_choiceCategory == null || radio_choiceCategory.equals("")))) {
                 System.out.println("ok đủ tt");

@@ -5,6 +5,8 @@
 <%@ page import="model.service.ProductService" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.text.SimpleDateFormat" %>
+<%@ page import="model.bean.Category" %>
+<%@ page import="model.service.CategoryService" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%List<Discount> discounts = DiscountService.getInstance().getAll();%>
 
@@ -21,6 +23,7 @@
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
     <title>Thêm sản phẩm</title>
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/views/Admin/css/table_style.css">
     <style>
         li {
             list-style-type: none;
@@ -187,34 +190,54 @@
                                                     <p><%=d.getName()%>
                                                     </p>
                                                     <div>
-                                                        <input type="button" class="btn btn-info"
-                                                               onclick="selectAllProductForDiscount()"
-                                                               value="Chọn tất cả"
-                                                        >
-                                                        <input type="button" class="btn btn-info"
-                                                               onclick="deSelectAllProductForDiscount()"
-                                                               value="Bỏ tất cả"
-                                                        >
-                                                        <button type="submit"
-                                                                name="submit_1_discountId"
-                                                                value="<%=d.getId()%>"
-                                                                class="btn btn-success"
-                                                        >Hoàn tất
-                                                        </button>
+                                                        <div style="display: flex">
+                                                            <input type="button" class="btn btn-info "
+                                                                   onclick="selectAllProductForDiscount(<%=stt%>)"
+                                                                   value="Chọn tất cả"
+                                                            >
+                                                            <input type="button" class="btn btn-info"
+                                                                   onclick="deSelectAllProductForDiscount(<%=stt%>)"
+                                                                   value="Bỏ tất cả"
+                                                            >
+                                                            <button type="submit"
+                                                                    name="submit_1_discountId"
+                                                                    value="<%=d.getId()%>"
+                                                                    class="btn btn-success"
+                                                            >Hoàn tất
+                                                            </button>
+                                                        </div>
+                                                        <div style=" display: block;position: relative;height: 80px;overflow: auto;">
+                                                            <div>
+                                                                <%for (Category category : CategoryService.getInstance().getALl()) {%>
+                                                                <div class="row">
+                                                                    <div class="d-flex">
+                                                                        <input type="checkbox" class="category"
+                                                                               onchange=" changeSelectByCategory(this,<%=stt%>, <%=category.getId()%>)"
+                                                                               id="<%=stt+"_"+category.getId()%>">
+                                                                        <label style="background:none ;font-size: 10px"
+                                                                               for="<%=stt+"_"+category.getId()%>"><%=category.getName()%>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <%}%>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <%for (Product p : ProductService.getInstance().getAll()) {%>
                                                 <li>
                                                     <div class="form-check form-switch">
-                                                        <input class="form-check-input chk" type="checkbox"
-                                                               id="<%=p.getId()%>"
+                                                        <input class="form-check-input product" type="checkbox"
+                                                               id="<%=stt+"_"+p.getCategoryId()+"_"+p.getId()%>"
                                                                name="<%=d.getId()%>" value="<%=p.getId()%>"
-<%--                                                            <%if(p.getDiscountId()!=null && p.getDiscountId()==(d.getId())) {%>--%>
+                                                               onchange="changeSelectByProduct(this,<%=stt%>, <%=p.getCategoryId()%>)"
+                                                        <%--                                                            <%if(p.getDiscountId()!=null && p.getDiscountId()==(d.getId())) {%>--%>
                                                             <%if(p.getDiscountId()==(d.getId())) {%>
                                                                checked
                                                             <%}%>
                                                         >
-                                                        <label class="form-check-label" for="<%=p.getId()%>">
+                                                        <label class="form-check-label"
+                                                               for="<%=stt+"_"+p.getCategoryId()+"_"+p.getId()%>">
                                                             <%=p.getId()%>-<%=p.getName()%>
                                                         </label>
                                                     </div>
@@ -350,20 +373,59 @@
         document.getElementById("edit_discount").style.display = "none";
     }
 
-    function selectAllProductForDiscount() {
-        var checkboxes = document.querySelectorAll('.chk');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].type == 'checkbox')
-                checkboxes[i].checked = true;
+    function selectAllProductForDiscount(stt) {
+        var categories_checkboxes = document.querySelectorAll('.category');
+        for (var i = 0; i < categories_checkboxes.length; i++) {
+            let id = categories_checkboxes[i].id;
+            if (categories_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
+                categories_checkboxes[i].checked = true;
+        }
+        var products_checkboxes = document.querySelectorAll('.product');
+        for (var i = 0; i < products_checkboxes.length; i++) {
+            let id = products_checkboxes[i].id;
+            if (products_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
+                products_checkboxes[i].checked = true;
         }
     }
 
-    function deSelectAllProductForDiscount() {
-        var checkboxes = document.querySelectorAll('.chk');
-        for (var i = 0; i < checkboxes.length; i++) {
-            if (checkboxes[i].type == 'checkbox')
-                checkboxes[i].checked = false;
+    function deSelectAllProductForDiscount(stt) {
+        var categories_checkboxes = document.querySelectorAll('.category');
+        for (var i = 0; i < categories_checkboxes.length; i++) {
+            let id = categories_checkboxes[i].id;
+            if (categories_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
+                categories_checkboxes[i].checked = false;
+        }
+        var products_checkboxes = document.querySelectorAll('.product');
+        for (var i = 0; i < products_checkboxes.length; i++) {
+            let id = products_checkboxes[i].id;
+            if (products_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
+                products_checkboxes[i].checked = false;
+        }
+    }
 
+    function changeSelectByCategory(checkbox, stt, categoryId) {
+        const isChecked = checkbox.checked;
+        const products_checkboxes = document.querySelectorAll('.product');
+        for (let i = 0; i < products_checkboxes.length; i++) {
+            let id = products_checkboxes[i].id;//stt_category_productId
+            if (products_checkboxes[i].type == 'checkbox' && id.startsWith(stt + "_" + categoryId))
+                if (isChecked) {
+                    products_checkboxes[i].checked = true;
+                } else {
+                    products_checkboxes[i].checked = false;
+                }
+        }
+    }
+
+    function changeSelectByProduct(checkbox, stt, categoryId) {
+        const isChecked = checkbox.checked;
+        const categories_checkboxes = document.querySelectorAll('.category');
+        for (let i = 0; i < categories_checkboxes.length; i++) {
+            let id = categories_checkboxes[i].id;//stt_category
+            if (categories_checkboxes[i].type == 'checkbox' && id.startsWith(stt + "_" + categoryId))
+                if (!isChecked) {
+                    categories_checkboxes[i].checked = false;
+                }
         }
     }
 </script>

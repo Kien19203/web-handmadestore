@@ -4,6 +4,7 @@ import model.bean.Discount;
 import model.bean.Product;
 import model.bean.Rate;
 import model.dao.ProductDAO;
+import model.dao.UserDAO;
 import model.db.JDBIConnector;
 
 import java.sql.Timestamp;
@@ -152,6 +153,44 @@ public class ProductService {
         return ProductDAO.getNumberRateStarsByUser(productId, userId);
     }
 
+    public List<Rate> getRatesByStarNumber(int productId, int starRatings, Integer userId) {
+        return ProductDAO.getRatesByStarNumber(productId, starRatings, userId);
+    }
+
+    public List<Rate> getRatesFirstUser(int productId, int userId) {
+       return ProductDAO.getRatesFirstUser(productId, userId);
+    }
+
+    public Integer getStarNumberCount(int productId, int starRatings) {
+        return ProductDAO.getStarNumberCount(productId, starRatings);
+    }
+
+    public Integer getStarNumberCount(int productId) {
+        return ProductDAO.getStarNumberCount(productId);
+    }
+
+    public void changeRate(int productId, int userId, int starRatings, String comment) {
+        if (ProductDAO.rateExists(productId, userId) != null) {
+            ProductDAO.updateRate(productId, userId, starRatings, comment);
+        } else {
+            ProductDAO.insertRate(productId, userId, starRatings, comment);
+        }
+    }
+
+    public Rate rateExists(int productId, int userId) {
+        return ProductDAO.rateExists(productId, userId);
+    }
+
+    public int getChangeNumber(int productId, int userId) {
+        boolean check = UserService.getInstance().checkUserAllowedToRate(productId, userId);
+        // nếu mua r => get Rate -> xem changeNumber
+        if (check) {
+            Rate rate = ProductService.getInstance().rateExists(productId, userId);
+            return (rate != null) ? rate.getChangeNumber() : -1;
+        }
+        return -1;
+    }
+
     public void editProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId, String discountId) {
         ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId, discountId);
     }
@@ -160,22 +199,18 @@ public class ProductService {
         ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId);
     }
 
-    public static void main(String[] args) {
-
-//        List<Product> productsa = ProductService.getInstance().getAllProduct();
-//        Product a = ProductService.getInstance().getProductById(10);
-//        System.out.println(a);
-//
-//        System.out.println(getInstance().getProductsByCategoryId(2));
-        System.out.println(ProductService.getInstance().listProductDiscount());
-    }
-
-
     public void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, int discountId, List<String> imagesPath) {
         ProductDAO.insertNewProduct(name, description, costPrice, sellingPrice, quantity, categoryId, discountId, imagesPath);
     }
 
     public long getNumberAvailProduct() {
         return ProductDAO.getNumberAvailProduct();
+    }
+
+    public static void main(String[] args) {
+        System.out.println(UserDAO.checkUserAllowedToRate(118, 4));
+        System.out.println(getInstance().getChangeNumber(118, 4));
+         Rate changeNumber = ProductService.getInstance().rateExists(118, 4);
+        System.out.println("rate -> number: " + changeNumber.getChangeNumber());
     }
 }

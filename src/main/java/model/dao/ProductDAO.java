@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 
 import model.service.ImageService;
+import model.service.ProductService;
 
 import java.sql.Connection;
 import java.util.*;
@@ -18,7 +19,7 @@ public class ProductDAO {
     //Tất cả các sản phẩm
     public static List<Product> getAll() {
         List<Product> product = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product where isSale = 1")
+                handle.createQuery("select * from product")
                         .mapToBean(Product.class)
                         .stream()
                         .toList()
@@ -80,7 +81,7 @@ public class ProductDAO {
 
     public static List<Product> findByCategory(int categoryID) {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product where categoryId = :id AND isSale = 1" )
+                handle.createQuery("select * from product where categoryId = :id")
                         .bind("id", categoryID)
                         .mapToBean(Product.class)
                         .stream()
@@ -276,7 +277,7 @@ public class ProductDAO {
     //    Sắp xếp theo giá tăng dần toàn bộ
     public static List<Product> sortProductAZ() {
         List<Product> productAZ = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE isSale = 1 ORDER BY product.sellingPrice ASC")
+                handle.createQuery("SELECT * FROM product ORDER BY product.sellingPrice ASC")
                         .mapToBean(Product.class)
                         .stream()
                         .toList());
@@ -286,7 +287,7 @@ public class ProductDAO {
     //    Sắp xếp theo giá giảm dần toàn bộ
     public static List<Product> sortProductZA() {
         List<Product> productZA = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE isSale = 1 ORDER BY product.sellingPrice DESC")
+                handle.createQuery("SELECT * FROM product ORDER BY product.sellingPrice DESC")
                         .mapToBean(Product.class)
                         .stream()
                         .toList());
@@ -296,7 +297,7 @@ public class ProductDAO {
     //    Sắp xếp theo giá tăng dần theo category
     public static List<Product> sortProductByCategoryAZ(int Categoryid) {
         List<Product> productAZ = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE categoryId = :id AND isSale = 1 ORDER BY product.sellingPrice ASC")
+                handle.createQuery("SELECT * FROM product WHERE categoryId = :id ORDER BY product.sellingPrice ASC")
                         .bind("id", Categoryid)
                         .mapToBean(Product.class)
                         .stream()
@@ -307,7 +308,7 @@ public class ProductDAO {
 
     public static List<Product> sortProductByCategoryZA(int Categoryid) {
         List<Product> productZA = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE categoryId = :id AND isSale = 1 ORDER BY product.sellingPrice DESC")
+                handle.createQuery("SELECT * FROM product WHERE categoryId = :id ORDER BY product.sellingPrice DESC")
                         .bind("id", Categoryid)
                         .mapToBean(Product.class)
                         .stream()
@@ -318,7 +319,7 @@ public class ProductDAO {
     //Sản phẩm khuyến mãi
     public static List<Product> listDiscountProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE AND isSale = 1")
+                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -326,7 +327,7 @@ public class ProductDAO {
 
     public static List<Product> discountProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT  product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP AND isSale = 1 LIMIT 6")
+                handle.createQuery("SELECT  product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP LIMIT 5")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -334,7 +335,7 @@ public class ProductDAO {
 
     public static List<Product> sortDiscountProductAZ() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE AND isSale = 1 ORDER BY product.sellingPrice ASC")
+                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE  ORDER BY product.sellingPrice ASC")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -342,7 +343,7 @@ public class ProductDAO {
 
     public static List<Product> sortDiscountProductZA() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE AND isSale = 1 ORDER BY product.sellingPrice DESC")
+                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE ORDER BY product.sellingPrice DESC")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -480,8 +481,97 @@ public class ProductDAO {
         return products;
     }
 
-    public static void main(String[] args) {
-        System.out.println(findByCategory(1));
+    public static List<Rate> getRatesByStarNumber(int productId, int starRatings, Integer userId) {
+        Integer star = starRatings;
+        if (userId == null) {
+            List<Rate> rateList = JDBIConnector.me().withHandle(
+                    handle -> handle.createQuery("SELECT * FROM `rate`  where productId =:productId and starRatings=:star")
+                            .bind("productId", productId)
+                            .bind("star", (star == 1 || star == 2 || star == 3 || star == 4 || star == 5) ? star : null)
+                            .mapToBean(Rate.class)
+                            .stream().toList());
+            return rateList;
+        } else {
+            List<Rate> rateList = JDBIConnector.me().withHandle(
+                    handle -> handle.createQuery("SELECT * FROM `rate` WHERE productId = :productId AND starRatings = :star ORDER BY CASE WHEN userId = :userId THEN 0 ELSE 1 END, createDate DESC")
+                            .bind("productId", productId)
+                            .bind("star", (star == 1 || star == 2 || star == 3 || star == 4 || star == 5) ? star : null)
+                            .bind("userId", userId)
+                            .mapToBean(Rate.class)
+                            .stream().toList());
+            return rateList;
+        }
+    }
+
+    public static Integer getStarNumberCount(int productId, int starRatings) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select count(userId) from rate where productId=? and starRatings=?")
+                        .bind(0, productId)
+                        .bind(1, starRatings)
+                        .mapTo(Integer.class).one());
+    }
+
+    public static Integer getStarNumberCount(int productId) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select count(userId) from rate where productId=?")
+                        .bind(0, productId)
+                        .mapTo(Integer.class).one());
+    }
+
+    public static Rate rateExists(int productId, int userId) {
+        Optional<Rate> rate = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("SELECT * FROM `rate` WHERE productId = :productId AND userId = :userId")
+                        .bind("productId", productId)
+                        .bind("userId", userId)
+                        .mapToBean(Rate.class)
+                        .stream()
+                        .findFirst()
+        );
+        return rate.isEmpty() ? null : rate.get();
+    }
+
+    public static void insertRate(int productId, int userId, int starRatings, String comment) {
+        if (starRatings < 1 || starRatings > 5) {
+            throw new IllegalArgumentException("starRatings must be between 1 and 5");
+        }
+
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate("INSERT INTO `rate` (productId, userId, starRatings, comment) VALUES (:productId, :userId, :starRatings, :comment)")
+                        .bind("productId", productId)
+                        .bind("userId", userId)
+                        .bind("starRatings", starRatings)
+                        .bind("comment", comment)
+                        .execute()
+        );
+    }
+
+    public static void updateRate(int productId, int userId, int starRatings, String comment) {
+        Rate rate = rateExists(productId, userId);
+        if (starRatings < 1 || starRatings > 5) {
+            throw new IllegalArgumentException("starRatings must be between 1 and 5");
+        } else if (rate != null && rate.getChangeNumber() != 0) {
+            throw new IllegalArgumentException("Không thể vì đã chỉnh sửa đánh giá");
+        }
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate("UPDATE `rate` SET starRatings = :starRatings, comment = :comment, createDate = CURRENT_TIMESTAMP, changeNumber =:changeNumber WHERE productId = :productId AND userId = :userId")
+                        .bind("productId", productId)
+                        .bind("userId", userId)
+                        .bind("starRatings", starRatings)
+                        .bind("comment", comment)
+                        .bind("changeNumber", 1)
+                        .execute()
+        );
+    }
+
+
+    public static List<Rate> getRatesFirstUser(int productId, int userId) {
+        List<Rate> rateList = JDBIConnector.me().withHandle(
+                handle -> handle.createQuery("SELECT * FROM `rate` WHERE productId = :productId  ORDER BY CASE WHEN userId = :userId THEN 0 ELSE 1 END, createDate DESC")
+                        .bind("productId", productId)
+                        .bind("userId", userId)
+                        .mapToBean(Rate.class)
+                        .stream().toList());
+        return rateList;
     }
 }
 

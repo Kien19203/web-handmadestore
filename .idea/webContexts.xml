@@ -7,6 +7,7 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/Admin/banners_tips.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/Admin" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/Admin/category_management.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/Admin" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/Admin/changeUserInfo.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/Admin" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/views/Admin/discount_management.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/Admin" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/Admin/order_management.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/Admin" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/Admin/order_management_datatable.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/Admin" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/Admin/product_management.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/Admin" />

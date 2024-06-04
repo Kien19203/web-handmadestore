@@ -73,9 +73,5 @@ public class ProductDetailsController extends HttpServlet {
 
         RequestDispatcher rq = req.getRequestDispatcher(jspPath);
         rq.forward(req, resp);
-
-
-
-
     }
 }
