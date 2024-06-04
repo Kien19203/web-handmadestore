@@ -10,6 +10,9 @@ import java.util.Base64;
 public class HashPassword {
     //sha-1
     public static String toSHA1(String str) {
+
+
+
         // để làm cho mật khẩu trở nên phức tạp hơn nhiều lần
         /*
         Người ta có thể xây dựng 1 DB để lưu những ký tự - mã hóa ký tự để check ngươợc lại (so khớp)

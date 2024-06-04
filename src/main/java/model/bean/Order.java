@@ -107,6 +107,10 @@ public class Order implements Serializable {
         return this.getStatus().equalsIgnoreCase("Chờ xác nhận");
     }
 
+    public boolean isPackingOrder() {
+        return this.getStatus().equalsIgnoreCase("Đang đóng gói");
+    }
+
     public boolean isDeliveringOrder() {
         return this.getStatus().equalsIgnoreCase("Đang giao");
     }

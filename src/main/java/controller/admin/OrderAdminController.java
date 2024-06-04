@@ -48,7 +48,10 @@ public class OrderAdminController extends HttpServlet {
                 currentFilter = "all";
             } else if (submit_filter.equals("waitConfirmOrders")) {
                 currentFilter = "waitConfirmOrders";
-            } else if (submit_filter.equals("deliveringOrders")) {
+            } else if(submit_filter.equals("packingOrders")) {
+                currentFilter = "packingOrders";
+            }
+            else if (submit_filter.equals("deliveringOrders")) {
                 currentFilter = "deliveringOrders";
             } else if (submit_filter.equals("canceledOrders")) {
                 currentFilter = "canceledOrders";
@@ -56,7 +59,9 @@ public class OrderAdminController extends HttpServlet {
                 currentFilter = "succcessfulOrders";
             }
         }
-//      confirm or cancel order: orderId + action: cancel/confirm
+/**
+ * XỬ LÝ GỬI EMAIL THÔNG BÁO CHO KHÁCH HÀNG. (trạng thái thành công hoặc bị hủy)
+ */
         String currentOrderId = req.getParameter("currentOrderId");
         if (currentOrderId != null) {
             Order currentOrder = OrderService.getInstance().getOrderById(currentOrderId);
@@ -69,7 +74,10 @@ public class OrderAdminController extends HttpServlet {
                 } else if (action.equals("confirm")) {
                     MailService.sendNotifyConfirmOrder(UserService.getInstance().getUserById(currentOrder.getUserId() + "").getEmail(), currentOrder);
                     OrderService.getInstance().confirmOrder(currentOrderId);
-                } else if (action.equals("delivered")) {
+                } else if (action.equals("packed")) {
+                    OrderService.getInstance().packedOrder(currentOrderId);
+                }
+                else if (action.equals("delivered")) {
                     OrderService.getInstance().deliveredOrder(currentOrderId);
                 }
             }
