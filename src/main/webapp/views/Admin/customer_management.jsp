@@ -5,11 +5,11 @@
 <%@ page import="model.service.RoleService" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%List<User> users = (List<User>) request.getAttribute("users");%>
-<% users = (users == null) ? UserService.getInstance().getAllUsers() : users;%>
+<%User user = (User) session.getAttribute("auth");%>
+<% users = (users == null && user != null) ? UserService.getInstance().getAllUsers(user.getId() + "") : users;%>
 <%
     String currentFilter = (String) request.getAttribute("currentFilter");
 %>
-<%User user = (User) session.getAttribute("auth");%>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -35,7 +35,24 @@
             bottom: 20%;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1000;
+            z-index: 9;
+        }
+
+        .dt-empty, .dt-info {
+            display: none;
+        }
+
+        #add_user {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: auto;
+            z-index: 9999;
+            background-color: #2c3e50; /* Adjust the background color as needed */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
         }
     </style>
 </head>
@@ -57,9 +74,11 @@
                 <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=owner"
                    class="btn btn-outline-secondary" type="button">Chủ hệ thống</a>
                 <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=admin"
-                   class="btn btn-outline-secondary" type="button">Quản trị viên</a>
+                   class="btn btn-outline-secondary" type="button">Quản lý</a>
                 <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=user"
                    class="btn btn-outline-secondary" type="button">Người dùng</a>
+                <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=lockUsers"
+                   class="btn btn-outline-secondary" type="button">Người dùng đã khóa</a>
             </div>
             <input type="text" class="form-control col-lg-6 col-12 col-sm-12"
                    placeholder="Tìm kiếm theo Tên hoặc Số điện thoại, Email khách hàng"
@@ -69,9 +88,40 @@
             <button
                     class="btn btn-outline-secondary col-lg-2" type="submit">Tìm kiếm khách hàng
             </button>
+            <%if (user.isOwn()) {%>
             <button
-                    class="btn btn-outline-secondary col-lg-2" type="submit">Thêm quản lý
+                    class="btn btn-outline-secondary col-lg-2" type="button" onclick="showAddUserBox()">Thêm tài khoản
             </button>
+            <div id="add_user" class="w-50 bg-secondary p-3 rounded" style="display: none">
+                <div class="form-group">
+                    <label for="name">Tên</label>
+                    <input type="text" class="form-control" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="phoneNumber">Số điện thoại</label>
+                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" class="form-control" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Mật khẩu</label>
+                    <input type="password" class="form-control" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select class="form-control" id="role" name="roleId">
+                        <option value="1">Quản lý</option>
+                        <option value="0">Chủ hệ thống</option>
+                    </select>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="addUser()">Thêm User</button>
+                <button
+                        class="btn btn-dark" type="button" onclick="hideAddUserBox()">Thoát
+                </button>
+            </div>
+            <%}%>
         </div>
     </form>
     <%--        table--%>
@@ -91,8 +141,6 @@
                 </th>
                 <th class="text-nowrap">
                     Trạng thái
-                    <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=lockUsers"
-                       class="btn-primary text-decoration-none"><i class="fa-solid fa-filter-circle-xmark"></i></a>
                 </th>
                 <th scope="col"><i class="fa-solid fa-user-pen fs-4"></i></th>
             </tr>
@@ -106,7 +154,7 @@
                     <%
                         if (user.getId() == u.getId()) {
                     %>
-                    style="font-weight: bold"
+                style="font-weight: bold"
                     <%}%>
             >
                 <td class="text-center"><%=stt%>
@@ -126,23 +174,19 @@
                 <td class="text-center">
                     <%if (user.isOwn() && !u.isOwn()) {%>
                     <%if (!u.isLock()) {%>
-                    <a title="Khóa tải khoản"
-                       href="<%=request.getContextPath()%>/admin/customer?func=customer_management&user_id=<%=u.getId()%>&currentFilter=<%=currentFilter%>"><i
-                            class="fa-solid fa-unlock fs-4"></i></a>
+                    <i title="Khóa tải khoản" onclick="toggleLock(<%=u.getId()%>,this)"
+                       class="fa-solid fa-unlock fs-4"></i>
                     <%} else {%>
-                    <a title="Bỏ khóa tải khoản"
-                       href="<%=request.getContextPath()%>/admin/customer?func=customer_management&user_id=<%=u.getId()%>&currentFilter=<%=currentFilter%>"><i
-                            class="fa-solid fa-lock fs-4"></i></a>
+                    <i title="Bỏ khóa tải khoản" onclick="toggleLock(<%=u.getId()%>,this)"
+                       class="fa-solid fa-lock fs-4 text-danger"></i>
                     <%}%>
                     <%} else if (user.isAdmin() && u.isUser()) {%>
                     <%if (!u.isLock()) {%>
-                    <a title="Khóa tải khoản"
-                       href="<%=request.getContextPath()%>/admin/customer?func=customer_management&user_id=<%=u.getId()%>&currentFilter=<%=currentFilter%>"><i
-                            class="fa-solid fa-unlock fs-4"></i></a>
+                    <i title="Khóa tải khoản" onclick="toggleLock(<%=u.getId()%>,this)"
+                       class="fa-solid fa-unlock fs-4"></i>
                     <%} else {%>
-                    <a title="Bỏ khóa tải khoản"
-                       href="<%=request.getContextPath()%>/admin/customer?func=customer_management&user_id=<%=u.getId()%>&currentFilter=<%=currentFilter%>"><i
-                            class="fa-solid fa-lock fs-4"></i></a>
+                    <i title="Bỏ khóa tải khoản" onclick="toggleLock(<%=u.getId()%>,this)"
+                       class="fa-solid fa-lock fs-4 text-danger"></i>
                     <%}%>
                     <%}%>
                 </td>
@@ -170,6 +214,76 @@
             document.getElementById("currentPageNumber").value = pageInfo.page;
         }
     });
+
+    function toggleLock(userId, element) {
+        // Gọi hàm lockOrUnLock với userId
+        lockOrUnLock(userId);
+
+        // Kiểm tra trạng thái hiện tại của biểu tượng
+        if (element.classList.contains('fa-unlock')) {
+            // Nếu hiện tại là mở khóa, đổi sang khóa
+            element.classList.remove('fa-unlock');
+            element.classList.add('fa-lock');
+            element.classList.add('text-danger');
+            element.parentElement.setAttribute('title', 'Bỏ khóa tải khoản');
+
+        } else {
+            // Nếu hiện tại là khóa, đổi sang mở khóa
+            element.classList.remove('fa-lock');
+            element.classList.add('fa-unlock');
+            element.classList.remove('text-danger');
+            element.parentElement.setAttribute('title', 'Khóa tải khoản');
+        }
+    }
+
+    function lockOrUnLock(userId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/user-ajax-handle",
+            data: {
+                action: "lockOrUnLock",
+                userId: userId
+            },
+            success: function (response) {
+
+            },
+            error: function () {
+                alert("error")
+            }
+        })
+    }
+
+    <%if(user.isOwn()){%>
+
+    function showAddUserBox() {
+        document.getElementById("add_user").style.display = "block";
+    }
+
+    function hideAddUserBox() {
+        document.getElementById("add_user").style.display = "none";
+    }
+    function addUser() {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/user-ajax-handle",
+            data: {
+                action: "addUser",
+                name: document.getElementById("name").value,
+                phoneNumber: document.getElementById("phoneNumber").value,
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value,
+                roleId: document.getElementById("roleId").value
+            },
+            success: function (response) {
+                alert(response)
+            },
+            error: function () {
+                alert("error")
+            }
+        })
+    }
+
+    <%}%>
 </script>
 </body>
 <%

@@ -19,6 +19,9 @@ public class UserService {
     public static void insertUser(User user) {
         UserDAO.insertUser(user);
     }
+    public User addUser(String name, String phoneNumber, String email, String password, int roleId) {
+        return UserDAO.addUser(name, phoneNumber, email, password, roleId);
+    }
 
     public User checkLogin(String email, String password) {
         User userByEmail = UserDAO.getUserByEmail(email);
@@ -42,6 +45,10 @@ public class UserService {
 
     public List<User> getAllUsers() {
         List<User> users = UserDAO.getAllUsers();
+        return users;
+    }
+    public List<User> getAllUsers(String userId) {
+        List<User> users = UserDAO.getAllUsers(userId);
         return users;
     }
 
@@ -68,22 +75,6 @@ public class UserService {
 
     public long usersNumber() {
         return UserDAO.usersNumber();
-    }
-
-    public List<User> ascCreateDateFilter() {
-        return UserDAO.ascCreateDateFilter();
-    }
-
-    public List<User> descCreateDateFilter() {
-        return UserDAO.descCreateDateFilter();
-    }
-
-    public List<User> ascNameFilter() {
-        return UserDAO.ascNameFilter();
-    }
-
-    public List<User> descNameFilter() {
-        return UserDAO.descNameFilter();
     }
 
     public List<User> getLockUsers() {

@@ -54,7 +54,9 @@
             transform: translateX(-50%);
             z-index: 1000;
         }
-
+        .dt-empty,.dt-info {
+            display: none;
+        }
         #edit_product {
             position: fixed;
             top: 50%;

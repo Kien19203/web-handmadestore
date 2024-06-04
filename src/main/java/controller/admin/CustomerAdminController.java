@@ -24,49 +24,43 @@ public class CustomerAdminController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/jsp; charset=UTF-8");
         req.setCharacterEncoding("UTF-8");
-        String user_id = req.getParameter("user_id");
-        if (user_id != null) {
-            //lock or unlock
-            User u = UserService.getInstance().getUserById(user_id);
-            if (u.getStatus().trim().startsWith("Bình Thường")) {
-                UserService.getInstance().lockUser(user_id);
-            } else if (u.getStatus().trim().equalsIgnoreCase("Bị Khóa")) {
-                UserService.getInstance().unlockUser(user_id);
+        User sessionUser = (User) req.getSession().getAttribute("auth");
+        if (sessionUser != null) {
+            String user_id = req.getParameter("user_id");
+            List<User> users = null;
+            String filter = req.getParameter("filter");
+
+            String currentFilter = req.getParameter("currentFilter");
+            if (currentFilter != null) filter = currentFilter;
+
+            if (filter != null) {
+                if (filter.equals("lockUsers")) {
+                    currentFilter = filter;
+                    users = UserService.getInstance().getLockUsers();
+                } else if (filter.equals("findCustomer")) {
+                    currentFilter = filter;
+                    String kw = req.getParameter("findCustomer");
+                    req.setAttribute("kw", kw);
+                    if (kw.contains("@")) {
+                        users = UserService.getInstance().findUserByEmail(kw);
+                    } else if (isPhoneNumber(kw)) {
+                        users = UserService.getInstance().findUserByPhone(kw);
+                    } else {
+                        users = UserService.getInstance().findUsersByName(kw);
+                    }
+                } else if (filter.equals("owner")) {
+                    users = UserService.getInstance().getOwnerList();
+                } else if (filter.equals("admin")) {
+                    users = UserService.getInstance().getAdminList();
+                } else if (filter.equals("user")) {
+                    users = UserService.getInstance().getUserList();
+                } else users = UserService.getInstance().getAllUsers(sessionUser.getId() + "");
+            } else {
+                users = UserService.getInstance().getAllUsers(sessionUser.getId() + "");
             }
+            req.setAttribute("currentFilter", currentFilter);
+            req.setAttribute("users", users);
         }
-        List<User> users = null;
-        String filter = req.getParameter("filter");
-
-        String currentFilter = req.getParameter("currentFilter");
-        if (currentFilter != null) filter = currentFilter;
-
-        if (filter != null) {
-            if (filter.equals("lockUsers")) {
-                currentFilter = filter;
-                users = UserService.getInstance().getLockUsers();
-            } else if (filter.equals("findCustomer")) {
-                currentFilter = filter;
-                String kw = req.getParameter("findCustomer");
-                req.setAttribute("kw", kw);
-                if (kw.contains("@")) {
-                    users = UserService.getInstance().findUserByEmail(kw);
-                } else if (isPhoneNumber(kw)) {
-                    users = UserService.getInstance().findUserByPhone(kw);
-                } else {
-                    users = UserService.getInstance().findUsersByName(kw);
-                }
-            } else if (filter.equals("owner")) {
-                users = UserService.getInstance().getOwnerList();
-            } else if (filter.equals("admin")) {
-                users = UserService.getInstance().getAdminList();
-            } else if (filter.equals("user")) {
-                users = UserService.getInstance().getUserList();
-            } else users = UserService.getInstance().getAllUsers();
-        } else {
-            users = UserService.getInstance().getAllUsers();
-        }
-        req.setAttribute("currentFilter", currentFilter);
-        req.setAttribute("users", users);
         req.getRequestDispatcher("/views/Admin/customer_management.jsp").forward(req, resp);
     }
 

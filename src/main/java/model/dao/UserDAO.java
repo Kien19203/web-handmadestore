@@ -99,10 +99,38 @@ public class UserDAO {
         }
     }
 
+    public static User addUser(String name, String phoneNumber, String email, String password, int roleId) {
+        return JDBIConnector.me().withHandle(handle -> {
+            // Thêm người dùng mới và lấy lại ID
+            int id = handle.createUpdate("INSERT INTO `user` (`name`, `phoneNumber`, `email`, `password`, `roleId`) VALUES (:name, :phoneNumber, :email, :password, :roleId)")
+                    .bind("name", name)
+                    .bind("phoneNumber", phoneNumber)
+                    .bind("email", email)
+                    .bind("password", password)
+                    .bind("roleId", roleId)
+                    .executeAndReturnGeneratedKeys("id")
+                    .mapTo(Integer.class)
+                    .one();
+
+            // Truy vấn để lấy lại đối tượng User
+            return handle.createQuery("SELECT * FROM `user` WHERE `id` = :id")
+                    .bind("id", id)
+                    .mapToBean(User.class)
+                    .one();
+        });
+    }
+
 
     public static List<User> getAllUsers() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from user order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
+        return users;
+    }
+
+    public static List<User> getAllUsers(String userId) {
+        List<User> users = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from user ORDER BY CASE WHEN id = :userId THEN 0 ELSE 1 END, roleId asc")
+                        .bind("userId", userId).mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
 
@@ -112,15 +140,36 @@ public class UserDAO {
         return users;
     }
 
+    public static List<User> getOwnerList(String userId) {
+        List<User> users = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from user where roleId=0 ORDER BY CASE WHEN id = :userId THEN 0 ELSE 1 END, roleId asc")
+                        .bind("userId", userId).mapToBean(User.class).stream().collect(Collectors.toList()));
+        return users;
+    }
+
     public static List<User> getAdminList() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from user where roleId=1 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
 
+    public static List<User> getAdminList(String userId) {
+        List<User> users = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from user where roleId=1 ORDER BY CASE WHEN id = :userId THEN 0 ELSE 1 END, roleId asc")
+                        .bind("userId", userId).mapToBean(User.class).stream().collect(Collectors.toList()));
+        return users;
+    }
+
     public static List<User> getUserList() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from user where roleId=2 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
+        return users;
+    }
+
+    public static List<User> getUserList(String userId) {
+        List<User> users = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from user where roleId=2 ORDER BY CASE WHEN id = :userId THEN 0 ELSE 1 END, roleId asc")
+                        .bind("userId", userId).mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
 
@@ -150,30 +199,6 @@ public class UserDAO {
         return JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select count(id) from user")
                         .mapTo(Long.class).one());
-    }
-
-    public static List<User> ascCreateDateFilter() {
-        List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user order by createDate asc").mapToBean(User.class).stream().collect(Collectors.toList()));
-        return users;
-    }
-
-    public static List<User> descCreateDateFilter() {
-        List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user order by createDate desc").mapToBean(User.class).stream().collect(Collectors.toList()));
-        return users;
-    }
-
-    public static List<User> ascNameFilter() {
-        List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user order by name asc").mapToBean(User.class).stream().collect(Collectors.toList()));
-        return users;
-    }
-
-    public static List<User> descNameFilter() {
-        List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user order by name desc").mapToBean(User.class).stream().collect(Collectors.toList()));
-        return users;
     }
 
     public static List<User> findUsersByName(String name) {

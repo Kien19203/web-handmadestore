@@ -103,7 +103,9 @@
             transform: translateX(-50%);
             z-index: 1000;
         }
-
+        .dt-empty,.dt-info {
+            display: none;
+        }
         #data th:nth-child(4),
         #data td:nth-child(4) {
             width: 20%;
