@@ -1727,7 +1727,8 @@ CREATE TABLE `rate`
     `userId`      int(11) NOT NULL,
     `starRatings` int(11) NOT NULL,
     `comment`     text NOT NULL,
-    `createDate`  datetime DEFAULT current_timestamp()
+    `createDate`  datetime DEFAULT current_timestamp(),
+    `changeNumber` int DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
