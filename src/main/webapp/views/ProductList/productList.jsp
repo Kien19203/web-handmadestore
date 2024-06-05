@@ -115,16 +115,13 @@
                     </p></a>
                     <%!double giaBanSauCung;%>
                     <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(p);%>
-
                     <%if(p.getCategoryId() >= 0 && giaBanSauCung!= p.getSellingPrice()){%>
-                    <del ><p style="margin-top: 20px; margin-bottom: 0"><%=numberFormat.format(p.getSellingPrice())%></p></del>
-                    <p ><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
+                    <del ><p class="mt-3" style=" margin-bottom: 0"><%=numberFormat.format(p.getSellingPrice())%></p></del>
+                    <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
                     <%}else{%>
-                    <p style="margin-top: 30px"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
+                    <p class="fw-bold mt-3"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
                     <%}%>
-<%--                    <div class="add-to-cart"><a href="<%=request.getContextPath()%>/add-cart?actionCart=post&num=1&id=<%=p.getId()%>"><span>Thêm vào giỏ hàng</span> </a></div>--%>
-                    <div class="add-to-cart"><button onclick="addcart(this,<%=p.getId()%>)"><span class="fw-bold">Thêm vào giỏ hàng</span> </button></div>
-
+                    <div class="add-to-cart" ><button onclick="addcart(this,<%=p.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                 </div>
             </li>
 

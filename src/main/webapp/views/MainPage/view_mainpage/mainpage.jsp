@@ -104,7 +104,7 @@
                     <%}else{%>
                     <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
                     <%}%>
-                    <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span class="fw-bold">Thêm vào giỏ hàng</span> </button></div>
+                    <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                 </div>
             </li>
             <%}%>
@@ -134,10 +134,12 @@
                         <%!double giaBanSauCung;%>
                         <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(pr);%>
                         <%if (pr.getCategoryId() >= 0 && giaBanSauCung != pr.getSellingPrice()) {%>
-                        <del><%=numberFormat.format(pr.getSellingPrice())%></del>
+                        <del><p class="mt-3"><%=numberFormat.format(pr.getSellingPrice())%></p></del>
+                        <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
+                        <%}else{%>
+                        <p class="fw-bold mt-3"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
                         <%}%>
-                        <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
-                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold">Thêm vào giỏ hàng</span> </button></div>
+                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                     </div>
                 </li>
                 <%}%>
