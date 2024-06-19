@@ -67,7 +67,7 @@
             </div>
             <div class="item-media">
                 <a class="google google-icon"
-                   href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/HandMadeStore/LoginGoogleHandler&response_type=code&client_id=468559225769-mg6o9rdha4qnskdi68hsa7neo0c9qtq0.apps.googleusercontent.com_placeholder&approval_prompt=force">
+                   href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/HandMadeStore/LoginGoogleHandler&response_type=code&client_id=468559225769-mg6o9rdha4qnskdi68hsa7neo0c9qtq0.apps.googleusercontent.com&approval_prompt=force">
                     <i class='bx bxl-google google-icon'></i>
                 </a>
             </div>
