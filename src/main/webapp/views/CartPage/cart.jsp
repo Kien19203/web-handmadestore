@@ -175,9 +175,11 @@
 <%@include file="/views/Footer/footer.jsp" %>
 <%--JS--%>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 <%--<a href="<%=request.getContextPath()%>/add-cart?actionCart=delete&id=<%=item.getProduct().getId()%>">
 --%>
+
 function deleteRow(btn,idProduct,priceProduct,amountProduct) {
     let actionCart = "delete";
     let total_amount = document.getElementById("total_amount");
@@ -210,6 +212,13 @@ function deleteRow(btn,idProduct,priceProduct,amountProduct) {
             total_amount.innerText = formatTotal;
             total_Cart.innerText = newTotal;
             handleDeleteToCart(response);
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Xóa Sản Phẩm Thành Công!",
+                showConfirmButton: false,
+                timer: 1500
+            });
 
         }
     })

@@ -206,11 +206,14 @@ public class ProductService {
     public long getNumberAvailProduct() {
         return ProductDAO.getNumberAvailProduct();
     }
-
+    public static Integer discountProduct(int idProduct){
+        return ProductDAO.discountProduct(idProduct);
+    }
     public static void main(String[] args) {
-        System.out.println(UserDAO.checkUserAllowedToRate(118, 4));
-        System.out.println(getInstance().getChangeNumber(118, 4));
-         Rate changeNumber = ProductService.getInstance().rateExists(118, 4);
-        System.out.println("rate -> number: " + changeNumber.getChangeNumber());
+//        System.out.println(UserDAO.checkUserAllowedToRate(118, 4));
+//        System.out.println(getInstance().getChangeNumber(118, 4));
+//         Rate changeNumber = ProductService.getInstance().rateExists(118, 4);
+//        System.out.println("rate -> number: " + changeNumber.getChangeNumber());
+        System.out.println(discountProduct(1));
     }
 }

@@ -111,15 +111,18 @@
                     <a class="image" href="product-detail?id=<%=p.getId()%>">
                         <img src="<%=request.getContextPath()%>/<%=pathImage%>">
                     </a>
-                    <a href="product-detail?id=<%=p.getId()%>"><p class="pt-5 px-4"><%=p.getName() %>
+                    <a href="product-detail?id=<%=p.getId()%>"><p class="pt-2 px-4 fw-bold"><%=p.getName() %>
                     </p></a>
                     <%!double giaBanSauCung;%>
                     <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(p);%>
                     <%if(p.getCategoryId() >= 0 && giaBanSauCung!= p.getSellingPrice()){%>
-                    <del ><p class="mt-3" style=" margin-bottom: 0"><%=numberFormat.format(p.getSellingPrice())%></p></del>
+                    <%! int discountProduct;%>
+                    <% discountProduct = ProductService.getInstance().discountProduct(p.getId());%>
+                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
+                    <del ><p class="mt-2" style=" margin-bottom: 0"><%=numberFormat.format(p.getSellingPrice())%></p></del>
                     <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
                     <%}else{%>
-                    <p class="fw-bold mt-3"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
+                    <p class="fw-bold mt-2"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
                     <%}%>
                     <div class="add-to-cart" ><button onclick="addcart(this,<%=p.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                 </div>
@@ -290,6 +293,7 @@ let amd = document.getElementById("asort_md");
 
 
     <%--    Add sản phẩm vào giỏ hàng--%>
+let idProductList = [];
     function addcart(btn,idProduct){
         let actionCart = "post";
         let num = 1;
@@ -302,8 +306,10 @@ let amd = document.getElementById("asort_md");
                 num: num
             },
             success:function(response){
-                console.log("thanh cong");
-                handleAddToCart(response);
+                if(!idProductList.includes(idProduct)){
+                    idProductList.push(idProduct);
+                    handleAddToCart(response);
+                }
                 Swal.fire({
                     position: "center",
                     icon: "success",

@@ -261,7 +261,7 @@ li {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 0;
+    bottom: 10px;
 }
 .product_list {
     width: 25%;
@@ -286,8 +286,9 @@ li {
 }
 /*KM*/
 #sp_khuyenmai{
-    border: 1px solid;
     box-shadow: 0 0 10px 3px #9b9898;
+    border: none;
+    border-radius: 15px;
 }
 .productkm{
         width: 25%;
@@ -331,10 +332,6 @@ li {
 }
 
 .products .productkm .item_product a p:hover {
-    color: red;
-}
-
-.products .productkm .item_product p {
     color: red;
 }
 

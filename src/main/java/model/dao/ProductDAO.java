@@ -574,12 +574,13 @@ public class ProductDAO {
         return rateList;
     }
 //    Lấy discount trong từng sản phẩm theo id
-    public static Double discountProduct(int idProduct){
+    public static Integer discountProduct(int idProduct){
         double discount = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select discount.percentageOff from discount inner join product on product.discountId = discount.id Where product.id =:id")
                         .bind("id", idProduct)
                         .mapTo(Double.class).one());
-        return discount *100;
+        int result = (int) Math.round((discount * 100));
+        return result;
     }
     public static void main(String[] args) {
         System.out.println(discountProduct(1));

@@ -27,8 +27,8 @@
 <%----%>
 <div id="findProducts" style="display: none"><%=resultFind%></div>
 <div>
-    <h2 class="text-center mt-3 ">Tìm Kiếm</h2>
     <%if(allProductfp.isEmpty() || allProductfp.equals("")){%>
+    <h2 class="text-center mt-3">Tìm Kiếm</h2>
     <div class="solid m-auto mb-4" style="background: black;height: 4px;width: 80px"></div>
     <p class="text-center fw-bold fs-5">Không tìm thấy nội dung bạn yêu cầu</p>
     <div class="text-center">
@@ -47,14 +47,11 @@
         </form>
     </div>
     <%}else{%>
-    <div class="text-center mb-3">
+    <h2 class="mt-3 ms-5">Tìm Kiếm</h2>
+    <div class="ms-5 mb-3">
         <span>Có </span>
         <span class="fw-bold"><%=request.getAttribute("numberProduct")%> sản phẩm </span>
-        <span>cho tìm kiếm</span>
-    </div>
-    <div class="solid m-auto mb-4" style="background: black;height: 4px;width: 80px"></div>
-    <div class="ms-5">
-        <span>Kết quả tìm kiếm cho </span>
+        <span>cho tìm kiếm từ khóa </span>
         <span class="fw-bold">"<%=resultFind%>".</span>
     </div>
     <%}%>
@@ -66,15 +63,18 @@
         <li class="product_li">
             <div class="item_product  me-4">
                 <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=pfp.getId()%>"> <img src="<%=request.getContextPath()%>/<%=pathImagefp%>"> </a>
-                <a href="<%=request.getContextPath()%>/product-detail?id=<%=pfp.getId()%>"><p class="pt-5 px-4"><%=pfp.getName() %>
+                <a href="<%=request.getContextPath()%>/product-detail?id=<%=pfp.getId()%>"><p class="pt-2 px-4 fw-bold"><%=pfp.getName() %>
                 </p></a>
                 <%!double giaBanSauCung;%>
                 <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(pfp);%>
                 <%if(pfp.getCategoryId() >= 0 && giaBanSauCung!= pfp.getSellingPrice()){%>
-                <del ><p style="margin-top: 20px; margin-bottom: 0"><%=numberFormat.format(pfp.getSellingPrice())%></p></del>
+                <%! int discountProduct;%>
+                <% discountProduct = ProductService.getInstance().discountProduct(pfp.getId());%>
+                <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
+                <del ><p class="mt-2" style="margin-bottom: 0"><%=numberFormat.format(pfp.getSellingPrice())%></p></del>
                 <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
                 <%}else{%>
-                <p class="fw-bold" style="margin-top: 30px"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
+                <p class="fw-bold mt-2" style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
                 <%}%>
                 <div class="add-to-cart">
                     <button onclick="addcart(this,<%=pfp.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span></button>
@@ -120,14 +120,14 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 <%--    Chưa khắc phục đc lỗi--%>
-        function addcart(btn,idProduct){
+        function addcart(btn,idP){
             let actionCart = "post";
             let num = 1;
             $.ajax({
                 url: "/HandMadeStore/add-cart",
                 method: "GET",
                 data:{
-                    id: idProduct,
+                    id: idP,
                     actionCart: actionCart,
                     num: num
                 },
