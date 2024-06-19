@@ -1,9 +1,9 @@
 package Constants;
 
 public class Constants {
-    public static String GOOGLE_CLIENT_ID = "YOUR_CLIENT_ID_PLACEHOLDER";
+    public static String GOOGLE_CLIENT_ID = System.getenv("GOOGLE_CLIENT_ID");
 
-    public static String GOOGLE_CLIENT_SECRET = "YOUR_CLIENT_SECRET_PLACEHOLDER";
+    public static String GOOGLE_CLIENT_SECRET = System.getenv("GOOGLE_CLIENT_SECRET");
 
     public static String GOOGLE_REDIRECT_URI = "http://localhost:8080/HandMadeStore/LoginGoogleHandler";
 
