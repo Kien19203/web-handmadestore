@@ -3,6 +3,7 @@ package Constants;
 public class Constants {
     public static String GOOGLE_CLIENT_ID = "468559225769-mg6o9rdha4qnskdi68hsa7neo0c9qtq0.apps.googleusercontent.com";
 
+    public static String GOOGLE_CLIENT_SECRET = "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";
 
     public static String GOOGLE_REDIRECT_URI = "http://localhost:8080/HandMadeStore/LoginGoogleHandler";
 

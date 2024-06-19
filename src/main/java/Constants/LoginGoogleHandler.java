@@ -42,6 +42,7 @@ public class LoginGoogleHandler extends HttpServlet {
         // call api to get token
         String response = Request.Post(Constants.GOOGLE_LINK_GET_TOKEN)
                 .bodyForm(Form.form().add("client_id", Constants.GOOGLE_CLIENT_ID)
+                        .add("client_secret", Constants.GOOGLE_CLIENT_SECRET)
                         .add("redirect_uri", Constants.GOOGLE_REDIRECT_URI).add("code", code)
                         .add("grant_type", Constants.GOOGLE_GRANT_TYPE).build())
                 .execute().returnContent().asString();
@@ -86,7 +87,7 @@ public class LoginGoogleHandler extends HttpServlet {
         int role = 1;
         String status = "Bình Thường";
         String name = user.getName();
-        String phoneNumber = "null";
+        String phoneNumber = " ";
         System.out.println(user.getPhoneNumber());
         if(user.getPhoneNumber() != null){
             phoneNumber = user.getPhoneNumber();
