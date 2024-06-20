@@ -63,7 +63,7 @@
         <div class="solid"></div>
         <div class="icondn">
             <div class="item-media">
-                <a href="#" class="facebook"><i class='bx bxl-facebook facebook-icon'></i></a>
+                <a href="https://www.facebook.com/v19.0/dialog/oauth?scope=email&client_id=1428287761185428&redirect_uri=http://localhost:8080/HandMadeStore/LoginFaceBookHandler" class="facebook"><i class='bx bxl-facebook facebook-icon'></i></a>
             </div>
             <div class="item-media">
                 <a class="google google-icon"
