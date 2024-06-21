@@ -12,13 +12,6 @@ public class User implements Serializable {
     private boolean verified_email;
     private String password;
     private Timestamp createDate;
-
-    private String given_name;
-
-    private String family_name;
-
-    private String picture;
-
     private String status;
     private int roleId;
     public User() {
@@ -29,16 +22,6 @@ public class User implements Serializable {
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.password = password;
-    }
-
-    public User(int id, String name, String email, boolean verified_email, String given_name, String family_name, String picture) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.verified_email = verified_email;
-        this.given_name = given_name;
-        this.family_name = family_name;
-        this.picture = picture;
     }
 
     public int getId() {
@@ -105,37 +88,6 @@ public class User implements Serializable {
         this.roleId = roleId;
     }
 
-    public boolean isVerified_email() {
-        return verified_email;
-    }
-
-    public void setVerified_email(boolean verified_email) {
-        this.verified_email = verified_email;
-    }
-
-    public String getGiven_name() {
-        return given_name;
-    }
-
-    public void setGiven_name(String given_name) {
-        this.given_name = given_name;
-    }
-
-    public String getFamily_name() {
-        return family_name;
-    }
-
-    public void setFamily_name(String family_name) {
-        this.family_name = family_name;
-    }
-
-    public String getPicture() {
-        return picture;
-    }
-
-    public void setPicture(String picture) {
-        this.picture = picture;
-    }
 
     @Override
     public String toString() {
@@ -151,15 +103,15 @@ public class User implements Serializable {
     }
 
     public boolean isOwn() {
-        return (this.roleId == 0) ? true : false;
+        return (this.roleId == 3) ? true : false;
     }
 
     public boolean isAdmin() {
-        return (this.roleId == 1) ? true : false;
+        return (this.roleId == 0) ? true : false;
     }
 
     public boolean isUser() {
-        return (this.roleId == 2) ? true : false;
+        return (this.roleId == 1) ? true : false;
     }
     public boolean isLock() {
         return (this.getStatus().equals("Bình Thường")) ? false : true;

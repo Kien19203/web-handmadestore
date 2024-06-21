@@ -19,7 +19,7 @@ public class ProductDAO {
     //Tất cả các sản phẩm
     public static List<Product> getAll() {
         List<Product> product = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product")
+                handle.createQuery("select * from product WHERE isSale = 1")
                         .mapToBean(Product.class)
                         .stream()
                         .toList()
@@ -29,7 +29,7 @@ public class ProductDAO {
 
     public static Product getProductById(final String id) {
         Optional<Product> product = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product where id= :id")
+                handle.createQuery("select * from product where id= :id ")
                         .bind("id", id)
                         .mapToBean(Product.class)
                         .stream()
@@ -66,7 +66,7 @@ public class ProductDAO {
     public static List<Product> listSixProduct(int offset) {
         try {
             List<Product> products = JDBIConnector.me().withHandle(handle ->
-                    handle.createQuery("select * from product limit 6 offset :offset")
+                    handle.createQuery("select * from product WHERE isSale = 1 limit 6 offset :offset")
                             .bind("offset", offset)
                             .mapToBean(Product.class)
                             .stream().toList());
@@ -81,7 +81,7 @@ public class ProductDAO {
 
     public static List<Product> findByCategory(int categoryID) {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product where categoryId = :id")
+                handle.createQuery("select * from product where categoryId = :id AND isSale = 1")
                         .bind("id", categoryID)
                         .mapToBean(Product.class)
                         .stream()
@@ -93,7 +93,7 @@ public class ProductDAO {
     //Lấy sản phẩm dựa vào id product
     public static Product getProduct(int productID) {
         Product p = JDBIConnector.me().withHandle(
-                handle -> handle.createQuery("SELECT * from product where id = :productID")
+                handle -> handle.createQuery("SELECT * from product where id = :productID ")
                         .bind("productID", productID)
                         .mapToBean(Product.class).findFirst().orElse(null)
         );
@@ -277,7 +277,7 @@ public class ProductDAO {
     //    Sắp xếp theo giá tăng dần toàn bộ
     public static List<Product> sortProductAZ() {
         List<Product> productAZ = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product ORDER BY product.sellingPrice ASC")
+                handle.createQuery("SELECT * FROM product Where isSale = 1 ORDER BY product.sellingPrice ASC")
                         .mapToBean(Product.class)
                         .stream()
                         .toList());
@@ -287,7 +287,7 @@ public class ProductDAO {
     //    Sắp xếp theo giá giảm dần toàn bộ
     public static List<Product> sortProductZA() {
         List<Product> productZA = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product ORDER BY product.sellingPrice DESC")
+                handle.createQuery("SELECT * FROM product Where isSale = 1 ORDER BY product.sellingPrice DESC")
                         .mapToBean(Product.class)
                         .stream()
                         .toList());
@@ -297,7 +297,7 @@ public class ProductDAO {
     //    Sắp xếp theo giá tăng dần theo category
     public static List<Product> sortProductByCategoryAZ(int Categoryid) {
         List<Product> productAZ = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE categoryId = :id ORDER BY product.sellingPrice ASC")
+                handle.createQuery("SELECT * FROM product WHERE categoryId = :id  AND isSale = 1 ORDER BY product.sellingPrice ASC")
                         .bind("id", Categoryid)
                         .mapToBean(Product.class)
                         .stream()
@@ -308,7 +308,7 @@ public class ProductDAO {
 
     public static List<Product> sortProductByCategoryZA(int Categoryid) {
         List<Product> productZA = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE categoryId = :id ORDER BY product.sellingPrice DESC")
+                handle.createQuery("SELECT * FROM product WHERE categoryId = :id  AND isSale = 1 ORDER BY product.sellingPrice DESC")
                         .bind("id", Categoryid)
                         .mapToBean(Product.class)
                         .stream()
@@ -319,7 +319,7 @@ public class ProductDAO {
     //Sản phẩm khuyến mãi
     public static List<Product> listDiscountProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE")
+                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE  AND isSale = 1")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -327,7 +327,7 @@ public class ProductDAO {
 
     public static List<Product> discountProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT  product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP LIMIT 5")
+                handle.createQuery("SELECT  product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP AND  isSale = 1 LIMIT 5")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -335,7 +335,7 @@ public class ProductDAO {
 
     public static List<Product> sortDiscountProductAZ() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE  ORDER BY product.sellingPrice ASC")
+                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE  AND isSale = 1  ORDER BY product.sellingPrice ASC")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -343,7 +343,7 @@ public class ProductDAO {
 
     public static List<Product> sortDiscountProductZA() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE ORDER BY product.sellingPrice DESC")
+                handle.createQuery("SELECT product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_DATE AND discount.endDate > CURRENT_DATE AND isSale = 1 ORDER BY product.sellingPrice DESC")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -411,7 +411,7 @@ public class ProductDAO {
     //Trang chính xuất 15 sản phẩm trong từng category và phải còn hàng
     public static List<Product> list4product(int idCategory) {
         List<Product> productList = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE categoryId = :id AND quantity > 0 LIMIT 4")
+                handle.createQuery("SELECT * FROM product WHERE categoryId = :id AND quantity > 0 AND isSale = 1 LIMIT 4")
                         .bind("id", idCategory)
                         .mapToBean(Product.class)
                         .stream().toList()
@@ -422,7 +422,7 @@ public class ProductDAO {
     //Tìm sản phẩm
     public static List<Product> findProduct(String nameP) {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE name LIKE :name")
+                handle.createQuery("SELECT * FROM product WHERE name LIKE :name AND isSale = 1")
                         .bind("name", "%" + nameP + "%")
                         .mapToBean(Product.class)
                         .stream().toList());
@@ -572,6 +572,18 @@ public class ProductDAO {
                         .mapToBean(Rate.class)
                         .stream().toList());
         return rateList;
+    }
+//    Lấy discount trong từng sản phẩm theo id
+    public static Integer discountProduct(int idProduct){
+        double discount = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select discount.percentageOff from discount inner join product on product.discountId = discount.id Where product.id =:id")
+                        .bind("id", idProduct)
+                        .mapTo(Double.class).one());
+        int result = (int) Math.round((discount * 100));
+        return result;
+    }
+    public static void main(String[] args) {
+        System.out.println(discountProduct(1));
     }
 }
 

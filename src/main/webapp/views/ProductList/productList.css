@@ -90,35 +90,29 @@ body {
 .content .productList .products .product_li .item_product a p {
     color: black;
     margin-top: 20px;
-    font-weight: bold;
 }
 
 .content .productList .products .product_li .item_product a p:hover {
     color: red;
 }
-
-.content .productList .products .product_li .item_product p {
-    color: red;
-}
-.content .productList .products .product_li .item_product .add-to-cart {
-    cursor: pointer;
-    visibility: hidden;
-}
 .content .productList .products .product_li .item_product .add-to-cart span{
-    color: white;
+    color: black;
 }
 .content .productList .products .product_li .item_product .add-to-cart button {
     padding: 10px;
-    background: #989b9a;
-    width: 100%;
+    background: white;
+    width: 71%;
     border: 0;
 }
-.content .productList .products .product_li .item_product:hover .add-to-cart {
-    visibility: visible;
-}
-.content .productList .products .product_li .item_product .add-to-cart:hover button{
+
+.content .productList .products .product_li .item_product .add-to-cart button:hover {
+    border-radius: 50px;
     background: red;
 }
+.content .productList .products .product_li .item_product .add-to-cart button:hover span{
+    color: white;
+}
+
 .add-to-cart {
     position: absolute;
     left: 0;

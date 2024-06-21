@@ -41,7 +41,7 @@ public class AddCartController extends HttpServlet {
 
             case "delete":
                 DeleteP(req,resp);
-                resp.sendRedirect(referer);
+//                resp.sendRedirect(referer);
                 break;
             case "put":
                 putP(req,resp);

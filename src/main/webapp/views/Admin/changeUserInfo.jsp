@@ -7,13 +7,27 @@
 <%@ page import="model.service.ProductService" %>
 <%@ page import="model.bean.Product" %>
 <%@ page import="model.service.RoleService" %>
+<%@ page import="java.util.Locale" %>
+<%@ page import="java.util.Currency" %>
+<%@ page import="java.text.NumberFormat" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.3/datatables.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lafeber/world-flags-sprite/stylesheets/flags32-both.css" crossorigin="anonymous">
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.3/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
+
     <title>Title</title>
     <style>
         .my-custom-scrollbar {
@@ -32,7 +46,12 @@
     if (user != null) {
 %>
 <%
-    List<Order> orders = OrderService.getInstance().getOrderByCustomerId(user.getId() + "");%>
+    List<Order> orders = OrderService.getInstance().getOrderByCustomerId(user.getId() + "");
+    Locale locale = new Locale("vi", "VN");
+    Currency currency = Currency.getInstance(locale);
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
+    numberFormat.setCurrency(currency);
+    %>
 <body>
 <div class="container p-4 rounded">
     <div class="fw-bold text-start" style="font-size: 30px; color: #0dcaf0">
@@ -121,20 +140,18 @@
                 </div>
             </div>
             <%--         --%>
-            <div class="table-wrapper-scroll-y my-custom-scrollbar">
-                <div style="font-size: 20px; font-weight: bold">Lịch sử đơn hàng</div>
-                <table class="table table-striped table-hover">
+            <div class="table-wrapper-scroll-y my-custom-scrollbar" style="border-top: 1px solid black" >
+                <div class="mt-5" style="font-size: 20px; font-weight: bold">Lịch sử đơn hàng</div>
+                <table class="table table-striped table-hover" id="historyOrder">
                     <thead>
                     <tr class="text-center sticky-top">
                         <th class="text-nowrap">Mã Đơn Hàng</th>
                         <th class="text-nowrap">Địa Chỉ Giao</th>
                         <th class="text-nowrap">Ngày Đặt Hàng</th>
-                        <th class="text-nowrap">Trạng thái</th>
-                        <th class="text-nowrap">Tên người nhận</th>
-                        <th class="text-nowrap">SĐT người nhận</th>
-                        <th class="text-nowrap">Link sản phẩm - Giá đã mua - số lượng - thành tiền</th>
-                        <th class="text-nowrap">Tiền Hóa Đơn</th>
-                        <th class="text-nowrap">Phí Vận Chuyển</th>
+                        <th class="text-nowrap">Trạng Thái</th>
+                        <th class="text-nowrap">Tên Người Nhận</th>
+                        <th class="text-nowrap">SĐT Người Nhận</th>
+                        <th class="text-nowrap">Danh Sách Sản Phẩm</th>
                         <th class="text-nowrap">Tổng Tiền Hóa Đơn</th>
                     </tr>
                     </thead>
@@ -144,14 +161,10 @@
                             if (o != null) {
                                 User customer = UserService.getInstance().getUserById(o.getUserId() + "");
                     %>
-                    <tr class="text-center" style=" cursor: pointer;"
-                    >
-                        <td><%=o.getId()%>
-                        </td>
-                        <td class="text-start"><%=o.getAddress()%>
-                        </td>
-                        <td><%=o.getOrderDate()%>
-                        </td>
+                    <tr class="text-center" style=" cursor: pointer;">
+                        <td class="text-center"><%=o.getId()%></td>
+                        <td class="text-start"><%=o.getAddress()%></td>
+                        <td><%=o.getOrderDate()%></td>
                         <td
                                 <%!
                                     String backgroundColor = "";
@@ -171,14 +184,10 @@
                                         backgroundColor = "#4d8a54";
                                         sttvalue = "Thành công";
                                     }%>
-                                style="background-color: <%=backgroundColor%>; color: #ffffff"
-                        ><%=sttvalue%>
-                        </td>
-                        <td><%=o.getConsigneeName()%>
-                        </td>
+                                style="background-color: <%=backgroundColor%>; color: #ffffff"><%=sttvalue%></td>
+                        <td class="text-center"><%=o.getConsigneeName()%></td>
 
-                        <td><%=o.getConsigneePhoneNumber()%>
-                        </td>
+                        <td class="text-center"><%=o.getConsigneePhoneNumber()%></td>
 
                         <td>
                             <select class="form-select" id="productSelect">
@@ -189,23 +198,13 @@
                                         p = ProductService.getInstance().getProductById(orderDetail.getProductId() + "");
                                 %>
 
-                                <option value="<%=p.getId()%>">
+                                <option class=" ms-2 me-2" value="<%=p.getId()%>">
                                         <%=p.getName()%>
-                                        - <%=orderDetail.getFinalSellingPrice()%>
-                                        - <%=orderDetail.getQuantity()%>
-                                        - <%=orderDetail.getQuantity() * orderDetail.getFinalSellingPrice()%>
                                 </option>
                                 <%}%>
                             </select>
                         </td>
-
-                        <td>
-                            <%=OrderService.getInstance().getExactlyTotalPriceNoShippingFee(o.getId() + "")%>
-                        </td>
-                        <td><%=o.getShippingFee()%>
-                        </td>
-                        <td><%=o.getTotalPrice()%>
-                        </td>
+                        <td class="text-center"><%=numberFormat.format(o.getTotalPrice())%></td>
                     </tr>
                     <%
                             }
@@ -254,23 +253,15 @@
         var url = '<%=request.getContextPath()%>/product-detail?id=' + productId;
         window.open(url, '_blank');
     });
+    $(document).ready(function (){
+        $('#historyOrder').DataTable()
+    })
+
 </script>
 </body>
 <%
     } else {
-        response
-                .
-                sendRedirect
-                        (
-                                request
-                                        .
-                                        getContextPath
-                                                (
-                                                )
-                                        +
-                                        "/login"
-                        )
-        ;
+        response.sendRedirect(request.getContextPath() + "/login");
     }
 %>
 </html>

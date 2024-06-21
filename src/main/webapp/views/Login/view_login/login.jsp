@@ -63,19 +63,23 @@
         <div class="solid"></div>
         <div class="icondn">
             <div class="item-media">
-                <a href="#" class="facebook"><i class='bx bxl-facebook facebook-icon'></i></a>
+                <a href="https://www.facebook.com/v19.0/dialog/oauth?scope=email&client_id=1428287761185428&redirect_uri=http://localhost:8080/HandMadeStore/LoginFaceBookHandler" class="facebook"><i class='bx bxl-facebook facebook-icon'></i></a>
             </div>
             <div class="item-media">
-
-                <a href= "#"
-                class="google"><i class='bx bxl-google google-icon'></i></a>
+                <a class="google google-icon"
+                   href="https://accounts.google.com/o/oauth2/auth?scope=email profile openid&redirect_uri=http://localhost:8080/HandMadeStore/LoginGoogleHandler&response_type=code&client_id=468559225769-mg6o9rdha4qnskdi68hsa7neo0c9qtq0.apps.googleusercontent.com&approval_prompt=force">
+                    <i class='bx bxl-google google-icon'></i>
+                </a>
             </div>
+
+
         </div>
         <div class="submit dk">
             <button><a href="<%=request.getContextPath()%>/views/Login/view_login/signup.jsp">Đăng Ký</a></button>
         </div>
 
     </form>
+
 </div>
 </body>
 <style>

@@ -508,9 +508,15 @@
 <script>
     function handleAddToCart(response) {
         let totalItem = document.getElementById('badge');
-        console.log(totalItem);
         let currentValue = parseInt(totalItem.innerText);
         currentValue += 1;
+        totalItem.innerText = currentValue;
+    }
+    function handleDeleteToCart(response) {
+        let totalItem = document.getElementById('badge');
+        console.log(totalItem);
+        let currentValue = parseInt(totalItem.innerText);
+        currentValue -= 1;
         totalItem.innerText = currentValue;
     }
 
