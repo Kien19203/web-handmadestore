@@ -1,24 +1,3 @@
--- phpMyAdmin SQL Dump
--- version 5.2.1
--- https://www.phpmyadmin.net/
---
--- Host: 127.0.0.1
--- Generation Time: May 22, 2024 at 01:24 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
-
-SET
-SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-START TRANSACTION;
-SET
-time_zone = "+00:00";
-
-
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
-
 --
 -- Database: `handmadestore`
 --
@@ -28,12 +7,19 @@ DATABASE handmadestore;
 USE
 handmadestore;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `banner_items`
+-- Table structure
 --
-
+CREATE TABLE `Log` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ipAddress VARCHAR(255),
+    location VARCHAR(255),
+    createdTime TIMESTAMP,
+    level VARCHAR(50),
+    action VARCHAR(255),
+    message TEXT
+)
+    
 CREATE TABLE `banner_items`
 (
     `title`       varchar(50) NOT NULL,
@@ -41,46 +27,11 @@ CREATE TABLE `banner_items`
     `img_path`    text        NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `banner_items`
---
-
-INSERT INTO `banner_items` (`title`, `description`, `img_path`)
-VALUES ('CÙNG NHAU KHÁM PHÁ NÀO!', 'Những sản phẩm đang nóng lòng đợi bạn rinh về nè !',
-        'images/banner_tip/item_1.jpg'),
-       ('Độc - Đẹp - Bền - Giá Phù Hợp', 'Chế tạo những sản phẩm độc đáo, với tình yêu và sự tận tụy',
-        'images/banner_tip/item_2.jpg'),
-       ('KÍNH CHÀO QUÝ KHÁCH', 'Mỗi sản phẩm từ HandmadeStore là một phần trái tim của ai đó',
-        'images/banner_tip/item_3.jpg');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `category`
---
-
 CREATE TABLE `category`
 (
     `id`   int(11) NOT NULL,
     `name` varchar(30) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
---
--- Dumping data for table `category`
---
-
-INSERT INTO `category` (`id`, `name`)
-VALUES (1, 'Thiệp, Khung Ảnh'),
-       (2, 'Scrapbook, Album Ảnh'),
-       (3, 'Nội thất tiện nghi'),
-       (4, 'Trang sức, phụ kiện thời trang'),
-       (5, 'Đồ decor trang trí');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `discount`
---
 
 CREATE TABLE `discount`
 (
@@ -91,23 +42,6 @@ CREATE TABLE `discount`
     `percentageOff` decimal(10, 2) DEFAULT 0.00
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
---
--- Dumping data for table `discount`
---
-
-INSERT INTO `discount` (`id`, `name`, `startDate`, `endDate`, `percentageOff`)
-VALUES (1, 'Giáng Sinh', '2023-12-20 00:00:00', '2023-12-26 00:00:00', 0.15),
-       (2, 'Tết Nguyên Đán', '2024-02-01 00:00:00', '2023-02-16 00:00:00', 0.20),
-       (3, 'Ngày phụ nữ Việt Nam', '2024-10-19 00:00:00', '2024-10-20 00:00:00', 0.30),
-       (4, 'Ngày Valentine', '2024-02-10 00:00:00', '2024-02-14 00:00:00', 0.30),
-       (5, 'Ngày Nhà giáo Việt Nam', '2024-11-15 00:00:00', '2024-11-20 00:00:00', 0.20);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `image`
---
-
 CREATE TABLE `image`
 (
     `id`        int(11) NOT NULL,
@@ -116,9 +50,188 @@ CREATE TABLE `image`
     `productId` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
+CREATE TABLE `order`
+(
+    `id`                   int(11) NOT NULL,
+    `totalPrice`           decimal(10, 2) NOT NULL,
+    `orderDate`            datetime       DEFAULT current_timestamp(),
 --
--- Dumping data for table `image`
+-- Status: 0 (chờ xác nhận), 1 (đã xác nhận, đang chuẩn bị), 2 (đang giao), 3 (đã giao), 4 đã hủy
 --
+
+    `status`               int(11) NOT NULL,
+    `consigneeName`        varchar(255)   NOT NULL,
+    `consigneePhoneNumber` varchar(255)   NOT NULL,
+    `address`              varchar(200)   NOT NULL,
+    `shippingFee`          decimal(10, 2) DEFAULT 0.00,
+    `userId`               int(11) NOT NULL,
+    `note`                 varchar(255)   DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `order_details`
+(
+    `orderId`                int(11) NOT NULL,
+    `productId`              int(11) NOT NULL,
+    `quantity`               int(11) NOT NULL,
+    `sellingPrice`           decimal(10, 2) NOT NULL,
+    `finalSellingPrice`      decimal(10, 2) NOT NULL,
+    `explainPriceDifference` varchar(255)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `product`
+(
+    `id`           int(11) NOT NULL,
+    `name`         varchar(255) DEFAULT NULL,
+    `description`  text           NOT NULL,
+    `costPrice`    decimal(10, 2) NOT NULL,
+    `sellingPrice` decimal(10, 2) NOT NULL,
+    `quantity`     int(11) DEFAULT 1,
+    `soldout`      int(11) DEFAULT 0,
+    `categoryId`   int(11) NOT NULL,
+    `discountId`   int(11) DEFAULT NULL,
+    `isSale`       tinyint(1) NOT NULL DEFAULT 1 CHECK (`isSale` in (0,1))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `rate`
+(
+    `productId`   int(11) NOT NULL,
+    `userId`      int(11) NOT NULL,
+    `starRatings` int(11) NOT NULL,
+    `comment`     text NOT NULL,
+    `createDate`  datetime DEFAULT current_timestamp(),
+    `changeNumber` int DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `role`
+(
+    `id`   int(11) NOT NULL DEFAULT 2,
+    `name` varchar(20) DEFAULT 'user'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE `tips`
+(
+    `title`       varchar(50)  NOT NULL,
+    `description` text DEFAULT NULL,
+    `img_path`    text         NOT NULL,
+    `video_link`  varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+CREATE TABLE `user`
+(
+    `id`          int(11) NOT NULL,
+    `name`        varchar(40) NOT NULL,
+    `phoneNumber` varchar(12) NOT NULL,
+    `email`       varchar(30) NOT NULL,
+    `password`    varchar(30) NOT NULL,
+    `createDate`  datetime    DEFAULT current_timestamp(),
+    `status`      varchar(25) DEFAULT 'Bình Thường',
+    `roleId`      int(11) NOT NULL DEFAULT 2
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+
+--
+-- Trigger: id > 0: category, discount, order, product, rate, user
+--
+DELIMITER
+CREATE TRIGGER `trigger_insert_category`
+    BEFORE INSERT
+    ON `category`
+    FOR EACH ROW
+BEGIN
+    IF NEW.id <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot insert a non-positive value into an auto-increment column';
+END IF;
+END
+DELIMITER ;
+
+DELIMITER
+CREATE TRIGGER `trigger_insert_discount`
+    BEFORE INSERT
+    ON `discount`
+    FOR EACH ROW
+BEGIN
+    IF NEW.id <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot insert a non-positive value into an auto-increment column';
+END IF;
+END
+DELIMITER ;
+
+DELIMITER
+CREATE TRIGGER `trigger_insert_order`
+    BEFORE INSERT
+    ON `order`
+    FOR EACH ROW
+BEGIN
+    IF NEW.id <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot insert a non-positive value into an auto-increment column';
+END IF;
+END
+DELIMITER ;
+
+DELIMITER
+CREATE TRIGGER `trigger_insert_product`
+    BEFORE INSERT
+    ON `product`
+    FOR EACH ROW
+BEGIN
+    IF NEW.id <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot insert a non-positive value into an auto-increment column';
+END IF;
+END
+DELIMITER ;
+
+DELIMITER
+CREATE TRIGGER `trigger_insert_rate`
+    BEFORE INSERT
+    ON `rate`
+    FOR EACH ROW
+BEGIN
+    IF NEW.id <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot insert a non-positive value into an auto-increment column';
+END IF;
+END
+DELIMITER ;
+
+DELIMITER
+CREATE TRIGGER `trigger_insert_user`
+    BEFORE INSERT
+    ON `user`
+    FOR EACH ROW
+BEGIN
+    IF NEW.id <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Cannot insert a non-positive value into an auto-increment column';
+END IF;
+END
+DELIMITER ;
+
+--
+-- INSERT DATA
+--
+INSERT INTO `banner_items` (`title`, `description`, `img_path`)
+VALUES ('CÙNG NHAU KHÁM PHÁ NÀO!', 'Những sản phẩm đang nóng lòng đợi bạn rinh về nè !',
+        'images/banner_tip/item_1.jpg'),
+       ('Độc - Đẹp - Bền - Giá Phù Hợp', 'Chế tạo những sản phẩm độc đáo, với tình yêu và sự tận tụy',
+        'images/banner_tip/item_2.jpg'),
+       ('KÍNH CHÀO QUÝ KHÁCH', 'Mỗi sản phẩm từ HandmadeStore là một phần trái tim của ai đó',
+        'images/banner_tip/item_3.jpg');
+INSERT INTO `category` (`id`, `name`)
+VALUES (1, 'Thiệp, Khung Ảnh'),
+       (2, 'Scrapbook, Album Ảnh'),
+       (3, 'Nội thất tiện nghi'),
+       (4, 'Trang sức, phụ kiện thời trang'),
+       (5, 'Đồ decor trang trí');
+
+INSERT INTO `discount` (`id`, `name`, `startDate`, `endDate`, `percentageOff`)
+VALUES (1, 'Giáng Sinh', '2023-12-20 00:00:00', '2023-12-26 00:00:00', 0.15),
+       (2, 'Tết Nguyên Đán', '2024-02-01 00:00:00', '2023-02-16 00:00:00', 0.20),
+       (3, 'Ngày phụ nữ Việt Nam', '2024-10-19 00:00:00', '2024-10-20 00:00:00', 0.30),
+       (4, 'Ngày Valentine', '2024-02-10 00:00:00', '2024-02-14 00:00:00', 0.30),
+       (5, 'Ngày Nhà giáo Việt Nam', '2024-11-15 00:00:00', '2024-11-20 00:00:00', 0.20);
 
 INSERT INTO `image` (`id`, `name`, `path`, `productId`)
 VALUES (1, 'Thiệp handmade vintage Beauty & the White', 'images/products/p01.webp', 1),
@@ -468,13 +581,18 @@ VALUES (1, 'Thiệp handmade vintage Beauty & the White', 'images/products/p01.w
        (345, 'Vòng hoa Giáng sinh kim nỉ Holly', 'images/products/p135.webp', 135),
        (346, 'Vòng hoa Giáng sinh kim nỉ Holly', 'images/products/p135_1.webp', 135),
        (347, 'Cây thông Noel Macrame', 'images/products/p136.webp', 136),
+
        (348, 'Tranh Treo Tường Macrame', 'images/products/p137.webp', 137),
        (349, 'Tranh Treo Tường Macrame', 'images/products/p137_1.webp', 137),
+
        (350, 'Bình Hoa Gốm Sứ', 'images/products/p138.webp', 138),
+
        (351, 'Dây Chuyền Handmade', 'images/products/p139.webp', 139),
        (352, 'Dây Chuyền Handmade', 'images/products/p139_1.webp', 139),
+
        (353, 'Bàn Tay Nghệ Thuật', 'images/products/p140.webp', 140),
        (354, 'Bàn Tay Nghệ Thuật', 'images/products/p140_1.webp', 140),
+
        (355, 'Nón Handmade Cho Bé', 'images/products/p141.webp', 141),
        (356, 'Nón Handmade Cho Bé', 'images/products/p141_1.webp', 141),
        (357, 'Gối Trang Trí Crochet', 'images/products/p142.webp', 142),
@@ -483,458 +601,267 @@ VALUES (1, 'Thiệp handmade vintage Beauty & the White', 'images/products/p01.w
        (361, 'Bút Chì Gỗ Handmade', 'images/products/p143_1.webp', 143),
        (362, 'Gối Massage Thủ Công', 'images/products/p144.webp', 144),
        (363, 'Gối Massage Thủ Công', 'images/products/p144_1.webp', 144),
+
        (364, 'Túi Xách Handmade', 'images/products/p145.webp', 145),
        (365, 'Túi Xách Handmade', 'images/products/p145_1.webp', 145),
+
        (366, 'Bức Tranh Sơn Dầu Nghệ Thuật', 'images/products/p146.webp', 146),
        (367, 'Bức Tranh Sơn Dầu Nghệ Thuật', 'images/products/p146_1.webp', 146),
        (368, 'Lọ Hoa Ceramics Handmade', 'images/products/p147.webp', 147),
        (369, 'Lọ Hoa Ceramics Handmade', 'images/products/p147_1.webp', 147),
        (370, 'Dây Lưng Da Handmade', 'images/products/p148.webp', 148),
        (371, 'Dây Lưng Da Handmade', 'images/products/p148_1.webp', 148),
+
        (372, 'Vòng Cổ Vải Handmade', 'images/products/p149.webp', 149),
        (373, 'Vòng Cổ Vải Handmade', 'images/products/p149_1.webp', 149),
+
        (374, 'Hộp Đựng Đồ Trang Sức Gỗ', 'images/products/p150.webp', 150),
        (375, 'Hộp Đựng Đồ Trang Sức Gỗ', 'images/products/p150_1.webp', 150),
+
        (376, 'Bức Tranh Quilling', 'images/products/p151.webp', 151),
        (377, 'Bức Tranh Quilling', 'images/products/p151_1.webp', 151),
+
        (378, 'Túi Xách Dự Tiệc Handmade', 'images/products/p152.webp', 152),
        (379, 'Túi Xách Dự Tiệc Handmade', 'images/products/p152_1.webp', 152),
+
        (380, 'Vòng Tay Handmade Đá Mắt Hổ', 'images/products/p153.webp', 153),
        (381, 'Vòng Tay Handmade Đá Mắt Hổ', 'images/products/p153_1.webp', 153),
+
        (382, 'Bức Tranh Dát Vàng', 'images/products/p154.webp', 154),
        (383, 'Bức Tranh Dát Vàng', 'images/products/p154_1.webp', 154),
+
        (384, 'Gối Trang Trí Embroidery', 'images/products/p155.webp', 155),
        (385, 'Gối Trang Trí Embroidery', 'images/products/p155_1.webp', 155),
+
        (386, 'Khung Ảnh Handmade Gỗ', 'images/products/p156.webp', 156),
        (387, 'Khung Ảnh Handmade Gỗ', 'images/products/p156_1.webp', 156),
+
        (388, 'Bút Mực Handmade', 'images/products/p157.webp', 157),
        (389, 'Bút Mực Handmade', 'images/products/p157_1.webp', 157),
+
        (390, 'Gối Trang Trí Patchwork', 'images/products/forall.webp', 158),
        (391, 'Gối Trang Trí Patchwork', 'images/products/forall.webp', 158),
+
        (392, 'Nón Lụa Handmade', 'images/products/forall.webp', 159),
        (393, 'Nón Lụa Handmade', 'images/products/forall.webp', 159),
+
        (394, 'Bức Tranh Nghệ Thuật Dát Vải', 'images/products/p160.webp', 160),
        (395, 'Bức Tranh Nghệ Thuật Dát Vải', 'images/products/p160_1.webp', 160),
+
        (396, 'Vòng Tay Thêu Hoa', 'images/products/p161.webp', 161),
        (397, 'Vòng Tay Thêu Hoa', 'images/products/p161_1.webp', 161),
+
        (398, 'Đèn Trang Trí Bàn Handmade', 'images/products/p162.webp', 162),
        (399, 'Đèn Trang Trí Bàn Handmade', 'images/products/p162_1.webp', 162),
+
+
        (400, 'Ghế Gỗ Handmade', 'images/products/p163.webp', 163),
        (401, 'Ghế Gỗ Handmade', 'images/products/p163_1.webp', 163),
+
        (402, 'Túi Xách Tay Handmade', 'images/products/p164.webp', 164),
        (403, 'Túi Xách Tay Handmade', 'images/products/p164_1.webp', 164),
+
        (404, 'Bức Tranh Mosaic', 'images/products/p165.webp', 165),
        (405, 'Bức Tranh Mosaic', 'images/products/p165_1.webp', 165),
+
        (406, 'Tượng Đá Nghệ Thuật', 'images/products/p166.webp', 166),
        (407, 'Tượng Đá Nghệ Thuật', 'images/products/p166_1.webp', 166),
+
        (408, 'Dây Nịt Da Handmade', 'images/products/p167.webp', 167),
        (409, 'Dây Nịt Da Handmade', 'images/products/p167_1.webp', 167),
+
        (410, 'Bức Tranh Chân Dung Bút Lông', 'images/products/p168.webp', 168),
        (411, 'Bức Tranh Chân Dung Bút Lông', 'images/products/p168.webp', 168),
+
        (412, 'Nón Len Handmade', 'images/products/p169.webp', 169),
        (413, 'Nón Len Handmade', 'images/products/p169_1.webp', 169),
+
        (414, 'Bình Trang Trí Handmade', 'images/products/p170.webp', 170),
        (415, 'Bình Trang Trí Handmade', 'images/products/p170_1.webp', 170),
+
        (416, 'Bút Mực Handmade Gỗ', 'images/products/p171.webp', 171),
        (417, 'Bút Mực Handmade Gỗ', 'images/products/p171_1.webp', 171),
+
        (418, 'Gối Trang Trí Quilt', 'images/products/p172.webp', 172),
        (419, 'Gối Trang Trí Quilt', 'images/products/p172_1.webp', 172),
+
        (420, 'Bức Tranh Dát Kim Tuyến', 'images/products/p173.webp', 173),
        (421, 'Bức Tranh Dát Kim Tuyến', 'images/products/p173_1.webp', 173),
+
        (422, 'Dây Chuyền Handmade Đá Quý', 'images/products/p174.webp', 174),
        (423, 'Dây Chuyền Handmade Đá Quý', 'images/products/p174_1.webp', 174),
+
        (424, 'Bức Tranh 3D Nghệ Thuật', 'images/products/p175.webp', 175),
        (425, 'Bức Tranh 3D Nghệ Thuật', 'images/products/p175_1.webp', 175),
+
        (426, 'Tượng Phật Bằng Đá', 'images/products/p176.webp', 176),
        (427, 'Tượng Phật Bằng Đá', 'images/products/p176_1.webp', 176),
+
        (428, 'Bút Chì Gỗ Quý Handmade', 'images/products/p177.webp', 177),
        (429, 'Bút Chì Gỗ Quý Handmade', 'images/products/p177_1.webp', 177),
+
        (430, 'Gối Trang Trí Linen', 'images/products/p178.webp', 178),
        (431, 'Gối Trang Trí Linen', 'images/products/p178_1.webp', 178),
+
        (432, 'Hoa Tai Handmade Đá Ngọc', 'images/products/p179.webp', 179),
        (433, 'Hoa Tai Handmade Đá Ngọc', 'images/products/p179_1.webp', 179),
+
        (434, 'Bức Tranh Sơn Dầu Abstract', 'images/products/p180.webp', 180),
        (435, 'Bức Tranh Sơn Dầu Abstract', 'images/products/p180_1.webp', 180),
+
        (436, 'Nón Nhựa Lưu Niệm Handmade', 'images/products/p181.webp', 181),
        (437, 'Nón Nhựa Lưu Niệm Handmade', 'images/products/p181_1.webp', 181),
+
        (438, 'Bình Hoa Handmade Ceramic', 'images/products/p182.webp', 182),
        (439, 'Bình Hoa Handmade Ceramic', 'images/products/p182_1.webp', 182),
+
        (440, 'Vòng Tay Chân Dung Handmade', 'images/products/p183.webp', 183),
        (441, 'Vòng Tay Chân Dung Handmade', 'images/products/p183_1.webp', 183),
+
        (442, 'Bút Lông Handmade', 'images/products/p184.webp', 184),
        (443, 'Bút Lông Handmade', 'images/products/p184_1.webp', 184),
+
        (444, 'Gối Trang Trí Vintage', 'images/products/p185.webp', 185),
        (445, 'Gối Trang Trí Vintage', 'images/products/p185_1.webp', 185),
+
        (446, 'Bức Tranh Collage Nghệ Thuật', 'images/products/p186.webp', 186),
        (447, 'Bức Tranh Collage Nghệ Thuật', 'images/products/p18_1.webp', 186),
+
        (448, 'Móc Chìa Khóa Gỗ Handmade', 'images/products/p187.webp', 187),
        (449, 'Móc Chìa Khóa Gỗ Handmade', 'images/products/p187_1.webp', 187),
+
        (450, 'Bức Tranh Dát Nổi Nghệ Thuật', 'images/products/p188.webp', 188),
        (451, 'Bức Tranh Dát Nổi Nghệ Thuật', 'images/products/p188_1.webp', 188),
+
        (452, 'Nón Vải Handmade', 'images/products/p189.webp', 189),
        (453, 'Nón Vải Handmade', 'images/products/p189_1.webp', 189),
+
        (454, 'Bình Hoa Tre Handmade', 'images/products/p190.webp', 190),
        (455, 'Bình Hoa Tre Handmade', 'images/products/p190_1.webp', 190),
+
        (456, 'Dây Chuyền Handmade Đá Phong Thủy', 'images/products/p191.webp', 191),
        (457, 'Dây Chuyền Handmade Đá Phong Thủy', 'images/products/p191_1.webp', 191),
+
        (458, 'Bức Tranh Màu Nước Abstract', 'images/products/p192.webp', 192),
        (459, 'Bức Tranh Màu Nước Abstract', 'images/products/p192_1.webp', 192),
+
        (460, 'Bút Máy Handmade Gỗ', 'images/products/p193.webp', 193),
        (461, 'Bút Máy Handmade Gỗ', 'images/products/p193_1.webp', 193),
+
        (462, 'Gối Trang Trí Boho', 'images/products/p194.webp', 194),
        (463, 'Gối Trang Trí Boho', 'images/products/p194_1.webp', 194),
+
        (464, 'Bức Tranh Dát Kim Tuyến Động Vật', 'images/products/p195.webp', 195),
        (465, 'Bức Tranh Dát Kim Tuyến Động Vật', 'images/products/p195_1.webp', 195),
+
        (466, 'Mũ Trùm Đầu Handmade', 'images/products/p196.webp', 196),
        (467, 'Mũ Trùm Đầu Handmade', 'images/products/p196_1.webp', 196),
+
        (468, 'Bình Hoa Lụa Handmade', 'images/products/p197.webp', 197),
        (469, 'Bình Hoa Lụa Handmade', 'images/products/p197_1.webp', 197),
+
        (470, 'Dây Nịt Vải Handmade', 'images/products/p198.webp', 198),
        (471, 'Dây Nịt Vải Handmade', 'images/products/p198.webp', 198),
+
        (472, 'Bức Tranh Dát Gỗ Nghệ Thuật', 'images/products/p199.webp', 199),
        (473, 'Bức Tranh Dát Gỗ Nghệ Thuật', 'images/products/p199_1.webp', 199),
+
        (474, 'Nón Vải Patchwork', 'images/products/p200.webp', 200),
        (475, 'Nón Vải Patchwork', 'images/products/p200_1.webp', 200),
+
        (476, 'Bút Mực Chì Handmade', 'images/products/p201.webp', 201),
        (477, 'Bút Mực Chì Handmade', 'images/products/p201_1.webp', 201),
+
        (478, 'Gối Trang Trí Macrame', 'images/products/p202.webp', 202),
        (479, 'Gối Trang Trí Macrame', 'images/products/p202.webp', 202),
+
        (480, 'Bức Tranh Sơn Dầu Phong Cảnh', 'images/products/p203.webp', 203),
        (481, 'Bức Tranh Sơn Dầu Phong Cảnhs', 'images/products/p203_1.webp', 203),
+
        (482, 'Nút Bấm Gỗ Handmade', 'images/products/p204.webp', 204),
        (483, 'Nút Bấm Gỗ Handmade', 'images/products/p204_1.webp', 204),
+
        (484, 'Bức Tranh Trừu Tượng Màu Sắc', 'images/products/p205.webp', 205),
        (485, 'Bức Tranh Trừu Tượng Màu Sắc', 'images/products/p205_1.webp', 205),
+
        (486, 'Bút Lông Handmade Chạm Khắc', 'images/products/p206.webp', 206),
        (487, 'Bút Lông Handmade Chạm Khắc', 'images/products/p206_1.webp', 206),
+
        (488, 'Gối Trang Trí Vải Jean', 'images/products/p207.webp', 207),
        (489, 'Gối Trang Trí Vải Jean', 'images/products/p207_1.webp', 207),
+
        (490, 'Bình Hoa Treo Tường Handmade', 'images/products/p208.webp', 208),
        (491, 'Bình Hoa Treo Tường Handmade', 'images/products/p208_1.webp', 208),
+
        (492, 'Dây Chuyền Handmade Đá Mắt Hổ', 'images/products/p209.webp', 209),
        (493, 'Dây Chuyền Handmade Đá Mắt Hổ', 'images/products/p209_1.webp', 209),
+
        (494, 'Bức Tranh Mosaic Nghệ Thuật', 'images/products/p210.webp', 210),
        (495, 'Bức Tranh Mosaic Nghệ Thuật', 'images/products/p210_1.webp', 210),
+
        (496, 'Mũ Len Đan Handmade', 'images/products/p211.webp', 211),
        (497, 'Mũ Len Đan Handmade', 'images/products/p211_1.webp', 211),
+
        (498, 'Bức Tranh Dát Gương Nghệ Thuật', 'images/products/p212.webp', 212),
        (499, 'Bức Tranh Dát Gương Nghệ Thuật', 'images/products/p212_1.webp', 212),
+
        (500, 'Dây Nịt Da Vintage', 'images/products/p213.webp', 213),
        (501, 'Dây Nịt Da Vintage', 'images/products/p213_1.webp', 213),
+
        (502, 'Bức Tranh 3D Nghệ Thuật Màu Sắc', 'images/products/p214.webp', 214),
        (503, 'Bức Tranh 3D Nghệ Thuật Màu Sắc', 'images/products/p214_1.webp', 214),
+
        (504, 'Gối Trang Trí Dáng Dừa Handmade', 'images/products/p215.webp', 215),
        (505, 'Gối Trang Trí Dáng Dừa Handmade', 'images/products/p215_1.webp', 215),
+
        (506, 'Bức Tranh Tích Hợp Đèn LED', 'images/products/p216.webp', 216),
        (507, 'Bức Tranh Tích Hợp Đèn LED', 'images/products/p216_1.webp', 216),
+
        (508, 'Nút Bấm Mèo Handmade', 'images/products/p217.webp', 217),
        (509, 'Nút Bấm Mèo Handmade', 'images/products/p217_1.webp', 217),
+
        (510, 'Bình Hoa Trang Trí Ceramic', 'images/products/p218.webp', 218),
        (511, 'Bình Hoa Trang Trí Ceramic', 'images/products/p218_1.webp', 218),
+
        (512, 'Dây Chuyền Phong Thủy Handmade', 'images/products/p219.webp', 219),
        (513, 'Dây Chuyền Phong Thủy Handmade', 'images/products/p219_1.webp', 219),
+
        (514, 'Bức Tranh Sơn Mài Chân Dung', 'images/products/p220.webp', 220),
        (515, 'Bức Tranh Sơn Mài Chân Dung', 'images/products/p220_1.webp', 220),
+
        (516, 'Nón Vải Patchwork Vintage', 'images/products/p221.webp', 221),
        (517, 'Nón Vải Patchwork Vintage', 'images/products/p221_1.webp', 221),
+
        (518, 'Bình Hoa Treo Tường Macrame', 'images/products/p222.webp', 222),
        (519, 'Bình Hoa Treo Tường Macrame', 'images/products/p222_1.webp', 222),
+
+
        (520, 'Bút Chì Máy Handmade', 'images/products/p223.webp', 223),
        (521, 'Bút Chì Máy Handmade', 'images/products/p223_1.webp', 223),
+
        (522, 'Gối Trang Trí Họa Tiết Hoa', 'images/products/p224.webp', 224),
        (523, 'Gối Trang Trí Họa Tiết Hoa', 'images/products/p224_1.webp', 224),
+
        (524, 'Bức Tranh Đồng Hồ Handmade', 'images/products/p225.webp', 225),
        (525, 'Bức Tranh Đồng Hồ Handmade', 'images/products/p225_1.webp', 225),
+
        (526, 'Bút Mực Chì Mèo Handmade', 'images/products/p226.webp', 226),
        (527, 'Bút Mực Chì Mèo Handmade', 'images/products/p226_1.webp', 226),
+
        (528, 'Dây Nịt Da Handmade Vintage', 'images/products/p227.webp', 227),
        (529, 'Dây Nịt Da Handmade Vintage', 'images/products/p227_1.webp', 227),
+
        (530, 'Bình Hoa Lụa Trang Trí', 'images/products/p228.webp', 228),
        (531, 'Bình Hoa Lụa Trang Trí', 'images/products/p228_1.webp', 228),
+
        (532, 'Bức Tranh Nghệ Thuật Dát Nổi', 'images/products/p229.webp', 229),
        (533, 'Bức Tranh Nghệ Thuật Dát Nổi', 'images/products/p229_.webp', 229),
+
        (534, 'Dây Chuyền Handmade Đá Pha Lê', 'images/products/p230.webp', 230),
        (535, 'Dây Chuyền Handmade Đá Pha Lê', 'images/products/p230_1.webp', 230),
+
        (550, 'Logo', 'images/logo.png', NULL),
        (551, 'Background', 'images/background.jpg', NULL);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `inventory`
---
-
-CREATE TABLE `inventory`
-(
-    `productId`  int(11) NOT NULL,
-    `quantity`   int(11) NOT NULL,
-    `costPrice`  int(11) NOT NULL,
-    `soldOut`    int(11) NOT NULL,
-    `createDate` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
-
---
--- Dumping data for table `inventory`
---
-
-INSERT INTO `inventory` (`productId`, `quantity`, `costPrice`, `soldOut`, `createDate`)
-VALUES (1, 35, 50000, 24, '2024-02-24 07:30:00'),
-       (2, 21, 55000, 0, '2024-02-24 07:30:00'),
-       (3, 24, 50000, 0, '2024-02-24 07:30:00'),
-       (4, 15, 24000, 0, '2024-02-24 07:30:00'),
-       (5, 5, 24000, 0, '2024-02-24 07:30:00'),
-       (6, 13, 50000, 0, '2024-02-24 07:30:00'),
-       (7, 19, 30000, 2, '2024-02-24 07:30:00'),
-       (8, 40, 7000, 0, '2024-02-24 07:30:00'),
-       (9, 50, 15000, 0, '2024-02-24 07:30:00'),
-       (10, 34, 18500, 0, '2024-02-24 07:30:00'),
-       (11, 49, 20100, 0, '2024-02-24 07:30:00'),
-       (12, 40, 17800, 1, '2024-02-24 07:30:00'),
-       (13, 37, 23000, 0, '2024-02-24 07:30:00'),
-       (14, 25, 17000, 1, '2024-02-24 07:30:00'),
-       (15, 19, 28900, 0, '2024-02-24 07:30:00'),
-       (16, 11, 16500, 0, '2024-02-24 07:30:00'),
-       (17, 34, 17900, 0, '2024-02-24 07:30:00'),
-       (18, 20, 145000, 0, '2024-02-24 07:30:00'),
-       (19, 10, 950000, 0, '2024-02-24 07:30:00'),
-       (20, 10, 475000, 0, '2024-02-24 07:30:00'),
-       (21, 0, 134000, 0, '2024-02-24 07:30:00'),
-       (22, 6, 376000, 0, '2024-02-24 07:30:00'),
-       (23, 0, 13000, 0, '2024-02-24 07:30:00'),
-       (24, 24, 106000, 0, '2024-02-24 07:30:00'),
-       (25, 21, 98000, 0, '2024-02-24 07:30:00'),
-       (26, 16, 88000, 0, '2024-02-24 07:30:00'),
-       (27, 0, 204000, 0, '2024-02-24 07:30:00'),
-       (28, 5, 219000, 0, '2024-02-24 07:30:00'),
-       (29, 1, 101000, 0, '2024-02-24 07:30:00'),
-       (30, 0, 96000, 0, '2024-02-24 07:30:00'),
-       (31, 0, 104000, 0, '2024-02-24 07:30:00'),
-       (32, 3, 65000, 0, '2024-02-24 07:30:00'),
-       (33, 2, 145000, 0, '2024-02-24 07:30:00'),
-       (34, 15, 179000, 0, '2024-02-24 07:30:00'),
-       (35, 13, 125000, 0, '2024-02-24 07:30:00'),
-       (36, 18, 241000, 0, '2024-02-24 07:30:00'),
-       (37, 4, 178000, 0, '2024-02-24 07:30:00'),
-       (38, 1, 178000, 0, '2024-02-24 07:30:00'),
-       (39, 0, 175000, 0, '2024-02-24 07:30:00'),
-       (40, 12, 19000, 0, '2024-02-24 07:30:00'),
-       (41, 10, 450000, 0, '2024-02-24 07:30:00'),
-       (42, 8, 450000, 0, '2024-02-24 07:30:00'),
-       (43, 13, 104000, 0, '2024-02-24 07:30:00'),
-       (44, 16, 104000, 0, '2024-02-24 07:30:00'),
-       (45, 24, 147000, 0, '2024-02-24 07:30:00'),
-       (46, 1, 402000, 0, '2024-02-24 07:30:00'),
-       (47, 4, 1350000, 0, '2024-02-24 07:30:00'),
-       (48, 9, 400000, 0, '2024-02-24 07:30:00'),
-       (49, 14, 400000, 0, '2024-02-24 07:30:00'),
-       (50, 14, 400000, 0, '2024-02-24 07:30:00'),
-       (51, 14, 400000, 0, '2024-02-24 07:30:00'),
-       (52, 16, 450000, 0, '2024-02-24 07:30:00'),
-       (53, 12, 450000, 0, '2024-02-24 07:30:00'),
-       (54, 8, 500000, 0, '2024-02-24 07:30:00'),
-       (55, 9, 210000, 0, '2024-02-24 07:30:00'),
-       (56, 20, 210000, 0, '2024-02-24 07:30:00'),
-       (57, 17, 210000, 0, '2024-02-24 07:30:00'),
-       (58, 6, 210000, 0, '2024-02-24 07:30:00'),
-       (59, 11, 210000, 0, '2024-02-24 07:30:00'),
-       (60, 9, 400000, 0, '2024-02-24 07:30:00'),
-       (61, 0, 145000, 0, '2024-02-24 07:30:00'),
-       (62, 38, 400000, 0, '2024-02-24 07:30:00'),
-       (63, 25, 550000, 0, '2024-02-24 07:30:00'),
-       (64, 19, 500000, 0, '2024-02-24 07:30:00'),
-       (65, 24, 400000, 0, '2024-02-24 07:30:00'),
-       (66, 35, 400000, 0, '2024-02-24 07:30:00'),
-       (67, 32, 400000, 0, '2024-02-24 07:30:00'),
-       (68, 15, 500000, 0, '2024-02-24 07:30:00'),
-       (69, 6, 1400000, 0, '2024-02-24 07:30:00'),
-       (70, 4, 500000, 0, '2024-02-24 07:30:00'),
-       (71, 22, 1400000, 0, '2024-02-24 07:30:00'),
-       (72, 21, 1400000, 0, '2024-02-24 07:30:00'),
-       (73, 19, 400000, 0, '2024-02-24 07:30:00'),
-       (74, 18, 520000, 0, '2024-02-24 07:30:00'),
-       (75, 0, 1400000, 0, '2024-02-24 07:30:00'),
-       (76, 12, 500000, 0, '2024-02-24 07:30:00'),
-       (77, 20, 210000, 0, '2024-02-24 07:30:00'),
-       (78, 20, 210000, 0, '2024-02-24 07:30:00'),
-       (79, 20, 210000, 0, '2024-02-24 07:30:00'),
-       (80, 25, 210000, 0, '2024-02-24 07:30:00'),
-       (81, 34, 970000, 0, '2024-02-24 07:30:00'),
-       (82, 0, 310000, 0, '2024-02-24 07:30:00'),
-       (83, 14, 56000, 0, '2024-02-24 07:30:00'),
-       (84, 31, 500000, 0, '2024-02-24 07:30:00'),
-       (85, 30, 145000, 0, '2024-02-24 07:30:00'),
-       (86, 30, 140000, 0, '2024-02-24 07:30:00'),
-       (87, 30, 140000, 0, '2024-02-24 07:30:00'),
-       (88, 30, 140000, 0, '2024-02-24 07:30:00'),
-       (89, 19, 140000, 0, '2024-02-24 07:30:00'),
-       (90, 18, 230000, 0, '2024-02-24 07:30:00'),
-       (91, 20, 1100000, 0, '2024-02-24 07:30:00'),
-       (92, 20, 1100000, 0, '2024-02-24 07:30:00'),
-       (93, 0, 180000, 0, '2024-02-24 07:30:00'),
-       (94, 1, 180000, 0, '2024-02-24 07:30:00'),
-       (95, 1, 180000, 0, '2024-02-24 07:30:00'),
-       (96, 5, 180000, 0, '2024-02-24 07:30:00'),
-       (97, 16, 176000, 0, '2024-02-24 07:30:00'),
-       (98, 16, 180000, 0, '2024-02-24 07:30:00'),
-       (99, 19, 180000, 0, '2024-02-24 07:30:00'),
-       (100, 27, 78000, 0, '2024-02-24 07:30:00'),
-       (101, 10, 350000, 0, '2024-02-24 07:30:00'),
-       (102, 10, 95000, 0, '2024-02-24 07:30:00'),
-       (103, 10, 280000, 0, '2024-02-24 07:30:00'),
-       (104, 10, 89000, 0, '2024-02-24 07:30:00'),
-       (105, 10, 320000, 0, '2024-02-24 07:30:00'),
-       (106, 7, 690000, 0, '2024-02-24 07:30:00'),
-       (107, 14, 310000, 0, '2024-02-24 07:30:00'),
-       (108, 20, 340000, 0, '2024-02-24 07:30:00'),
-       (109, 20, 340000, 0, '2024-02-24 07:30:00'),
-       (110, 35, 23000, 0, '2024-02-24 07:30:00'),
-       (111, 0, 45000, 0, '2024-02-24 07:30:00'),
-       (112, 0, 59000, 0, '2024-02-24 07:30:00'),
-       (113, 0, 70000, 0, '2024-02-24 07:30:00'),
-       (114, 0, 23000, 0, '2024-02-24 07:30:00'),
-       (115, 12, 84000, 0, '2024-02-24 07:30:00'),
-       (116, 15, 395000, 0, '2024-02-24 07:30:00'),
-       (117, 0, 400000, 0, '2024-02-24 07:30:00'),
-       (118, 40, 240000, 12, '2024-02-24 07:30:00'),
-       (119, 6, 90000, 0, '2024-02-24 07:30:00'),
-       (120, 20, 290000, 0, '2024-02-24 07:30:00'),
-       (121, 19, 550000, 0, '2024-02-24 07:30:00'),
-       (122, 27, 75000, 1, '2024-02-24 07:30:00'),
-       (123, 4, 140000, 0, '2024-02-24 07:30:00'),
-       (124, 4, 100000, 0, '2024-02-24 07:30:00'),
-       (125, 0, 89000, 0, '2024-02-24 07:30:00'),
-       (126, 0, 15000, 0, '2024-02-24 07:30:00'),
-       (127, 19, 101000, 0, '2024-02-24 07:30:00'),
-       (128, 25, 510000, 0, '2024-02-24 07:30:00'),
-       (129, 33, 510000, 0, '2024-02-24 07:30:00'),
-       (130, 14, 220000, 0, '2024-02-24 07:30:00'),
-       (131, 19, 190000, 0, '2024-02-24 07:30:00'),
-       (132, 27, 260000, 0, '2024-02-24 07:30:00'),
-       (133, 19, 108000, 0, '2024-02-24 07:30:00'),
-       (134, 16, 88000, 0, '2024-02-24 07:30:00'),
-       (135, 16, 113000, 0, '2024-02-24 07:30:00'),
-       (136, 0, 113000, 0, '2024-02-24 07:30:00'),
-       (137, 10, 85000, 0, '2024-02-24 07:30:00'),
-       (138, 15, 120000, 0, '2024-02-24 07:30:00'),
-       (139, 20, 50000, 0, '2024-02-24 07:30:00'),
-       (140, 8, 95000, 0, '2024-02-24 07:30:00'),
-       (141, 25, 35000, 0, '2024-02-24 07:30:00'),
-       (142, 12, 75000, 0, '2024-02-24 07:30:00'),
-       (143, 30, 25000, 0, '2024-02-24 07:30:00'),
-       (144, 18, 110000, 0, '2024-02-24 07:30:00'),
-       (145, 14, 90000, 0, '2024-02-24 07:30:00'),
-       (146, 5, 180000, 0, '2024-02-24 07:30:00'),
-       (147, 8, 135000, 0, '2024-02-24 07:30:00'),
-       (148, 15, 75000, 0, '2024-02-24 07:30:00'),
-       (149, 20, 40000, 0, '2024-02-24 07:30:00'),
-       (150, 25, 55000, 0, '2024-02-24 07:30:00'),
-       (151, 10, 95000, 0, '2024-02-24 07:30:00'),
-       (152, 12, 120000, 0, '2024-02-24 07:30:00'),
-       (153, 18, 60000, 0, '2024-02-24 07:30:00'),
-       (154, 6, 155000, 0, '2024-02-24 07:30:00'),
-       (155, 14, 85000, 0, '2024-02-24 07:30:00'),
-       (156, 15, 70000, 0, '2024-02-24 07:30:00'),
-       (157, 20, 45000, 0, '2024-02-24 07:30:00'),
-       (158, 10, 85000, 0, '2024-02-24 07:30:00'),
-       (159, 25, 55000, 0, '2024-02-24 07:30:00'),
-       (160, 8, 120000, 0, '2024-02-24 07:30:00'),
-       (161, 18, 60000, 0, '2024-02-24 07:30:00'),
-       (162, 12, 95000, 0, '2024-02-24 07:30:00'),
-       (163, 5, 200000, 0, '2024-02-24 07:30:00'),
-       (164, 15, 130000, 0, '2024-02-24 07:30:00'),
-       (165, 7, 180000, 0, '2024-02-24 07:30:00'),
-       (166, 10, 150000, 0, '2024-02-24 07:30:00'),
-       (167, 18, 70000, 0, '2024-02-24 07:30:00'),
-       (168, 6, 120000, 0, '2024-02-24 07:30:00'),
-       (169, 22, 50000, 0, '2024-02-24 07:30:00'),
-       (170, 12, 80000, 0, '2024-02-24 07:30:00'),
-       (171, 15, 55000, 0, '2024-02-24 07:30:00'),
-       (172, 20, 90000, 0, '2024-02-24 07:30:00'),
-       (173, 8, 140000, 0, '2024-02-24 07:30:00'),
-       (174, 25, 65000, 0, '2024-02-24 07:30:00'),
-       (175, 5, 160000, 0, '2024-02-24 07:30:00'),
-       (176, 8, 200000, 0, '2024-02-24 07:30:00'),
-       (177, 12, 120000, 0, '2024-02-24 07:30:00'),
-       (178, 15, 95000, 0, '2024-02-24 07:30:00'),
-       (179, 20, 80000, 0, '2024-02-24 07:30:00'),
-       (180, 7, 180000, 0, '2024-02-24 07:30:00'),
-       (181, 25, 45000, 0, '2024-02-24 07:30:00'),
-       (182, 10, 135000, 0, '2024-02-24 07:30:00'),
-       (183, 18, 60000, 0, '2024-02-24 07:30:00'),
-       (184, 22, 55000, 0, '2024-02-24 07:30:00'),
-       (185, 20, 70000, 0, '2024-02-24 07:30:00'),
-       (186, 15, 130000, 0, '2024-02-24 07:30:00'),
-       (187, 25, 35000, 0, '2024-02-24 07:30:00'),
-       (188, 10, 160000, 0, '2024-02-24 07:30:00'),
-       (189, 20, 40000, 0, '2024-02-24 07:30:00'),
-       (190, 18, 75000, 0, '2024-02-24 07:30:00'),
-       (191, 22, 60000, 0, '2024-02-24 07:30:00'),
-       (192, 10, 180000, 0, '2024-02-24 07:30:00'),
-       (193, 15, 80000, 0, '2024-02-24 07:30:00'),
-       (194, 12, 90000, 0, '2024-02-24 07:30:00'),
-       (195, 8, 180000, 0, '2024-02-24 07:30:00'),
-       (196, 18, 55000, 0, '2024-02-24 07:30:00'),
-       (197, 12, 120000, 0, '2024-02-24 07:30:00'),
-       (198, 20, 40000, 0, '2024-02-24 07:30:00'),
-       (199, 15, 150000, 0, '2024-02-24 07:30:00'),
-       (200, 25, 45000, 0, '2024-02-24 07:30:00'),
-       (201, 18, 50000, 0, '2024-02-24 07:30:00'),
-       (202, 12, 90000, 0, '2024-02-24 07:30:00'),
-       (203, 10, 200000, 0, '2024-02-24 07:30:00'),
-       (204, 30, 30000, 0, '2024-02-24 07:30:00'),
-       (205, 5, 160000, 0, '2024-02-24 07:30:00'),
-       (206, 15, 60000, 0, '2024-02-24 07:30:00'),
-       (207, 20, 80000, 0, '2024-02-24 07:30:00'),
-       (208, 12, 120000, 0, '2024-02-24 07:30:00'),
-       (209, 18, 70000, 0, '2024-02-24 07:30:00'),
-       (210, 10, 180000, 0, '2024-02-24 07:30:00'),
-       (211, 22, 50000, 0, '2024-02-24 07:30:00'),
-       (212, 15, 150000, 0, '2024-02-24 07:30:00'),
-       (213, 20, 60000, 0, '2024-02-24 07:30:00'),
-       (214, 8, 200000, 0, '2024-02-24 07:30:00'),
-       (215, 15, 85000, 0, '2024-02-24 07:30:00'),
-       (216, 7, 220000, 0, '2024-02-24 07:30:00'),
-       (217, 30, 30000, 0, '2024-02-24 07:30:00'),
-       (218, 12, 120000, 0, '2024-02-24 07:30:00'),
-       (219, 18, 70000, 0, '2024-02-24 07:30:00'),
-       (220, 10, 250000, 0, '2024-02-24 07:30:00'),
-       (221, 25, 45000, 0, '2024-02-24 07:30:00'),
-       (222, 12, 90000, 0, '2024-02-24 07:30:00'),
-       (223, 15, 60000, 0, '2024-02-24 07:30:00'),
-       (224, 20, 70000, 0, '2024-02-24 07:30:00'),
-       (225, 12, 120000, 0, '2024-02-24 07:30:00'),
-       (226, 18, 50000, 0, '2024-02-24 07:30:00'),
-       (227, 20, 60000, 0, '2024-02-24 07:30:00'),
-       (228, 15, 100000, 0, '2024-02-24 07:30:00'),
-       (229, 10, 160000, 0, '2024-02-24 07:30:00'),
-       (230, 12, 80000, 0, '2024-02-24 07:30:00');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `order`
---
-
-CREATE TABLE `order`
-(
-    `id`                   int(11) NOT NULL,
-    `totalPrice`           decimal(10, 2) NOT NULL,
-    `orderDate`            datetime       DEFAULT current_timestamp(),
---
--- Status: 0 (chờ xác nhận), 1 (đã xác nhận, đang chuẩn bị), 2 (đang giao), 3 (đã giao), 4 đã hủy
---
-    `status`               int(11) NOT NULL,
-    `consigneeName`        varchar(255)   NOT NULL,
-    `consigneePhoneNumber` varchar(255)   NOT NULL,
-    `address`              varchar(200)   NOT NULL,
-    `shippingFee`          decimal(10, 2) DEFAULT 0.00,
-    `userId`               int(11) NOT NULL,
-    `note`                 varchar(255)   DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
---
--- Dumping data for table `order`
---
 
 INSERT INTO `order` (`id`, `totalPrice`, `orderDate`, `status`, `consigneeName`, `consigneePhoneNumber`, `address`,
                      `shippingFee`, `userId`)
@@ -967,80 +894,48 @@ VALUES (1, 270000.00, '2023-11-29 00:00:00', 3, 'Pblues', '0336677141',
        (14, 165000.00, '2023-12-02 00:00:00', 0, 'Nguyễn Kiên Trọng Nghĩa', '0875488549',
         '416 Phạm Văn Đồng, Phường 11, Bình Thạnh, Thành phố Hồ Chí Minh', 30000.00, 3);
 
--- --------------------------------------------------------
+INSERT INTO `order_details` (`orderId`, `productId`, `quantity`, `sellingPrice`, `finalSellingPrice`)
+VALUES (1, 1, 2, 70000.0, 70000.0),
+       (1, 7, 2, 50000.0, 50000.0),
 
---
--- Table structure for table `order_details`
---
+       (2, 12, 1, 39000.0, 39000.0),
+       (2, 14, 1, 30000.0, 30000.0),
+       (2, 118, 1, 39000.0, 39000.0),
 
-CREATE TABLE `order_details`
-(
-    `orderId`                int(11) NOT NULL,
-    `productId`              int(11) NOT NULL,
-    `quantity`               int(11) NOT NULL,
-    `sellingPrice`           decimal(10, 2) NOT NULL,
-    `finalSellingPrice`      decimal(10, 2) NOT NULL,
-    `explainPriceDifference` varchar(255) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+       (3, 1, 2, 70000.0, 70000.0),
+       (3, 118, 1, 39000.0, 39000.0),
 
---
--- Dumping data for table `order_details`
---
+       (4, 1, 2, 70000.0, 70000.0),
+       (4, 118, 1, 39000.0, 39000.0),
 
-INSERT INTO `order_details` (`orderId`, `productId`, `quantity`, `sellingPrice`, `finalSellingPrice`,
-                             `explainPriceDifference`)
-VALUES (1, 1, 2, 70000.00, 70000.00, NULL),
-       (1, 7, 2, 50000.00, 50000.00, NULL),
-       (2, 12, 1, 39000.00, 39000.00, NULL),
-       (2, 14, 1, 30000.00, 30000.00, NULL),
-       (2, 118, 1, 39000.00, 39000.00, NULL),
-       (3, 1, 2, 70000.00, 70000.00, NULL),
-       (3, 118, 1, 39000.00, 39000.00, NULL),
-       (4, 1, 2, 70000.00, 70000.00, NULL),
-       (4, 118, 1, 39000.00, 39000.00, NULL),
-       (5, 1, 2, 70000.00, 70000.00, NULL),
-       (5, 118, 1, 39000.00, 39000.00, NULL),
-       (6, 1, 2, 70000.00, 70000.00, NULL),
-       (6, 118, 1, 39000.00, 39000.00, NULL),
-       (7, 1, 2, 70000.00, 70000.00, NULL),
-       (7, 118, 1, 39000.00, 39000.00, NULL),
-       (8, 1, 2, 70000.00, 70000.00, NULL),
-       (8, 118, 1, 39000.00, 39000.00, NULL),
-       (9, 1, 2, 70000.00, 70000.00, NULL),
-       (9, 118, 1, 39000.00, 39000.00, NULL),
-       (10, 1, 2, 70000.00, 70000.00, NULL),
-       (10, 118, 1, 39000.00, 39000.00, NULL),
-       (11, 1, 2, 70000.00, 70000.00, NULL),
-       (11, 118, 1, 39000.00, 39000.00, NULL),
-       (12, 1, 2, 70000.00, 70000.00, NULL),
-       (12, 118, 1, 39000.00, 39000.00, NULL),
-       (13, 1, 2, 70000.00, 70000.00, NULL),
-       (13, 118, 1, 39000.00, 39000.00, NULL),
-       (14, 122, 1, 135000.00, 135000.00, NULL);
+       (5, 1, 2, 70000.0, 70000.0),
+       (5, 118, 1, 39000.0, 39000.0),
 
--- --------------------------------------------------------
+       (6, 1, 2, 70000.0, 70000.0),
+       (6, 118, 1, 39000.0, 39000.0),
 
---
--- Table structure for table `product`
---
+       (7, 1, 2, 70000.0, 70000.0),
+       (7, 118, 1, 39000.0, 39000.0),
 
-CREATE TABLE `product`
-(
-    `id`           int(11) NOT NULL,
-    `name`         varchar(255) DEFAULT NULL,
-    `description`  text           NOT NULL,
-    `costPrice`    decimal(10, 2) NOT NULL,
-    `sellingPrice` decimal(10, 2) NOT NULL,
-    `quantity`     int(11) DEFAULT 1,
-    `soldout`      int(11) DEFAULT 0,
-    `categoryId`   int(11) NOT NULL,
-    `discountId`   int(11) DEFAULT NULL,
-    `isSale`       tinyint(1) NOT NULL DEFAULT 1 CHECK (`isSale` in (0,1))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
+       (8, 1, 2, 70000.0, 70000.0),
+       (8, 118, 1, 39000.0, 39000.0),
 
---
--- Dumping data for table `product`
---
+       (9, 1, 2, 70000.0, 70000.0),
+       (9, 118, 1, 39000.0, 39000.0),
+
+       (10, 1, 2, 70000.0, 70000.0),
+       (10, 118, 1, 39000.0, 39000.0),
+
+       (11, 1, 2, 70000.0, 70000.0),
+       (11, 118, 1, 39000.0, 39000.0),
+
+       (12, 1, 2, 70000.0, 70000.0),
+       (12, 118, 1, 39000.0, 39000.0),
+
+       (13, 1, 2, 70000.0, 70000.0),
+       (13, 118, 1, 39000.0, 39000.0),
+
+       (14, 122, 1, 135000.0, 135000.0);
 
 INSERT INTO `product` (`id`, `name`, `description`, `costPrice`, `sellingPrice`, `quantity`, `soldout`, `categoryId`,
                        `discountId`, `isSale`)
@@ -1606,10 +1501,8 @@ VALUES (1, 'Thiệp handmade vintage Beauty & the White',
         90000.00, 140000.00, 12, 0, 3, NULL, 1),
        (195, 'Bức Tranh Dát Kim Tuyến Động Vật',
         'Bức tranh dát kim tuyến động vật là tác phẩm nghệ thuật thủ công với sự kết hợp của kim tuyến và hình ảnh động vật. Kích thước: 50cm x 70cm',
-        180000.00, 300000.00, 8, 0, 5, NULL, 1);
-INSERT INTO `product` (`id`, `name`, `description`, `costPrice`, `sellingPrice`, `quantity`, `soldout`, `categoryId`,
-                       `discountId`, `isSale`)
-VALUES (196, 'Mũ Trùm Đầu Handmade',
+        180000.00, 300000.00, 8, 0, 5, NULL, 1),
+       (196, 'Mũ Trùm Đầu Handmade',
         'Mũ trùm đầu handmade là sản phẩm thủ công với chất liệu len mềm mại và thiết kế ấn tượng. Sản phẩm giữ ấm và làm đẹp cho phong cách cá nhân.',
         55000.00, 90000.00, 18, 0, 4, NULL, 1),
        (197, 'Bình Hoa Lụa Handmade',
@@ -1715,289 +1608,155 @@ VALUES (196, 'Mũ Trùm Đầu Handmade',
         'Dây chuyền handmade với đá pha lê là sản phẩm thủ công mang lại vẻ đẹp lấp lánh và sang trọng. Chất liệu an toàn cho da và phù hợp cho những dịp đặc biệt.',
         80000.00, 140000.00, 12, 0, 4, NULL, 1);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `rate`
---
-
-CREATE TABLE `rate`
-(
-    `productId`   int(11) NOT NULL,
-    `userId`      int(11) NOT NULL,
-    `starRatings` int(11) NOT NULL,
-    `comment`     text NOT NULL,
-    `createDate`  datetime DEFAULT current_timestamp(),
-    `changeNumber` int DEFAULT 0
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
---
--- Dumping data for table `rate`
---
-
 INSERT INTO `rate` (`productId`, `userId`, `starRatings`, `comment`, `createDate`)
 VALUES (1, 1, 4, 'Sản phẩm tốt', '2023-11-29 00:00:00'),
-       (1, 4, 5, 'Sản phẩm chất liệu tốt và rất đẹp', '2023-12-01 00:00:00'),
        (7, 1, 5, 'Thiếp đẹp mắt và rất phù hợp', '2023-12-03 00:00:00'),
+       (1, 4, 5, 'Sản phẩm chất liệu tốt và rất đẹp', '2023-12-01 00:00:00'),
+       (118, 4, 5, 'Khung ảnh đẹp và tốt lắm ! 10điểm cho shop', '2023-12-01 00:00:00'),
        (12, 3, 5, 'Sản phẩm quá đẹp rất hợp ý tôi!', '2023-11-29 00:00:00'),
        (14, 3, 3, 'Sản phẩm ổn không quá xuất sắc!', '2023-12-02 00:00:00'),
        (118, 3, 5, 'Không có gì để chê sản phẩm này !', '2023-12-03 00:00:00'),
-       (118, 4, 5, 'Khung ảnh đẹp và tốt lắm ! 10điểm cho shop', '2023-12-01 00:00:00'),
        (118, 9, 5, 'Quá ưng ý với sản phẩm này!', '2023-12-03 00:00:00');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `role`
---
-
-CREATE TABLE `role`
-(
-    `id`   int(11) NOT NULL DEFAULT 1,
-    `name` varchar(20) DEFAULT 'user'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `role`
---
-
 INSERT INTO `role` (`id`, `name`)
-VALUES (0, 'admin'),
-       (1, 'user');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `tips`
---
-
-CREATE TABLE `tips`
-(
-    `title`       varchar(50)  NOT NULL,
-    `description` text DEFAULT NULL,
-    `img_path`    text         NOT NULL,
-    `video_link`  varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
---
--- Dumping data for table `tips`
---
+VALUES (1, 'admin'),
+       (2, 'user'),
+       (3, 'owner');
 
 INSERT INTO `tips` (`title`, `description`, `img_path`, `video_link`)
 VALUES ('Cách cắm hoa khô đẹp trong 5 phút',
         'Hoa khô hay còn gọi là hoa không tàn, hoa vĩnh cửu luôn có nét đẹp riêng,\r\nĐể tăng thêm sự độc đáo và giá trị thì cách cắm hoa...',
-        'images/banner_tip/tip_1.jpg', 'https://youtu.be/t4Sjrj0MvUg'),
+        'images/banner_tip/tip_1.jpg',
+        'https://youtu.be/t4Sjrj0MvUg'),
        ('Cách làm trang trí thiệp hoa khô handmade siêu dễ',
         'Thiệp hoa khô tự nhiên có nét quyến rũ thú vị, thể hiện sự chỉnh chu của người tặng,\r\nTự tay làm chiếc thiệp hoa khô sẽ thật ý nghĩa...',
-        'images/banner_tip/tip_2.jpg', 'https://youtu.be/eA_cUtEO6zA'),
+        'images/banner_tip/tip_2.jpg',
+        'https://youtu.be/eA_cUtEO6zA'),
        ('Hướng dẫn cách làm scrapbook album ảnh handmade',
         'Scrapbook là một dạng nhật ký ảnh, album hình được làm, trang trí thủ công có nội dung ,\r\ncâu chuyện hoàn chỉnh,Thời gian, sự kiện được ghi chú...',
-        'images/banner_tip/tip_3.jpg', 'https://youtu.be/U3kAyqvfWoc');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `user`
---
-
-CREATE TABLE `user`
-(
-    `id`          int(11) NOT NULL,
-    `name`        varchar(40) NOT NULL,
-    `phoneNumber` varchar(12) NOT NULL,
-    `email`       varchar(30) NOT NULL,
-    `password`    varchar(30) NOT NULL,
-    `createDate`  datetime    DEFAULT current_timestamp(),
-    `status`      varchar(25) DEFAULT 'Bình Thường',
-    `roleId`      int(11) NOT NULL DEFAULT 1
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
-
---
--- Dumping data for table `user`
---
+        'images/banner_tip/tip_3.jpg',
+        'https://youtu.be/U3kAyqvfWoc');
 
 INSERT INTO `user` (`id`, `name`, `phoneNumber`, `email`, `password`, `createDate`, `status`, `roleId`)
 VALUES (1, 'admin', '0865266994', 'handmadestore@gmail.com', 'j5Y57UE67Etm9o/3budppVPs26Y=', '2023-12-21 11:55:58',
-        'Bình Thường', 0),
+        'Bình Thường', 3),
        (2, 'Nguyễn Trung Kiên', '0336677141', '	21130408@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
-        '2023-12-21 11:55:58', 'Bình Thường', 1),
+        '2023-12-21 11:55:58',
+        'Bình Thường', 1),
        (3, 'Nguyễn Trọng Nghĩa', '0336677141', '21130452@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
-        '2023-12-21 11:55:58', 'Bình Thường', 1),
+        '2023-12-21 11:55:58',
+        'Bình Thường', 1),
        (4, 'Lê Bá Phụng', '0336677141', '21130482@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
-        '2023-12-21 11:55:58', 'Bình Thường', 0),
+        '2023-12-21 11:55:58',
+        'Bình Thường', 3),
        (5, 'Pblues', '0336677141', 'lungbaphe772003@gmail.com', 'j5Y57UE67Etm9o/3budppVPs26Y=', '2023-12-21 11:55:58',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (6, 'Giàng A Phò', '0383301249', 'gioaphang10@gmail.com', 'bzEG9mi+7P1TKsq8TWaJPvLB/rA=', '2023-12-21 11:57:42',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (7, 'Giàng A Lữ', '0383331294', 'alu122@gmail.com', 'tmJ8E7v+JZxOlCpaUDHANskmiFQ=', '2023-12-21 11:58:07',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (8, 'Cáp Tần', '0747712817', 'captanam12@gmail.com', 'FT2mYccNA0jxMv5hr7KHMPThfsk=', '2023-12-21 11:58:36',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (9, 'Nguyễn Thị Nghĩa', '0846992305', 'nghiarunner1@gmail.com', 'gkwSuLZQX5Uw2621/gVpx+MXpCo=',
-        '2023-12-21 11:59:30', 'Bình Thường', 1),
+        '2023-12-21 11:59:30', 'Bình Thường', 2),
        (10, 'Lê Ngọc Phụng', '0932100348', 'chanden12@gmail.com', 'YG1YVf8v5O2tVb8w6XgN9aFm/Jo=', '2023-12-21 12:00:08',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (11, 'Nguyễn Quang Hải', '0875244129', 'quanghai19@gmail.com', 'JxcrosuODLiKLbKuTAEOJuQrzTg=',
-        '2023-12-21 12:00:49', 'Bình Thường', 1),
+        '2023-12-21 12:00:49', 'Bình Thường', 2),
        (12, 'Phan Thanh Hòa', '0324712889', 'pdl199@gmail.com', 'PT/lnWok0bM7NAadn1sCWRqTjUg=', '2023-12-21 12:01:28',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (13, 'Tôn Ngộ Không', '0671821176', 'wukong99@gmail.com', 'HcAWujhP8PZAsYe/3icfc9N4b1s=', '2023-12-21 12:02:03',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (14, 'Đường Tăng Tạng', '0315821901', 'thinhkinh008@gmail.com', 'jHdhq9r1HYxgovt/ST+OaNAaF/w=',
-        '2023-12-21 12:02:30', 'Bình Thường', 1),
+        '2023-12-21 12:02:30', 'Bình Thường', 2),
        (15, 'Trư Bát Giới', '0871881103', 'packgioi77@gmail.com', 'SIBC9HV8hbf63+dVHRSjRaV+TWk=', '2023-12-21 12:03:06',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (16, 'Người Cồn', '0341007611', 'nguoicon88@gmail.com', 'En4OJjjx1rRcqPxSFAgmP4/82/w=', '2023-12-21 12:05:41',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (17, 'Nguyễn Khư', '0765 122 822', 'coko@gmail.com', 'bkB6UP/uoLhvBxphkqHaxgRUGxU=', '2023-12-25 00:04:10',
-        'Bình Thường', 1),
+        'Bình Thường', 2),
        (18, 'Ngô Huy', '0756 788 192', 'huyngu92@go.vn', '3BMxq3cwKG/6fhkEG1SJMySX+58=', '2023-12-25 00:14:09',
-        'Bình Thường', 1);
+        'Bình Thường', 2);
 
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `banner_items`
---
 ALTER TABLE `banner_items`
     ADD PRIMARY KEY (`title`) USING BTREE;
 
---
--- Indexes for table `category`
---
+
 ALTER TABLE `category`
     ADD PRIMARY KEY (`id`) USING BTREE;
 
---
--- Indexes for table `discount`
---
+
 ALTER TABLE `discount`
     ADD PRIMARY KEY (`id`) USING BTREE;
 
---
--- Indexes for table `image`
---
+
 ALTER TABLE `image`
     ADD PRIMARY KEY (`id`) USING BTREE,
   ADD KEY `fk_image` (`productId`) USING BTREE;
 
---
--- Indexes for table `inventory`
---
-ALTER TABLE `inventory`
-    ADD PRIMARY KEY (`productId`);
 
---
--- Indexes for table `order`
---
 ALTER TABLE `order`
     ADD PRIMARY KEY (`id`) USING BTREE,
   ADD KEY `fk_order` (`userId`) USING BTREE;
 
---
--- Indexes for table `order_details`
---
+
 ALTER TABLE `order_details`
     ADD PRIMARY KEY (`orderId`, `productId`) USING BTREE,
   ADD KEY `fk_od2` (`productId`) USING BTREE;
 
---
--- Indexes for table `product`
---
+
 ALTER TABLE `product`
     ADD PRIMARY KEY (`id`),
   ADD KEY `fk_discount` (`discountId`) USING BTREE;
 
---
--- Indexes for table `rate`
---
+
 ALTER TABLE `rate`
     ADD PRIMARY KEY (`productId`, `userId`) USING BTREE;
 
---
--- Indexes for table `role`
---
 ALTER TABLE `role`
     ADD PRIMARY KEY (`id`);
 
---
--- Indexes for table `tips`
---
+
 ALTER TABLE `tips`
     ADD PRIMARY KEY (`title`) USING BTREE;
 
---
--- Indexes for table `user`
---
 ALTER TABLE `user`
     ADD PRIMARY KEY (`id`) USING BTREE,
   ADD KEY `fkuser` (`roleId`) USING BTREE;
 
---
--- AUTO_INCREMENT for dumped tables
---
 
---
--- AUTO_INCREMENT for table `category`
---
+
 ALTER TABLE `category`
     MODIFY `id` int (11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
---
--- AUTO_INCREMENT for table `discount`
---
+
 ALTER TABLE `discount`
     MODIFY `id` int (11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
---
--- AUTO_INCREMENT for table `image`
---
-ALTER TABLE `image`
-    MODIFY `id` int (11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=552;
 
---
--- AUTO_INCREMENT for table `order`
---
+ALTER TABLE `image`
+    MODIFY `id` int (11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=347;
+
+
 ALTER TABLE `order`
     MODIFY `id` int (11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
---
--- AUTO_INCREMENT for table `product`
---
 ALTER TABLE `product`
-    MODIFY `id` int (11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=231;
+    MODIFY `id` int (11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
 
---
--- AUTO_INCREMENT for table `user`
---
+
 ALTER TABLE `user`
     MODIFY `id` int (11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
---
--- Constraints for dumped tables
---
 
---
--- Constraints for table `image`
---
 ALTER TABLE `image`
     ADD CONSTRAINT `fk_image` FOREIGN KEY (`productId`) REFERENCES `product` (`id`);
 
---
--- Constraints for table `order`
---
+
 ALTER TABLE `order`
     ADD CONSTRAINT `fk_order` FOREIGN KEY (`userId`) REFERENCES `user` (`id`);
 
---
--- Constraints for table `order_details`
---
+
 ALTER TABLE `order_details`
     ADD CONSTRAINT `fk_od1` FOREIGN KEY (`orderId`) REFERENCES `order` (`id`);
 COMMIT;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
