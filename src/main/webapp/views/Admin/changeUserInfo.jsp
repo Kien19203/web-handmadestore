@@ -783,7 +783,7 @@
                 $('#data tbody').eq(rowIndex).remove();
             },
             error: function () {
-               alert("Hủy đơn hàng thất bại!");
+                alert("Hủy đơn hàng thất bại!");
             }
         })
     }

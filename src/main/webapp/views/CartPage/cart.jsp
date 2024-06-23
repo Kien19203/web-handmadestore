@@ -63,11 +63,11 @@
 
 <div class="row">
     <div class="col-12">
-        <form action="">
+<%--        <form action="">--%>
             <div class="vh-100 w-100 bg-body d-flex justify-content-center align-items-center ">
                 <!--Main-->
                 <div>
-                    <div class="w-70">
+                    <div class="m-auto" style="height: 400px;width: 90%; overflow-y: auto;">
                         <table id="order-list" class="table table-borderless text-center mb-5">
                             <thead>
                             <tr class="align-middle border">
@@ -93,7 +93,7 @@
                                 </td>
                                 <td class="align-middle">
                                     <div>
-                                        <a class="text-decoration-none" href="<%=request.getContextPath()%>/product-detail?id=<%=item.getProduct().getId()%>"> <h6><%=item.getProduct().getName()%>
+                                        <a class="text-decoration-none" href="<%=request.getContextPath()%>/product-detail?id=<%=item.getProduct().getId()%>"> <h6 style="color: black"><%=item.getProduct().getName()%>
                                         </h6> </a>
 
                                     </div>
@@ -130,13 +130,8 @@
                                     <%=numberFormat.format(item.getQuantity() * item.getPrice())%>
                                 </td>
                                 <td class="align-middle">
-
-
-
-
-
-                                    <a href="<%=request.getContextPath()%>/add-cart?actionCart=delete&id=<%=item.getProduct().getId()%>">
-                                        <i class="fa-solid fa-trash-can"></i> </a>
+                                    <button onclick="deleteRow(this,<%=item.getProduct().getId()%>,<%=item.getPrice()%>,<%=item.getQuantity()%>)" style="border: none;background: white;color: blue;">
+                                        <i class="fa-solid fa-trash-can"></i> </button>
 
 
 
@@ -150,37 +145,84 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="line-block text-end mb-3">
+                    <div class="line-block text-end mb-3 mt-5 me-5">
                         <span class="total-amount h4 me-1 fw-normal">Tổng tiền:</span>
+                        <p id="total_Cart" class="d-none"><%=total%></p>
                         <span id="total_amount" class="h5"><%=numberFormat.format(total)%></span>
                     </div>
-
                     <div class="line-block text-end">
-
                         <button type="button" class="pause_bt"
                                 onclick="window.location = '../MainPage/view_mainpage/mainpage.jsp'">Tiếp tục mua hàng
                         </button>
                      <%if(u != null){%>
-                        <button type="button" class="complete_bt"
+                        <button type="button" class="complete_bt me-5"
                                 onclick="window.location = '<%=request.getContextPath()%>/views/PaymentPage/payment.jsp'">Thanh Toán
                         </button>
                         <%}else{%>
-                        <button type="button" class="complete_bt"
+                        <button type="button" class="complete_bt me-5"
                                 onclick="window.location = '<%=request.getContextPath()%>/login'">Thanh Toán
                         </button>
                         <%}%>
                     </div>
                 </div>
             </div>
-        </form>
+<%--        </form>--%>
     </div>
 </div>
 
 
 <!--    Footer-->
 <%@include file="/views/Footer/footer.jsp" %>
+<%--JS--%>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+<%--<a href="<%=request.getContextPath()%>/add-cart?actionCart=delete&id=<%=item.getProduct().getId()%>">
+--%>
 
+function deleteRow(btn,idProduct,priceProduct,amountProduct) {
+    let actionCart = "delete";
+    let total_amount = document.getElementById("total_amount");
+    let total_Cart = document.getElementById("total_Cart");
+    let total = parseInt(total_Cart.innerText);
+    console.log(total);
+    let newTotal = total - (priceProduct*amountProduct);
+    const numberFomat = Intl.NumberFormat('vi-VN',{
+        style: 'currency',
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    console.log(total);
+    console.log(priceProduct);
+    console.log(amountProduct);
+    console.log(priceProduct*amountProduct);
+    $.ajax({
+        url: "/HandMadeStore/add-cart",
+        method: "POST",
+        data: {
+            actionCart: actionCart,
+            id: idProduct
+        },
+        success: function (response) {
+            console.log("Thành Công Xóa");
+            btn.closest("tr").remove();
+            let formatTotal = numberFomat.format(newTotal);
+            console.log(formatTotal);
+            total_amount.innerText = formatTotal;
+            total_Cart.innerText = newTotal;
+            handleDeleteToCart(response);
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Xóa Sản Phẩm Thành Công!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+        }
+    })
+}
 
 
 </script>

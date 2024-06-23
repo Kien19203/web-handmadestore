@@ -1,5 +1,6 @@
 package controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import model.bean.Category;
 import model.bean.Image;
 import model.bean.Product;
@@ -21,22 +22,6 @@ public class productList extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doPost(req, resp);
-        /**/
-        //Xem chi tiết sản phẩm
-//        int productId = Integer.parseInt(req.getParameter("productId"));
-
-
-        //Lấy sản phẩm từ database với id đã được chọn
-//
-//        Product product = ProductService.getInstance().getProductById(productId);
-//        List<Image> imageList = ProductDAO.getImagesForProduct(productId);
-//        req.setAttribute("productById", product);
-//        req.setAttribute("listImage",imageList );
-//
-//
-//        req.getRequestDispatcher("./views/product-details/view/productdt.jsp").forward(req, resp);
-
-
     }
 
     @Override
@@ -97,9 +82,8 @@ public class productList extends HttpServlet {
         } else {
             productList = ProductService.getInstance().getAll();
         }
-
         req.setAttribute("filter", filter);
-        int itemPerPage = 16; // số lượng sp trên mỗi trang
+        int itemPerPage = 15; // số lượng sp trên mỗi trang
         //lấy số trang hiện tại từ tham số yêu cầu
         int currentPage = 1;
         String paraParam = req.getParameter("page");
@@ -117,5 +101,19 @@ public class productList extends HttpServlet {
         req.setAttribute("productInPage", currentPageItems);
         String path = "./views/ProductList/productList.jsp";
         req.getRequestDispatcher(path).forward(req, resp);
+        // ----------------------------
+//        boolean loadfile = req.getParameter("loadfile") != null;
+//        if(loadfile){
+//            System.out.println("Load");
+//            ObjectMapper mapper = new ObjectMapper();
+//            String jsonReponse = mapper.writeValueAsString(productList);
+//            resp.setContentType("application/json");
+//            resp.getWriter().write(jsonReponse);
+//            resp.getWriter().flush();
+//            resp.getWriter().close();
+//        }
+//        System.out.println("Ko Load");
+
+// ----------------------------
     }
 }

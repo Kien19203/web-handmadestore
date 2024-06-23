@@ -65,7 +65,7 @@
         crossorigin="anonymous"></script>
 
 <%--Danh Mục--%>
-<div class="categorys d-flex">
+<div class="categorys d-flex overflow-auto" style="white-space: nowrap">
     <%for(Category cate : categoryP){%>
     <%int idProImage = CategoryDAO.oneProductofCategory(cate.getId());%>
     <%String pathImg = ImageService.getInstance().pathImageOnly(idProImage);%>
@@ -85,8 +85,8 @@
         <a style="text-decoration: none;" href="<%=request.getContextPath()%>/product?category=khuyenmai"><p class="text-center fs-5 fw-bold">Sản Phẩm Khuyến Mãi
         </p></a>
     </div>
-    <div class="sp overflow-auto" id="sp_khuyenmai" style="width: 92%;margin: auto;margin-bottom: 50px;">
-        <ul class="products  m-2  d-flex flex-nowrap" style="padding: 5px;padding-left: 60px;">
+    <div class="sp overflow-auto" id="sp_khuyenmai" style="width: 92%;margin: auto;margin-bottom: 50px;background: #d7f0eb;">
+        <ul class="products  m-2  d-flex flex-nowrap">
             <%
                 for (Product prd : listProductDiscount) {
             %>
@@ -94,19 +94,25 @@
             <li class="productkm">
                 <div class="item_product  me-4">
                     <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
-                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p><%=prd.getName() %>
+                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p class="pt-2 px-4"><%=prd.getName() %>
                     </p></a>
                     <%!double giaKhuyenMai;%>
                     <% giaKhuyenMai = ProductService.getInstance().productPriceIncludeDiscount(prd);%>
                     <%if (prd.getCategoryId() >= 0 && giaKhuyenMai != prd.getSellingPrice()) {%>
-                    <del><%=numberFormat.format(prd.getSellingPrice())%></del>
+                    <%! int discountProductKM;%>
+                    <% discountProductKM = ProductService.getInstance().discountProduct(prd.getId());%>
+                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProductKM%>%</div>
+                    <del><p style="margin-top: 10px"><%=numberFormat.format(prd.getSellingPrice())%></p></del>
+                    <p class="text-danger fw-bold"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
+                    <%}else{%>
+                    <p class="fw-bold"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
                     <%}%>
-                    <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
-                    <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
+                    <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                 </div>
             </li>
             <%}%>
         </ul>
+        <div class="allKM text-center mb-4"><a class="text-decoration-none fw-bold fs-4"  href="<%=request.getContextPath()%>/product?category=khuyenmai">Xem Ngay!</a></div>
     </div>
     <%}%>
     <%--  Sản Phẩm  --%>
@@ -126,15 +132,20 @@
                 <li class="product_list">
                     <div class="item_product  me-4">
                         <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
-                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"><p class="pt-4 px-3"><%=pr.getName() %>
+                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"><p class="pt-2 px-3 fw-bold"><%=pr.getName() %>
                         </p></a>
                         <%!double giaBanSauCung;%>
                         <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(pr);%>
                         <%if (pr.getCategoryId() >= 0 && giaBanSauCung != pr.getSellingPrice()) {%>
-                        <del><%=numberFormat.format(pr.getSellingPrice())%></del>
+                        <%! int discountProduct;%>
+                        <% discountProduct = ProductService.getInstance().discountProduct(pr.getId());%>
+                        <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
+                        <del><p class="mt-2"><%=numberFormat.format(pr.getSellingPrice())%></p></del>
+                        <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
+                        <%}else{%>
+                        <p class="fw-bold mt-2"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
                         <%}%>
-                        <p><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
-                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span>Thêm vào giỏ hàng</span> </button></div>
+                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                     </div>
                 </li>
                 <%}%>
@@ -207,6 +218,7 @@
 </body>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+    let idProduct = [];
     function addCart(btn,id){
         var actionCart = "post";
         var num = 1;
@@ -219,7 +231,11 @@
                 num: num
             },
             success: function (response){
-                handleAddToCart(response);
+                if(!idProduct.includes(id)){
+                    idProduct.push(id);
+                    console.log(idProduct);
+                    handleAddToCart(response);
+                }
                 console.log("Hoàn Thành Thêm vào giỏ hàng! ");
                 Swal.fire({
                     position: "center",

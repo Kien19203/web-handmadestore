@@ -36,7 +36,8 @@ public class Cart {
             item.incQuantity(quantity);
 
         } else {
-            item = new Item(p, quantity, p.getSellingPrice());
+            item = new Item(p, quantity,
+                    ProductService.getInstance().productPriceIncludeDiscount(p));
         }
         items.put(id, item);
         return true;

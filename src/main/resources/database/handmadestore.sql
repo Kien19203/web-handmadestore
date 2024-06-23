@@ -10,7 +10,16 @@ handmadestore;
 --
 -- Table structure
 --
-
+CREATE TABLE `Log` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ipAddress VARCHAR(255),
+    location VARCHAR(255),
+    createdTime TIMESTAMP,
+    level VARCHAR(50),
+    action VARCHAR(255),
+    message TEXT
+)
+    
 CREATE TABLE `banner_items`
 (
     `title`       varchar(50) NOT NULL,

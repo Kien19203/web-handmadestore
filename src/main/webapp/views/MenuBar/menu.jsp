@@ -51,7 +51,7 @@
     }
 
     .menu ul .item_a {
-        padding: 25px 0;
+        padding-top: 25px;
         position: absolute;
         left: 40px;
         top: -40px;
@@ -514,9 +514,15 @@
 <script>
     function handleAddToCart(response) {
         let totalItem = document.getElementById('badge');
-        console.log(totalItem);
         let currentValue = parseInt(totalItem.innerText);
         currentValue += 1;
+        totalItem.innerText = currentValue;
+    }
+    function handleDeleteToCart(response) {
+        let totalItem = document.getElementById('badge');
+        console.log(totalItem);
+        let currentValue = parseInt(totalItem.innerText);
+        currentValue -= 1;
         totalItem.innerText = currentValue;
     }
 

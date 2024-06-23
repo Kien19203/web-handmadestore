@@ -258,4 +258,24 @@ public class UserDAO {
             return null;
         }
     }
+<<<<<<< HEAD
+=======
+//    Thêm user đăng nhập bằng GG
+    public static void inserUserGG(String userName,String userTelephone,String userEmail,String password,String status,int roleId){
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate("INSERT INTO user (name,phoneNumber,email,password,status,roleId)" +
+                                " VALUES( :name,:telephone,:email, :password,:status, :roleId)")
+                        .bind("name", userName)
+                        .bind("telephone", userTelephone)
+                        .bind("email", userEmail)
+                        .bind("password",password)
+                        .bind("status",status)
+                        .bind("roleId",roleId)
+                        .execute());
+    }
+
+    public static void main(String[] args) {
+        inserUserGG("NTN","null","NTNNghia@gmail.com","null","Bình Thường",1);
+    }
+>>>>>>> b6b3ebcd9eeefe3752343c77a21f13ca1a8ed57f
 }
