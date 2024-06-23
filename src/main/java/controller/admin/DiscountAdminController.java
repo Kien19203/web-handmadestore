@@ -1,5 +1,9 @@
 package controller.admin;
 
+import model.bean.Category;
+import model.bean.Discount;
+import model.bean.Product;
+import model.service.CategoryService;
 import model.service.DiscountService;
 import model.service.ProductService;
 
@@ -9,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -91,6 +96,13 @@ public class DiscountAdminController extends HttpServlet {
                 req.setAttribute("result", "Hãy điền đầy đủ thông tin để thay đồi thông tin khuyến mãi! Vui lòng thử lại");
                 System.out.println("fall update");
             }
+        }
+//        load Discount
+        String choiceProductsDiscountId = req.getParameter("choiceProductsDiscountId");
+        System.out.println("choiceProductsDiscountId server :" +  choiceProductsDiscountId);
+        if (choiceProductsDiscountId != null) {
+            Discount choiceProductsDiscount = DiscountService.getInstance().getDiscountById(choiceProductsDiscountId);
+            req.setAttribute("choiceProductsDiscount", choiceProductsDiscount);
         }
         req.getRequestDispatcher("/views/Admin/discount_management.jsp").forward(req, resp);
     }

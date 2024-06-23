@@ -116,7 +116,7 @@ CREATE TABLE `user`
     `password`    varchar(30) NOT NULL,
     `createDate`  datetime    DEFAULT current_timestamp(),
     `status`      varchar(25) DEFAULT 'Bình Thường',
-    `roleId`      int(11) NOT NULL DEFAULT 1
+    `roleId`      int(11) NOT NULL DEFAULT 2
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci ROW_FORMAT=DYNAMIC;
 
 --
@@ -1610,9 +1610,9 @@ VALUES (1, 1, 4, 'Sản phẩm tốt', '2023-11-29 00:00:00'),
        (118, 9, 5, 'Quá ưng ý với sản phẩm này!', '2023-12-03 00:00:00');
 
 INSERT INTO `role` (`id`, `name`)
-VALUES (0, 'owner'),
-       (1, 'admin'),
-       (2, 'user');
+VALUES (1, 'admin'),
+       (2, 'user'),
+       (3, 'owner');
 
 INSERT INTO `tips` (`title`, `description`, `img_path`, `video_link`)
 VALUES ('Cách cắm hoa khô đẹp trong 5 phút',
@@ -1630,16 +1630,16 @@ VALUES ('Cách cắm hoa khô đẹp trong 5 phút',
 
 INSERT INTO `user` (`id`, `name`, `phoneNumber`, `email`, `password`, `createDate`, `status`, `roleId`)
 VALUES (1, 'admin', '0865266994', 'handmadestore@gmail.com', 'j5Y57UE67Etm9o/3budppVPs26Y=', '2023-12-21 11:55:58',
-        'Bình Thường', 0),
+        'Bình Thường', 3),
        (2, 'Nguyễn Trung Kiên', '0336677141', '	21130408@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
         '2023-12-21 11:55:58',
-        'Bình Thường', 2),
+        'Bình Thường', 1),
        (3, 'Nguyễn Trọng Nghĩa', '0336677141', '21130452@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
         '2023-12-21 11:55:58',
-        'Bình Thường', 2),
+        'Bình Thường', 1),
        (4, 'Lê Bá Phụng', '0336677141', '21130482@st.hcmuaf.edu.vn', 'j5Y57UE67Etm9o/3budppVPs26Y=',
         '2023-12-21 11:55:58',
-        'Bình Thường', 0),
+        'Bình Thường', 3),
        (5, 'Pblues', '0336677141', 'lungbaphe772003@gmail.com', 'j5Y57UE67Etm9o/3budppVPs26Y=', '2023-12-21 11:55:58',
         'Bình Thường', 2),
        (6, 'Giàng A Phò', '0383301249', 'gioaphang10@gmail.com', 'bzEG9mi+7P1TKsq8TWaJPvLB/rA=', '2023-12-21 11:57:42',

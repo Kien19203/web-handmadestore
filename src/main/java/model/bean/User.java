@@ -151,15 +151,15 @@ public class User implements Serializable {
     }
 
     public boolean isOwn() {
-        return (this.roleId == 0) ? true : false;
+        return this.roleId == 3;
     }
 
     public boolean isAdmin() {
-        return (this.roleId == 1) ? true : false;
+        return this.roleId == 1;
     }
 
     public boolean isUser() {
-        return (this.roleId == 2) ? true : false;
+        return this.roleId == 2;
     }
     public boolean isLock() {
         return (this.getStatus().equals("Bình Thường")) ? false : true;

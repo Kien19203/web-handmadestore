@@ -7,6 +7,9 @@
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="model.bean.Category" %>
 <%@ page import="model.service.CategoryService" %>
+<%@ page import="java.util.Locale" %>
+<%@ page import="java.util.Currency" %>
+<%@ page import="java.text.NumberFormat" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%List<Discount> discounts = DiscountService.getInstance().getAll();%>
 
@@ -16,83 +19,46 @@
     Discount editDiscount = (editDiscountId != null) ? DiscountService.getInstance().getDiscountById(editDiscountId) : null;//null ->ko bắt ex thì nó che lỗi .getName() :)))
 %>
 <%String editStt = (String) request.getAttribute("editStt");%>
+<%
+    Locale locale = new Locale("vi", "VN");
+    Currency currency = Currency.getInstance(locale);
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
+    numberFormat.setCurrency(currency);
+%>
+<%List<Product> products =  ProductService.getInstance().getAll();%>
+<%List<Category> categories = CategoryService.getInstance().getALl();%>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
-    <title>Thêm sản phẩm</title>
+    <title>Quản lý khuyến mãi</title>
     <link rel="stylesheet" href="<%=request.getContextPath()%>/views/Admin/css/table_style.css">
+    <!--https://datatables.net/download/-->
+    <%--    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">--%>
+    <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
+    <link
+            href="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.min.css"
+            rel="stylesheet"
+    />
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+            integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/js/bootstrap.min.js"></script>
+    <!--https://releases.jquery.com/-->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js"
+            integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+            crossorigin="anonymous"></script>
     <style>
-        li {
-            list-style-type: none;
-        }
-
-        p, ul, li {
-            margin: 0;
-            padding: 0;
-        }
-
-        nav ul.menu {
-            overflow: auto;
-        }
-
-        nav ul.menu li.item {
-            float: left;
-            cursor: pointer;
-            font-size: 20px;
-        }
-
-        nav ul.menu li.item ul.sub_menu {
-            position: absolute;
-            overflow: auto;
-            display: none;
-        }
-
-        nav ul.menu li.item:hover ul.sub_menu {
-            width: auto;
-            display: block;
-            border-radius: 3px;
-            margin-top: -15px;
-        }
-
-        nav ul.menu li.item ul.sub_menu p {
-            font-weight: bold;
-            background-color: #afe2ea;
-        }
-
-        nav ul.menu li.item ul.sub_menu li {
-            display: block;
-            background-color: #afe2ea;
-            padding: 5px 10px;
-        }
-
-        /*nav ul.menu li.item ul.sub_menu li a {*/
-        /*    color: white;*/
-        /*    text-decoration: none;*/
-        /*}*/
-
-        /*nav ul.menu li.item ul.sub_menu li a:hover {*/
-        /*    color: black;*/
-        /*}*/
-        .product-list {
-            max-height: 400px; /* Đặt giá trị tối đa cho chiều cao */
-            overflow-y: auto; /* Thêm thanh trượt khi chiều cao vượt quá max-height */
-        }
-
-        .sticky-title {
-            position: sticky;
-            top: 0;
-            background-color: #afe2ea; /* Màu nền của phần tiêu đề cố định */
-            font-weight: bold;
-        }
-
-        #add_discount {
+        #add_discount, #edit_discount, #choice_products_discount {
             position: fixed;
             top: 50%;
             left: 50%;
-            transform: translate(-50%, -50%);
+            transform: translate(-50%, -60%);
             overflow: auto;
             display: none;
             z-index: 9;
@@ -102,20 +68,12 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
         }
 
-        #edit_discount {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            overflow: auto;
+        .dt-empty, .dt-info {
             display: none;
-            z-index: 9;
-            background-color: #2c3e50; /* Adjust the background color as needed */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
         }
-
+        #data_wrapper{
+            width: 100%;
+        }
     </style>
 </head>
 <%
@@ -124,6 +82,7 @@
 %>
 <body>
 <form action="<%=request.getContextPath()%>/admin/discount" method="post">
+    <input type="hidden" id="current_discountId">
     <div class="container">
         <div class="row">
             <div class="col-11">
@@ -180,73 +139,10 @@
                             </div>
                             <div class="col-md-1 text-center"><%=d.getPercentageOff() * 100%>
                             </div>
-                            <div class="col-md-2 text-center d-flex justify-content-center text-center">
-                                <nav>
-                                    <ul class="menu">
-                                        <li class="item">
-                                            <i class="fa-solid fa-list-check"></i>
-                                            <ul class="sub_menu border border-primary product-list">
-                                                <div class="sticky-title">
-                                                    <p><%=d.getName()%>
-                                                    </p>
-                                                    <div>
-                                                        <div style="display: flex">
-                                                            <input type="button" class="btn btn-info "
-                                                                   onclick="selectAllProductForDiscount(<%=stt%>)"
-                                                                   value="Chọn tất cả"
-                                                            >
-                                                            <input type="button" class="btn btn-info"
-                                                                   onclick="deSelectAllProductForDiscount(<%=stt%>)"
-                                                                   value="Bỏ tất cả"
-                                                            >
-                                                            <button type="submit"
-                                                                    name="submit_1_discountId"
-                                                                    value="<%=d.getId()%>"
-                                                                    class="btn btn-success"
-                                                            >Hoàn tất
-                                                            </button>
-                                                        </div>
-                                                        <div style=" display: block;position: relative;height: 80px;overflow: auto;">
-                                                            <div>
-                                                                <%for (Category category : CategoryService.getInstance().getALl()) {%>
-                                                                <div class="row">
-                                                                    <div class="d-flex">
-                                                                        <input type="checkbox" class="category"
-                                                                               onchange=" changeSelectByCategory(this,<%=stt%>, <%=category.getId()%>)"
-                                                                               id="<%=stt+"_"+category.getId()%>">
-                                                                        <label style="background:none ;font-size: 10px"
-                                                                               for="<%=stt+"_"+category.getId()%>"><%=category.getName()%>
-                                                                        </label>
-                                                                    </div>
-                                                                </div>
-                                                                <%}%>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <%for (Product p : ProductService.getInstance().getAll()) {%>
-                                                <li>
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input product" type="checkbox"
-                                                               id="<%=stt+"_"+p.getCategoryId()+"_"+p.getId()%>"
-                                                               name="<%=d.getId()%>" value="<%=p.getId()%>"
-                                                               onchange="changeSelectByProduct(this,<%=stt%>, <%=p.getCategoryId()%>)"
-                                                        <%--                                                            <%if(p.getDiscountId()!=null && p.getDiscountId()==(d.getId())) {%>--%>
-                                                            <%if(p.getDiscountId()==(d.getId())) {%>
-                                                               checked
-                                                            <%}%>
-                                                        >
-                                                        <label class="form-check-label"
-                                                               for="<%=stt+"_"+p.getCategoryId()+"_"+p.getId()%>">
-                                                            <%=p.getId()%>-<%=p.getName()%>
-                                                        </label>
-                                                    </div>
-                                                </li>
-                                                <%}%>
-                                            </ul>
-                                        </li>
-                                    </ul>
-                                </nav>
+                            <div class="col-md-1 text-center align-items-center">
+                                <button type="button" onclick="showChoiceForDiscount(<%=d.getId()%>)">
+                                    <i class="fa-solid fa-list-check"></i>
+                                </button>
                             </div>
                             <div class="col-md-2 text-center d-flex justify-content-center text-center mt-1">
                                 <a
@@ -358,8 +254,222 @@
             <%}%>
         </div>
     </div>
+    <%-- choice box    --%>
+    <div class="row justify-content-center">
+        <div id="choice_products_discount" class="w-100 h-75 bg-secondary p-3 rounded">
+            <div>
+                <div class="container-fluid">
+                    <button class="w-100 btn btn-success" onclick="hideChoiceForDiscount()">Thoát</button>
+                    <%--chọn theo danh mục--%>
+                    <div class="m-4 fs-6 d-flex align-items-center">
+                        <div class="dropdown">
+                            <button data-mdb-button-init data-mdb-ripple-init data-mdb-dropdown-init
+                                    class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-mdb-toggle="dropdown" aria-expanded="false">
+                                Áp dụng theo danh mục
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                <li>
+                                    <div class="dropdown-item" href="#">
+                                        <%for (Category c : categories) {%>
+                                        <div class="form-check form-switch">
+                                            <input class="form-check-input" type="checkbox" id="c_<%=c.getId()%>">
+                                            <label class="form-check-label" for="c_<%=c.getId()%>"><%=c.getName()%>
+                                            </label>
+                                        </div>
+                                        <%}%>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="mx-3">
+                            <button class="btn btn-primary" type="button">
+                                Áp dụng cho tất cả
+                            </button>
+                        </div>
+                        <div>
+                            <button class="btn btn-primary" type="button">
+                                Bỏ áp dụng cho tất cả
+                            </button>
+                        </div>
+                    </div>
+                    <div class="m-4 fs-6 d-flex align-items-center">
+                        <div class="d-flex">
+                            <div class="form-group">
+                                <input type="number" class="form-control" placeholder="Nhập số lượng có sẵn">
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="mx-5">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                           id="flexRadioDefault1">
+                                    <label class="form-check-label" for="flexRadioDefault1">
+                                        Lớn hơn
+                                    </label>
+                                </div>
+                                <div class="mx-5">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                           id="flexRadioDefault2" checked>
+                                    <label class="form-check-label" for="flexRadioDefault2">
+                                        Bé hơn
+                                    </label>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" type="button">
+                                Áp dụng theo số lượng có sẵn
+                            </button>
+                        </div>
+                    </div>
+                    <div class="m-4 fs-6 d-flex align-items-center">
+                        <div class="d-flex">
+                            <div class="form-group">
+                                <input type="number" class="form-control" placeholder="Nhập số lượng bán ra">
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="mx-5">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                           id="flexRadioDefault3">
+                                    <label class="form-check-label" for="flexRadioDefault1">
+                                        Lớn hơn
+                                    </label>
+                                </div>
+                                <div class="mx-5">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                           id="flexRadioDefault4" checked>
+                                    <label class="form-check-label" for="flexRadioDefault2">
+                                        Bé hơn
+                                    </label>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" type="button">
+                                Áp dụng theo số lượng bán ra
+                            </button>
+                        </div>
+                    </div>
+                    <div class="m-4 fs-6 d-flex align-items-center">
+                        <div class="d-flex">
+                            <div class="form-group">
+                                <input type="number" class="form-control" placeholder="Nhập giá bán ra">
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <div class="mx-5">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                           id="flexRadioDefault5">
+                                    <label class="form-check-label" for="flexRadioDefault1">
+                                        Lớn hơn
+                                    </label>
+                                </div>
+                                <div class="mx-5">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
+                                           id="flexRadioDefault6" checked>
+                                    <label class="form-check-label" for="flexRadioDefault2">
+                                        Bé hơn
+                                    </label>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" type="button">
+                                Áp dụng theo giá bán ra
+                            </button>
+                        </div>
+                    </div>
+                    <%--search--%>
+                    <div class="row m-4 fs-6 d-flex align-items-center">
+                        <div class="col">
+                            <input type="text" class="form-control" placeholder="Nhập mã sản phẩm"
+                                   name="searchById"
+                                   id="searchById"/>
+                        </div>
+                    </div>
+                    <%--table--%>
+                    <div class="d-flex">
+                        <table id="data" class="table table-striped table-hover" style="width: 100%;">
+                            <thead>
+                            <tr class="text-center sticky-top">
+                                <th class="text-center" scope="col"
+                                    style=" position: sticky;left: 0;z-index: 1;"
+                                >Mã
+                                </th>
+                                <th style="width: 30%">Tên sản phẩm</th>
+                                <th class="text-center" scope="col">Có sẵn</th>
+                                <th class="text-center" scope="col">Đã bán</th>
+                                <th class="text-center" scope="col">Giá nhập</th>
+                                <th class="text-center" scope="col">Giá bán</th>
+                                <th class="text-center" scope="col">Giảm giá</th>
+                                <th class="text-center" scope="col">Giá sản phẩm</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <%for (Product p : products) {%>
+                            <tr class="text-center">
+                                <td class="d-flex align-items-center">
+                                    <div class="me-2 form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" id="p_<%=p.getId()%>">
+                                    </div>
+                                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=p.getId()%>"
+                                       target="_blank"
+                                       class="px-2 btn btn-primary">
+                                        <%=p.getId()%>
+                                    </a>
+                                </td>
+                                <td><%=p.getName()%>
+                                </td>
+                                <td><%=p.getQuantity()%>
+                                </td>
+                                <td><%=p.getSoldout()%>
+                                </td>
+                                <td><%=numberFormat.format(p.getCostPrice())%>
+                                </td>
+                                <td><%=numberFormat.format(p.getSellingPrice())%>
+                                </td>
+                                <%!double finalSellingPrice;%>
+                                <%finalSellingPrice = ProductService.getInstance().productPriceIncludeDiscount(p);%>
+                                <td>
+
+                                    <%
+                                        Discount d = DiscountService.getInstance().getDiscountById(p.getDiscountId() + "");%>
+                                    <%if (finalSellingPrice == p.getSellingPrice()) {%>
+                                    <del style="text-decoration-color: red;">
+                                        <%=(d == null) ? "" : d.getName() + " - giảm " + (d.getPercentageOff() * 100) + "%"%>
+                                    </del>
+                                    <%} else {%>
+                                    <%=(d == null) ? "" : d.getName() + " - giảm " + (d.getPercentageOff() * 100) + "%"%>
+                                    <%}%>
+                                </td>
+                                <td><%=numberFormat.format(finalSellingPrice)%>
+                            </tr>
+                            <%}%>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </form>
 <script>
+    const searchById = document.querySelector('#searchById');
+    let table;
+
+    $(document).ready(function () {
+        table = $('#data').DataTable({
+            "paging": true,
+            "searching": true,
+            "lengthChange": false,
+            "pageLength": 5,
+            "info": false,
+            language: {
+                search: "Nhập từ khóa tìm kiếm"
+            }
+        });
+
+        if (searchById) {
+            searchById.addEventListener('input', function () {
+                const searchValue = this.value;
+                table.columns(0).search(searchValue).draw();
+            });
+        }
+    });
+
+
     function showAddDiscount() {
         hideEditDiscount();
         document.getElementById("add_discount").style.display = "block";
@@ -371,6 +481,15 @@
 
     function hideEditDiscount() {
         document.getElementById("edit_discount").style.display = "none";
+    }
+
+    function showChoiceForDiscount(discountId) {
+        document.getElementById("current_discountId").value = discountId;
+        document.getElementById("choice_products_discount").style.display = "block";
+    }
+
+    function hideChoiceForDiscount() {
+        document.getElementById("choice_products_discount").style.display = "none";
     }
 
     function selectAllProductForDiscount(stt) {
@@ -429,6 +548,10 @@
         }
     }
 </script>
+<script
+        type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/7.3.2/mdb.umd.min.js"
+></script>
 </body>
 <%
     } else {

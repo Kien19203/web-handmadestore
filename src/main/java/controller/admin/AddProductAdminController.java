@@ -1,5 +1,6 @@
 package controller.admin;
 
+import controller.Validation;
 import model.service.CategoryService;
 import model.service.ImageService;
 import model.service.ProductService;
@@ -64,13 +65,18 @@ public class AddProductAdminController extends HttpServlet {
                         System.out.println("paths: " + paths);
                         //insert
                         try {
-                            if (!discount.equals("")) {
-                                ProductService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        Integer.parseInt(categoryId), Integer.parseInt(discount), paths);
-                            } else {
-                                // không áp dụng discount
-                                ProductService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        Integer.parseInt(categoryId), paths);
+                            if (Validation.isPositiveNumber(costPrice) && Validation.isPositiveNumber(sellingPrice) && Validation.isPositiveNumber(quantity)) {
+                                if (!discount.equals("")) {
+                                    ProductService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+                                            Integer.parseInt(categoryId), Integer.parseInt(discount), paths);
+                                } else {
+                                    // không áp dụng discount
+                                    ProductService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+                                            Integer.parseInt(categoryId), paths);
+                                }
+                                //forward
+                                req.setAttribute("result", "Thêm sản phẩm mới thành công! Bạn có thể thêm sản phẩm tiếp theo.");
+                                req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
                             }
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -87,9 +93,6 @@ public class AddProductAdminController extends HttpServlet {
                             req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
                             req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
                         }
-                        //forward
-                        req.setAttribute("result", "Thêm sản phẩm mới thành công! Bạn có thể thêm sản phẩm tiếp theo.");
-                        req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
                     } catch (IOException e) {
                         req.setAttribute("productName", productName);
                         req.setAttribute("quantity", quantity);

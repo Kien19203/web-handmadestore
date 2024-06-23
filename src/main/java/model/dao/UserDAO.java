@@ -98,7 +98,6 @@ public class UserDAO {
             throw new RuntimeException("Failed to insert user into the database", e);
         }
     }
-
     public static User addUser(String name, String phoneNumber, String email, String password, int roleId) {
         return JDBIConnector.me().withHandle(handle -> {
             // Thêm người dùng mới và lấy lại ID
@@ -136,14 +135,7 @@ public class UserDAO {
 
     public static List<User> getOwnerList() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user where roleId=0 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
-        return users;
-    }
-
-    public static List<User> getOwnerList(String userId) {
-        List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user where roleId=0 ORDER BY CASE WHEN id = :userId THEN 0 ELSE 1 END, roleId asc")
-                        .bind("userId", userId).mapToBean(User.class).stream().collect(Collectors.toList()));
+                handle.createQuery("select * from user where roleId=3 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
 
@@ -153,29 +145,15 @@ public class UserDAO {
         return users;
     }
 
-    public static List<User> getAdminList(String userId) {
-        List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user where roleId=1 ORDER BY CASE WHEN id = :userId THEN 0 ELSE 1 END, roleId asc")
-                        .bind("userId", userId).mapToBean(User.class).stream().collect(Collectors.toList()));
-        return users;
-    }
-
     public static List<User> getUserList() {
         List<User> users = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from user where roleId=2 order by roleId asc").mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
 
-    public static List<User> getUserList(String userId) {
-        List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from user where roleId=2 ORDER BY CASE WHEN id = :userId THEN 0 ELSE 1 END, roleId asc")
-                        .bind("userId", userId).mapToBean(User.class).stream().collect(Collectors.toList()));
-        return users;
-    }
-
     public static List<User> getNewUsersTop(int number) {
         List<User> users = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select  * from user order by createDate desc limit " + number).mapToBean(User.class).stream().collect(Collectors.toList()));
+                handle.createQuery("select  * from user where roleId = 2 order by createDate desc limit " + number).mapToBean(User.class).stream().collect(Collectors.toList()));
         return users;
     }
 
@@ -279,9 +257,5 @@ public class UserDAO {
             e.printStackTrace();
             return null;
         }
-    }
-
-    public static void main(String[] args) {
-        System.out.println(getNameById(4));
     }
 }

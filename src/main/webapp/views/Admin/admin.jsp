@@ -2,6 +2,8 @@
 <%@ page import="model.bean.User" %>
 <%@ page import="model.service.RoleService" %>
 <%@ page import="model.service.OrderService" %>
+<%@ page import="logs.LogService" %>
+<%@ page import="logs.Log" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <% String framePath = ((String) request.getAttribute("framePath") == null) ?
         request.getContextPath() + "/views/Admin/dashboard.jsp"
@@ -193,54 +195,42 @@
 
             <div class="navbar-nav align-items-center ms-auto">
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <div class="nav-link dropdown-toggle" style="cursor: default" data-bs-toggle="dropdown">
                         <i class="fa-solid fa-scroll me-lg-2"></i>
                         <span class="d-none d-lg-inline-flex">Lịch sử hệ thống</span>
-                    </a>
+                    </div>
                     <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                        <a href="#" class="dropdown-item">
+                        <%for (Log log : LogService.getInstance().getThreeRecentlyLogs()) {%>
+                        <div class="dropdown-item">
                             <div class="d-flex align-items-center">
-                                <img class="rounded-circle" src="img/user.jpg" alt=""
-                                     style="width: 40px; height: 40px;">
+                                <div class="fs-5">
+                                    <%if (log.isWARNINGLevel()) {%>
+                                    <i class="text-warning fa-solid fa-triangle-exclamation"></i>
+                                    <%} else if (log.isINFORLevel()) {%>
+                                    <i class="text-info fa-solid fa-circle-info"></i>
+                                    <%} else if (log.isDANGERLevel()) {%>
+                                    <i class="text-danger fa-solid fa-circle-exclamation"></i>
+                                    <%}%>
+                                </div>
                                 <div class="ms-2">
-                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                    <small>15 minutes ago</small>
+                                    <h6 style="text-wrap: initial" class="fw-normal mb-0"><%=log.getMessage()%></h6>
+                                    <small style="color: rgb(128,128,128)"><%=log.getFormattedCreatedTime()%>
+                                    </small>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                         <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle" src="img/user.jpg" alt=""
-                                     style="width: 40px; height: 40px;">
-                                <div class="ms-2">
-                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                    <small>15 minutes ago</small>
-                                </div>
-                            </div>
-                        </a>
-                        <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle" src="img/user.jpg" alt=""
-                                     style="width: 40px; height: 40px;">
-                                <div class="ms-2">
-                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                    <small>15 minutes ago</small>
-                                </div>
-                            </div>
-                        </a>
-                        <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item text-center">See all message</a>
+                        <%}%>
+                        <a href="<%=request.getContextPath()%>/admin?func=banners_tips" class="dropdown-item text-center">Xem tất cả</a>
                     </div>
                 </div>
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <div style="cursor: default" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="rounded-circle me-lg-2 fa-solid fa-user"
                            style="width: 40px; height: 40px;">
                         </i>
                         <span class="d-none d-lg-inline-flex"><%= u.getName()%></span>
-                    </a>
+                    </div>
                     <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                         <a href="<%=request.getContextPath()%>/changeUserInfo" class="dropdown-item">Tài khoản cá
                             nhân</a>

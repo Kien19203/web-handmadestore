@@ -396,9 +396,15 @@
             <button type="button" class="btn btn-sm btn-primary "><i class="fa-solid fa-user" style="color: white;"></i>
                 <span><%= u.getName()%></span></button>
             <ul id="dangxuat" class="dx dropdown-menu">
-
+                <%
+                    boolean isAdmin = ((request.getSession().getAttribute("isAdmin") == null) ? false : ((boolean) request.getSession().getAttribute("isAdmin")));
+                    if (isAdmin) {
+                %>
+                <li><a class="dropdown-item" href="<%=request.getContextPath()%>/admin">
+                    <i class="fa-solid fa-user-tie fs-3 me-1"></i>Quản lý hệ thống</a></li>
+                <%}%>
                 <li><a class="dropdown-item" href="<%=request.getContextPath()%>/views/Admin/changeUserInfo.jsp"><i
-                        class="fa-solid fa-user-pen"></i> Thay Đổi Thông Tin</a></li>
+                        class="fa-solid fa-user-pen"></i>Thông Tin Tài Khoản</a></li>
                 <li><a class="dropdown-item" href="<%=request.getContextPath()%>/logout"><i
                         class="fa-solid fa-right-from-bracket"></i> Đăng
                     Xuất</a></li>

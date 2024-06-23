@@ -19,6 +19,7 @@ public class UserService {
     public static void insertUser(User user) {
         UserDAO.insertUser(user);
     }
+
     public User addUser(String name, String phoneNumber, String email, String password, int roleId) {
         return UserDAO.addUser(name, phoneNumber, email, password, roleId);
     }
@@ -47,6 +48,7 @@ public class UserService {
         List<User> users = UserDAO.getAllUsers();
         return users;
     }
+
     public List<User> getAllUsers(String userId) {
         List<User> users = UserDAO.getAllUsers(userId);
         return users;

@@ -553,14 +553,14 @@
     }
 
     function submit_showOrderDetails(event, clickedElement) {
-        var rowIndex = 0;
-        var row = clickedElement;
+        let rowIndex = 0;
+        let row = clickedElement;
         while ((row = row.previousElementSibling) != null) {
             rowIndex++;
         }
         // alert("Chỉ số hàng: " + rowIndex);
         event.preventDefault();
-        var orderId = clickedElement.id;
+        const orderId = clickedElement.id;
         document.getElementById("currentOrderId").value = orderId;
         document.getElementById("orderForm").submit();
     }

@@ -95,27 +95,39 @@
             <div id="add_user" class="w-50 bg-secondary p-3 rounded" style="display: none">
                 <div class="form-group">
                     <label for="name">Tên</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <input type="text" class="form-control" id="name" name="name" oninput="checkName()" required>
+                    <div class="text-danger" id="resultValidName"></div>
                 </div>
                 <div class="form-group">
                     <label for="phoneNumber">Số điện thoại</label>
-                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber" required>
+                    <input type="text" class="form-control" id="phoneNumber" name="phoneNumber"
+                           oninput="checkPhoneNumber()" required>
+                    <div class="text-danger" id="resultValidPhoneNumber"></div>
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control" id="email" name="email" oninput="checkEmail()" required>
+                    <div class="text-danger" id="resultValidEmail"></div>
                 </div>
                 <div class="form-group">
                     <label for="password">Mật khẩu</label>
-                    <input type="password" class="form-control" id="password" name="password" required>
+                    <input type="password" class="form-control" id="password" name="password" oninput="checkPassword()"
+                           required>
+                    <div class="text-danger" id="resultValidPassword"></div>
+                </div>
+                <div class="field">
+                    <label for="rePassword">Nhập lại mật khẩu</label>
+                    <input type="password" name="rePassword" id="rePassword" oninput="checkRePassword()" required>
+                    <div class="text-danger" id="resultValidRePassword"></div>
                 </div>
                 <div class="form-group">
-                    <label for="role">Role</label>
-                    <select class="form-control" id="role" name="roleId">
+                    <label for="roleId">Quyền hạn</label>
+                    <select class="form-control" id="roleId" name="roleId">
                         <option value="1">Quản lý</option>
-                        <option value="0">Chủ hệ thống</option>
+                        <option value="3">Chủ hệ thống</option>
                     </select>
                 </div>
+                <div class="text-warning" id="validateResult"></div>
                 <button type="button" class="btn btn-primary" onclick="addUser()">Thêm User</button>
                 <button
                         class="btn btn-dark" type="button" onclick="hideAddUserBox()">Thoát
@@ -262,28 +274,88 @@
     function hideAddUserBox() {
         document.getElementById("add_user").style.display = "none";
     }
+
     function addUser() {
+        const name = document.getElementById("name").value;
+        const phoneNumber = document.getElementById("phoneNumber").value;
+        const email = document.getElementById("email").value;
+        const password = document.getElementById("password").value;
+        const rePassword = document.getElementById("rePassword").value;
+        const roleId = document.getElementById("roleId").value
         $.ajax({
             method: "POST",
             url: "/HandMadeStore/user-ajax-handle",
             data: {
                 action: "addUser",
-                name: document.getElementById("name").value,
-                phoneNumber: document.getElementById("phoneNumber").value,
-                email: document.getElementById("email").value,
-                password: document.getElementById("password").value,
-                roleId: document.getElementById("roleId").value
+                name: name,
+                phoneNumber: phoneNumber,
+                email: email,
+                password: password,
+                rePassword: rePassword,
+                roleId: roleId
             },
             success: function (response) {
                 alert(response)
+                document.getElementById("validateResult").innerHTML = response;
             },
             error: function () {
-                alert("error")
+                alert("error"+ this.error)
             }
         })
     }
 
     <%}%>
+
+    function checkName() {
+        let name = document.getElementById("name").value;
+        let regex = /^.+$/;
+        if (!name.match(regex)) {
+            document.getElementById("resultValidName").textContent = "Tên không được bỏ trống"
+        } else {
+            document.getElementById("resultValidName").textContent = " "
+        }
+    }
+
+    function checkPhoneNumber() {
+        let phoneNumber = document.getElementById("phoneNumber").value;
+        let regex = /^0\d{2}\d{3}\d{4}$/;
+        if (!phoneNumber.match(regex)) {
+            document.getElementById("resultValidPhoneNumber").textContent = "Số điện thoại không hợp lệ"
+        } else {
+            document.getElementById("resultValidPhoneNumber").textContent = " "
+        }
+    }
+
+    function checkEmail() {
+        let email = document.getElementById("email").value;
+        let regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!email.match(regex)) {
+            document.getElementById("resultValidEmail").textContent = "Email không hợp lệ"
+        } else {
+            document.getElementById("resultValidEmail").textContent = " "
+        }
+    }
+
+    function checkPassword() {
+        let pw = document.getElementById("password").value;
+        // >8 ký tự, ít nhất 1 Hoa, 1 ký tự đặc biệt
+        let regex = /^(?=.*[A-Z])(?=.*[\W_])(?=.*[a-z]).{8,}$/;
+        if (!pw.match(regex)) {
+            document.getElementById("resultValidPassword").textContent = "Mật khẩu bao gồm ít nhất 8 ký tự, có ít nhất 1 ký tự in hoa và 1 ký tự đặc biệt"
+        } else {
+            document.getElementById("resultValidPassword").textContent = " "
+        }
+    }
+
+    function checkRePassword() {
+        let pw = document.getElementById("password").value;
+        let rePw = document.getElementById("rePassword").value;
+        if (pw !== rePw) {
+            document.getElementById("resultValidRePassword").textContent = "Mật khẩu không khớp"
+        } else {
+            document.getElementById("resultValidRePassword").textContent = ""
+        }
+    }
 </script>
 </body>
 <%
