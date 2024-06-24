@@ -258,8 +258,6 @@ public class UserDAO {
             return null;
         }
     }
-<<<<<<< HEAD
-=======
 //    Thêm user đăng nhập bằng GG
     public static void inserUserGG(String userName,String userTelephone,String userEmail,String password,String status,int roleId){
         JDBIConnector.me().useHandle(handle ->
@@ -277,5 +275,4 @@ public class UserDAO {
     public static void main(String[] args) {
         inserUserGG("NTN","null","NTNNghia@gmail.com","null","Bình Thường",1);
     }
->>>>>>> b6b3ebcd9eeefe3752343c77a21f13ca1a8ed57f
 }
