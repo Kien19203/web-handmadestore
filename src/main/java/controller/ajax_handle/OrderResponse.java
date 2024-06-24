@@ -1,23 +1,18 @@
 package controller.ajax_handle;
 
-import model.bean.Order;
-import model.bean.OrderDetail;
-import model.bean.Product;
-import model.bean.User;
+import model.bean.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class OrderResponse {
     private Order order;
-    private User user;
-    private List<OrderDetail> orderDetails;
-    private List<Product> mappingProducts;
+    private HashMap<String, String> image_name;
 
-    public OrderResponse(Order order, User user, List<OrderDetail> orderDetails, List<Product> mappingProducts) {
+    public OrderResponse(Order order, HashMap<String, String> image_name) {
         this.order = order;
-        this.user = user;
-        this.orderDetails = orderDetails;
-        this.mappingProducts = mappingProducts;
+        this.image_name = image_name;
     }
 
     public Order getOrder() {
@@ -28,27 +23,11 @@ public class OrderResponse {
         this.order = order;
     }
 
-    public User getUser() {
-        return user;
+    public HashMap<String, String> getImage_name() {
+        return image_name;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<OrderDetail> getOrderDetails() {
-        return orderDetails;
-    }
-
-    public void setOrderDetails(List<OrderDetail> orderDetails) {
-        this.orderDetails = orderDetails;
-    }
-
-    public List<Product> getMappingProducts() {
-        return mappingProducts;
-    }
-
-    public void setMappingProducts(List<Product> mappingProducts) {
-        this.mappingProducts = mappingProducts;
+    public void setImage_name(HashMap<String, String> image_name) {
+        this.image_name = image_name;
     }
 }

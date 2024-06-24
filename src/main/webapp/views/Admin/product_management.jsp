@@ -250,6 +250,8 @@
                     title="Hoàn tất nếu bạn chắc chắn đã điền đầy đủ thông tin">Hoàn tất chỉnh sửa
             </button>
         </div>
+        <input type="hidden" name="currentPageNumber"
+               value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
     </div>
 </form>
 <script>

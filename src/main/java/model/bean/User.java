@@ -14,6 +14,7 @@ public class User implements Serializable {
     private Timestamp createDate;
     private String status;
     private int roleId;
+
     public User() {
     }
 
@@ -103,26 +104,27 @@ public class User implements Serializable {
     }
 
     public boolean isOwn() {
-        return (this.roleId == 3) ? true : false;
+        return this.roleId == 3;
     }
 
     public boolean isAdmin() {
-        return (this.roleId == 0) ? true : false;
+        return this.roleId == 1;
     }
 
     public boolean isUser() {
-        return (this.roleId == 1) ? true : false;
+        return this.roleId == 2;
     }
+
     public boolean isLock() {
         return (this.getStatus().equals("Bình Thường")) ? false : true;
     }
 
-    public String nameAsRole(){
-        if(isOwn()){
+    public String nameAsRole() {
+        if (isOwn()) {
             return "Chủ hệ thống";
-        }else if(isAdmin()){
+        } else if (isAdmin()) {
             return "Quản trị viên";
-        }else{
+        } else {
             return "Người dùng";
         }
     }

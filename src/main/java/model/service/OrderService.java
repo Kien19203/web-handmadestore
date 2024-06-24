@@ -30,6 +30,21 @@ public class OrderService {
         return OrderDAO.getOrderByCustomerId(customerId);
     }
 
+    public List<Order> getOrderByCustomerId(String customerId, int limit, int offset) {
+        return OrderDAO.getOrderByCustomerId(customerId, limit, offset);
+    }
+    public List<Order> getOrderByCustomerId(String customerId, int limit, int offset, int statusNumber) {
+        return OrderDAO.getOrderByCustomerId(customerId, limit, offset, statusNumber);
+    }
+
+    public int ordersNumber(String customerId) {
+        return OrderDAO.ordersNumber(customerId);
+    }
+
+    public int ordersNumber(String customerId, int status) {
+        return OrderDAO.ordersNumber(customerId, status);
+    }
+
     public List<Order> getOrderByCustomerNamePart(String customerNamePart) {
         return OrderDAO.getOrderByCustomerNamePart(customerNamePart);
     }
@@ -61,6 +76,7 @@ public class OrderService {
     public List<Order> getWaitConfirmOrders() {
         return OrderDAO.getWaitConfirmOrders();
     }
+
     public List<Order> getPreparingOrders() {
         return OrderDAO.getPreparingOrders();
     }

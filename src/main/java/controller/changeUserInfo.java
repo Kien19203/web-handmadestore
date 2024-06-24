@@ -2,6 +2,7 @@ package controller;
 
 import model.bean.User;
 import model.dao.UserDAO;
+import model.service.OrderService;
 import model.service.RoleService;
 import model.service.UserService;
 import utils.HashPassword;
@@ -28,34 +29,35 @@ public class changeUserInfo extends HttpServlet {
 
         User user = (User) (req.getSession().getAttribute("auth"));
         if (user != null) {
-            String submit = req.getParameter("submit");
-            if (submit != null) {
-                if (submit.equals("change_name")) {
-                    String input_name = req.getParameter("input_name");
-                    if (input_name == null || input_name.trim().equals(""))
-                        req.setAttribute("result", "Tên mới không khả dụng");
+            String action = req.getParameter("action");
+            if (action != null) {
+                if (action.equals("changeName")) {
+                    String newName = req.getParameter("newName");
+                    if (newName == null || newName.trim().equals(""))
+                        resp.getWriter().write("Tên mới không khả dụng");
                     else {
-                        UserService.getInstance().updateName(user.getId() + "", input_name);
-                        req.setAttribute("result", "Tên mới - " + input_name + " đã cập nhật");
-
+                        UserService.getInstance().updateName(user.getId() + "", newName);
+                        resp.getWriter().write("Tên gọi mới - " + newName + " đã cập nhật");
                         user = (User) UserService.getInstance().getUserById(user.getId() + "");
                         req.getSession().setAttribute("auth", user);
                     }
-
-                } else if (submit.equals("change_phone")) {
-                    String input_phone = req.getParameter("input_phone");
-                    if (input_phone == null || input_phone.trim().equals("") || !(input_phone.length() <= 10 && input_phone.charAt(0) == '0'))
-                        req.setAttribute("result", "Số điện thoại không khả dụng");
+                } else if (action.equals("changePhone")) {
+                    String newPhone = req.getParameter("newPhone");
+                    if (newPhone == null || newPhone.trim().equals("") || newPhone.equals(user.getPhoneNumber()))
+                        resp.getWriter().write("Số điện thoại không khả dụng");
+                    else if(Validation.checkPhoneNumber(newPhone)==false){
+                        resp.getWriter().write("Số điện thoại không hợp lệ");
+                    }
                     else {
-                        UserService.getInstance().updatePhoneNumber(user.getId() + "", input_phone);
-                        req.setAttribute("result", "Số điện thoại mới - " + input_phone + " đã cập nhật");
+                        UserService.getInstance().updatePhoneNumber(user.getId() + "", newPhone);
+                        resp.getWriter().write("Số điện thoại mới - " + newPhone + " đã cập nhật");
 
                         user = (User) UserService.getInstance().getUserById(user.getId() + "");
                         req.getSession().setAttribute("auth", user);
                     }
                 }
-            }
-            req.getRequestDispatcher("./views/Admin/changeUserInfo.jsp").forward(req, resp);
+            } else
+                req.getRequestDispatcher("./views/Admin/changeUserInfo.jsp").forward(req, resp);
         } else {
             resp.sendRedirect(req.getContextPath() + "/login");
         }
