@@ -28,18 +28,6 @@ public class DiscountAdminController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/jsp; charset=UTF-8");
         req.setCharacterEncoding("UTF-8");
-        String discountId = req.getParameter("submit_1_discountId");
-        if (discountId != null) {
-            String[] discountProductsId = req.getParameterValues(discountId);
-            if (discountProductsId != null) {
-                List<String> Plist = Arrays.asList(discountProductsId);
-                // Xử lý các giá trị của checkbox
-                ProductService.getInstance().setDiscountForProductList(discountId, Plist);
-            } else {
-//            Khong có product nao duoc chon
-                ProductService.getInstance().setDiscountForProductList(discountId, null);
-            }
-        }
         // Thêm KM
         String adddiscount = req.getParameter("submit_2_adddiscount");
         if (adddiscount != null) {
@@ -97,13 +85,8 @@ public class DiscountAdminController extends HttpServlet {
                 System.out.println("fall update");
             }
         }
-//        load Discount
-        String choiceProductsDiscountId = req.getParameter("choiceProductsDiscountId");
-        System.out.println("choiceProductsDiscountId server :" +  choiceProductsDiscountId);
-        if (choiceProductsDiscountId != null) {
-            Discount choiceProductsDiscount = DiscountService.getInstance().getDiscountById(choiceProductsDiscountId);
-            req.setAttribute("choiceProductsDiscount", choiceProductsDiscount);
-        }
+
+
         req.getRequestDispatcher("/views/Admin/discount_management.jsp").forward(req, resp);
     }
 }

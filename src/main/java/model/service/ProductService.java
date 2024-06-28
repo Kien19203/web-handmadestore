@@ -105,12 +105,43 @@ public class ProductService {
         ProductDAO.removeDiscount(product_id);
     }
 
-    public void setDiscountForProductList(String discountId, List<String> product_id_list) {
-        ProductDAO.setDiscountForProductList(discountId, product_id_list);
+    public void setDiscountForAllProducts(String discountId) {
+        ProductDAO.setDiscountForAllProducts(discountId);
     }
 
-    public void setNullDiscountForProductList(String discountId) {
-        ProductDAO.setNullDiscountForProductList(discountId);
+    public void unSetDiscountForAllProducts(String discountId) {
+        ProductDAO.unSetDiscountForAllProducts(discountId);
+    }
+
+    public void unSetDiscountForAllProducts() {
+        ProductDAO.unSetDiscountForAllProducts();
+    }
+
+    public void setDiscountByCategory(String discountId, String categoryId) {
+        ProductDAO.setDiscountByCategory(discountId, categoryId);
+    }
+
+    public void unSetDiscountByCategory(String discountId, String categoryId) {
+        ProductDAO.unSetDiscountByCategory(discountId, categoryId);
+    }
+
+    public void setDiscountByProduct(String discountId, String productId) {
+        ProductDAO.setDiscountByProduct(discountId, productId);
+    }
+
+    public void unSetDiscountByProduct(String discountId, String productId) {
+        ProductDAO.unSetDiscountByProduct(discountId, productId);
+    }
+
+    /*
+    comparison: -1 <; 0 =; 1 >
+     */
+    public void setDiscountByQuantity(String discountId, int number, int comparison) {
+        ProductDAO.setDiscountByQuantity(discountId, number, comparison);
+    }
+
+    public void unSetDiscountByQuantity(String discountId, int number, int comparison) {
+        ProductDAO.unSetDiscountByQuantity(discountId, number, comparison);
     }
 
     public void insertNewProduct(String name, String description, double costPrice, double sellingPrice,
@@ -158,7 +189,7 @@ public class ProductService {
     }
 
     public List<Rate> getRatesFirstUser(int productId, int userId) {
-       return ProductDAO.getRatesFirstUser(productId, userId);
+        return ProductDAO.getRatesFirstUser(productId, userId);
     }
 
     public Integer getStarNumberCount(int productId, int starRatings) {
@@ -206,14 +237,15 @@ public class ProductService {
     public long getNumberAvailProduct() {
         return ProductDAO.getNumberAvailProduct();
     }
-    public static Integer discountProduct(int idProduct){
+
+    public static Integer discountProduct(int idProduct) {
         return ProductDAO.discountProduct(idProduct);
     }
+
     public static void main(String[] args) {
 //        System.out.println(UserDAO.checkUserAllowedToRate(118, 4));
 //        System.out.println(getInstance().getChangeNumber(118, 4));
 //         Rate changeNumber = ProductService.getInstance().rateExists(118, 4);
 //        System.out.println("rate -> number: " + changeNumber.getChangeNumber());
-        System.out.println(discountProduct(1));
     }
 }
