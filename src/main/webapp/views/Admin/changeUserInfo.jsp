@@ -482,7 +482,7 @@
                                         <p class="card-text">Đơn giá: ${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice)}</p>
                                         <p class="card-text">X ${orderDetailMapping.orderDetail.quantity}</p>
                                         <p class="card-text fw-bold">${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice * orderDetailMapping.orderDetail.quantity)}</p>
-                                        <a href="<%=request.getContextPath()%>/product-detail?id=${orderDetailMapping.orderDetail.productId}">Đánh giá, Xem trực tiếp sản phẩm</a>
+                                        <a href="<%=request.getContextPath()%>/product-detail?id=${orderDetailMapping.orderDetail.productId}">Xem, Đánh giá trực tiếp sản phẩm</a>
                                     </div>
                                 </div>
                             </div>

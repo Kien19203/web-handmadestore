@@ -47,7 +47,7 @@ public class DiscountDAO {
 
     public static void deleteDiscountById(String id) {
         //set products list bằng null
-        ProductService.getInstance().setNullDiscountForProductList(id);
+        ProductService.getInstance().unSetDiscountForAllProducts(id);
         //xóa discount
         JDBIConnector.me().useHandle(handle ->
                 handle.createUpdate(

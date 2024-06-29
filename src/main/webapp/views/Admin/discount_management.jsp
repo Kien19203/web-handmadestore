@@ -25,7 +25,7 @@
     NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
     numberFormat.setCurrency(currency);
 %>
-<%List<Product> products =  ProductService.getInstance().getAll();%>
+<%List<Product> products = ProductService.getInstance().getAll();%>
 <%List<Category> categories = CategoryService.getInstance().getALl();%>
 <html lang="en">
 <head>
@@ -71,7 +71,8 @@
         .dt-empty, .dt-info {
             display: none;
         }
-        #data_wrapper{
+
+        #data_wrapper {
             width: 100%;
         }
     </style>
@@ -273,7 +274,9 @@
                                     <div class="dropdown-item" href="#">
                                         <%for (Category c : categories) {%>
                                         <div class="form-check form-switch">
-                                            <input class="form-check-input" type="checkbox" id="c_<%=c.getId()%>">
+                                            <input class="form-check-input category" type="checkbox"
+                                                   onchange="changeSelectByCategory(this,<%=c.getId()%>)"
+                                                   id="c_<%=c.getId()%>">
                                             <label class="form-check-label" for="c_<%=c.getId()%>"><%=c.getName()%>
                                             </label>
                                         </div>
@@ -283,12 +286,12 @@
                             </ul>
                         </div>
                         <div class="mx-3">
-                            <button class="btn btn-primary" type="button">
+                            <button class="btn btn-primary" type="button" onclick="selectAllProductForDiscount()">
                                 Áp dụng cho tất cả
                             </button>
                         </div>
                         <div>
-                            <button class="btn btn-primary" type="button">
+                            <button class="btn btn-primary" type="button" onclick="deSelectAllProductForDiscount()">
                                 Bỏ áp dụng cho tất cả
                             </button>
                         </div>
@@ -296,79 +299,42 @@
                     <div class="m-4 fs-6 d-flex align-items-center">
                         <div class="d-flex">
                             <div class="form-group">
-                                <input type="number" class="form-control" placeholder="Nhập số lượng có sẵn">
+                                <input type="number" class="form-control" id="number"
+                                       placeholder="Nhập số lượng có sẵn">
+                                <div class="text-danger" id="numberValid"></div>
                             </div>
-                            <div class="d-flex align-items-center">
-                                <div class="mx-5">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault1">
+                            <div class="mx-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="comparison"
+                                           id="flexRadioDefault1" value="1" checked>
                                     <label class="form-check-label" for="flexRadioDefault1">
-                                        Lớn hơn
+                                        Dựa vào số lượng lớn hơn
                                     </label>
                                 </div>
-                                <div class="mx-5">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault2" checked>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="comparison"
+                                           id="flexRadioDefault3" value="0">
+                                    <label class="form-check-label" for="flexRadioDefault3">
+                                        Dựa vào số lượng tương ứng
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="comparison"
+                                           id="flexRadioDefault2" value="-1">
                                     <label class="form-check-label" for="flexRadioDefault2">
-                                        Bé hơn
+                                        Dựa vào số lượng ít hơn
                                     </label>
                                 </div>
                             </div>
-                            <button class="btn btn-primary" type="button">
-                                Áp dụng theo số lượng có sẵn
-                            </button>
-                        </div>
-                    </div>
-                    <div class="m-4 fs-6 d-flex align-items-center">
-                        <div class="d-flex">
-                            <div class="form-group">
-                                <input type="number" class="form-control" placeholder="Nhập số lượng bán ra">
+
+                            <div>
+                                <button class="btn btn-primary" type="button" onclick="selectByQuantity()">
+                                    Áp dụng
+                                </button>
+                                <button class="btn btn-primary" type="button" onclick="unSelectByQuantity()">
+                                    Hủy bỏ áp dụng
+                                </button>
                             </div>
-                            <div class="d-flex align-items-center">
-                                <div class="mx-5">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault3">
-                                    <label class="form-check-label" for="flexRadioDefault1">
-                                        Lớn hơn
-                                    </label>
-                                </div>
-                                <div class="mx-5">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault4" checked>
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                        Bé hơn
-                                    </label>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary" type="button">
-                                Áp dụng theo số lượng bán ra
-                            </button>
-                        </div>
-                    </div>
-                    <div class="m-4 fs-6 d-flex align-items-center">
-                        <div class="d-flex">
-                            <div class="form-group">
-                                <input type="number" class="form-control" placeholder="Nhập giá bán ra">
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <div class="mx-5">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault5">
-                                    <label class="form-check-label" for="flexRadioDefault1">
-                                        Lớn hơn
-                                    </label>
-                                </div>
-                                <div class="mx-5">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault"
-                                           id="flexRadioDefault6" checked>
-                                    <label class="form-check-label" for="flexRadioDefault2">
-                                        Bé hơn
-                                    </label>
-                                </div>
-                            </div>
-                            <button class="btn btn-primary" type="button">
-                                Áp dụng theo giá bán ra
-                            </button>
                         </div>
                     </div>
                     <%--search--%>
@@ -402,7 +368,15 @@
                             <tr class="text-center">
                                 <td class="d-flex align-items-center">
                                     <div class="me-2 form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="p_<%=p.getId()%>">
+                                        <input class="form-check-input p_all p_<%=p.getCategoryId()%> pquantity_<%=p.getQuantity()%>"
+                                               type="checkbox"
+                                               id="p_<%=p.getId()%>"
+                                               onclick="changeSelectByProduct(this, <%=p.getCategoryId()%>, <%=p.getId()%>)"
+                                               onchange="reloadGUI(this,<%=p.getId()%>, <%=p.getSellingPrice()%>)"
+                                            <%if(p.getDiscountId()!=0){%>
+                                               checked
+                                            <%}%>
+                                        >
                                     </div>
                                     <a href="<%=request.getContextPath()%>/product-detail?id=<%=p.getId()%>"
                                        target="_blank"
@@ -422,8 +396,7 @@
                                 </td>
                                 <%!double finalSellingPrice;%>
                                 <%finalSellingPrice = ProductService.getInstance().productPriceIncludeDiscount(p);%>
-                                <td>
-
+                                <td id="discount_for_<%=p.getId()%>">
                                     <%
                                         Discount d = DiscountService.getInstance().getDiscountById(p.getDiscountId() + "");%>
                                     <%if (finalSellingPrice == p.getSellingPrice()) {%>
@@ -434,7 +407,7 @@
                                     <%=(d == null) ? "" : d.getName() + " - giảm " + (d.getPercentageOff() * 100) + "%"%>
                                     <%}%>
                                 </td>
-                                <td><%=numberFormat.format(finalSellingPrice)%>
+                                <td id="newFinalSellingPrice_<%=p.getId()%>"><%=numberFormat.format(finalSellingPrice)%>
                             </tr>
                             <%}%>
                             </tbody>
@@ -469,6 +442,212 @@
         }
     });
 
+    function reloadGUI(checkbox, productId, sellingPrice) {
+        const current_discountId = document.getElementById("current_discountId").value;
+        const discountTdE = $('#discount_for_' + productId);
+        const newFinalSellingPriceTdE = $('#newFinalSellingPrice_' + productId);
+        const isChecked = checkbox.checked;
+        if (isChecked) {
+            $.ajax({
+                method: "POST",
+                url: "/HandMadeStore/discount-ajax-handle",
+                data: {
+                    action: "reloadGUI",
+                    productId: productId,
+                    discountId: current_discountId
+                },
+                success: function (response) {
+                    let discountHtml = `<div>`;
+                    if (response.isAvailable == false) {
+                        discountHtml += `<del style="text-decoration-color: red;">${response.asTextForShow}</del>`;
+                    } else {
+                        discountHtml += `${response.asTextForShow}`;
+                    }
+                    discountHtml += `</div>`;
+                    discountTdE.html(discountHtml);
+                    newFinalSellingPriceTdE.html(
+                        `<div>
+                        ${formattedPrice(response.finalPrice)}
+                    </div>`
+                    );
+                },
+                error: function () {
+                    alert("Thay đổi không thành công!");
+                }
+            })
+        } else {
+            $.ajax({
+                method: "POST",
+                url: "/HandMadeStore/discount-ajax-handle",
+                data: {
+                    action: "unDiscountForProduct",
+                    discountId: current_discountId,
+                    productId: productId
+                },
+                success: function (response) {
+                    discountTdE.html(`<div></div>`);
+                    newFinalSellingPriceTdE.html(
+                        `<div>
+                        ` + formattedPrice(sellingPrice) + `
+                    </div>`
+                    );
+                },
+                error: function () {
+                    alert("Thay đổi không thành công!");
+                }
+            })
+        }
+    }
+
+    function ajaxSellectAll(discountId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/discount-ajax-handle",
+            data: {
+                action: "discountForAll",
+                discountId: discountId
+            },
+            success: function (response) {
+                const p_checkboxes = document.querySelectorAll('.p_all');
+                for (let i = 0; i < p_checkboxes.length; i++) {
+                    let id = p_checkboxes[i].id;
+                    if (p_checkboxes[i].type == 'checkbox') {
+                        p_checkboxes[i].checked = true;
+                        p_checkboxes[i].onchange();
+                    }
+                }
+                const categories = document.querySelectorAll('.category');
+                for (let i = 0; i < categories.length; i++) {
+                    let id = categories[i].id;
+                    if (categories[i].type == 'checkbox')
+                        categories[i].checked = true;
+                }
+            },
+            error: function () {
+                alert("Thay đổi không thành công!");
+            }
+        })
+    }
+
+    function ajaxUnSellectAll(discountId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/discount-ajax-handle",
+            data: {
+                action: "unDiscountForAll",
+                discountId: discountId
+            },
+            success: function (response) {
+                const p_checkboxes = document.querySelectorAll('.p_all');
+                for (let i = 0; i < p_checkboxes.length; i++) {
+                    let id = p_checkboxes[i].id;
+                    if (p_checkboxes[i].type == 'checkbox') {
+                        p_checkboxes[i].checked = false;
+                        p_checkboxes[i].onchange();
+                    }
+                }
+                const categories = document.querySelectorAll('.category');
+                for (let i = 0; i < categories.length; i++) {
+                    let id = categories[i].id;
+                    if (categories[i].type == 'checkbox')
+                        categories[i].checked = false;
+                }
+            },
+            error: function () {
+                alert("Thay đổi không thành công!");
+            }
+        })
+    }
+
+    function ajaxSelectByCategory(discountId, categoryId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/discount-ajax-handle",
+            data: {
+                action: "discountByCategory",
+                discountId: discountId,
+                categoryId: categoryId
+            },
+            success: function (response) {
+                const p_checkboxes = document.querySelectorAll('.p_' + categoryId);
+                for (let i = 0; i < p_checkboxes.length; i++) {
+                    if (p_checkboxes[i].type == 'checkbox') {
+                        p_checkboxes[i].checked = true;
+                        p_checkboxes[i].onchange();
+                    }
+                }
+            },
+            error: function () {
+                alert("Thay đổi không thành công!");
+            }
+        })
+    }
+
+    function ajaxUnSelectByCategory(discountId, categoryId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/discount-ajax-handle",
+            data: {
+                action: "unDiscountByCategory",
+                discountId: discountId,
+                categoryId: categoryId
+            },
+            success: function (response) {
+                const p_checkboxes = document.querySelectorAll('.p_' + categoryId);
+                for (let i = 0; i < p_checkboxes.length; i++) {
+                    if (p_checkboxes[i].type == 'checkbox') {
+                        p_checkboxes[i].checked = false;
+                        p_checkboxes[i].onchange();
+                    }
+                }
+            },
+            error: function () {
+                alert("Thay đổi không thành công!");
+            }
+        })
+    }
+
+    function ajaxSelectByProduct(checkbox, discountId, productId, categoryId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/discount-ajax-handle",
+            data: {
+                action: "discountForProduct",
+                discountId: discountId,
+                productId: productId
+            },
+            success: function (response) {
+
+            },
+            error: function () {
+                alert("Thay đổi không thành công!");
+            }
+        })
+    }
+
+    function ajaxUnSelectByProduct(checkbox, discountId, productId, categoryId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/discount-ajax-handle",
+            data: {
+                action: "unDiscountForProduct",
+                discountId: discountId,
+                productId: productId
+            },
+            success: function (response) {
+                const categories_checkboxes = document.querySelectorAll('.category');
+                for (let i = 0; i < categories_checkboxes.length; i++) {
+                    let id = categories_checkboxes[i].id;
+                    if (categories_checkboxes[i].type == 'checkbox' && id == ('c_' + categoryId))
+                        categories_checkboxes[i].checked = false;
+                }
+            },
+            error: function () {
+                alert("Thay đổi không thành công!");
+            }
+        })
+    }
+
 
     function showAddDiscount() {
         hideEditDiscount();
@@ -492,60 +671,147 @@
         document.getElementById("choice_products_discount").style.display = "none";
     }
 
-    function selectAllProductForDiscount(stt) {
-        var categories_checkboxes = document.querySelectorAll('.category');
-        for (var i = 0; i < categories_checkboxes.length; i++) {
-            let id = categories_checkboxes[i].id;
-            if (categories_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
-                categories_checkboxes[i].checked = true;
-        }
-        var products_checkboxes = document.querySelectorAll('.product');
-        for (var i = 0; i < products_checkboxes.length; i++) {
-            let id = products_checkboxes[i].id;
-            if (products_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
-                products_checkboxes[i].checked = true;
+    function selectAllProductForDiscount() {
+        const current_discountId = document.getElementById("current_discountId").value;
+        ajaxSellectAll(current_discountId);
+    }
+
+    function deSelectAllProductForDiscount() {
+        const current_discountId = document.getElementById("current_discountId").value;
+        ajaxUnSellectAll(current_discountId)
+    }
+
+    function changeSelectByCategory(categoryCheckbox, categoryId) {
+        const current_discountId = document.getElementById("current_discountId").value;
+        const isChecked = categoryCheckbox.checked;
+        if (isChecked) {
+            ajaxSelectByCategory(current_discountId, categoryId)
+        } else {
+            ajaxUnSelectByCategory(current_discountId, categoryId)
         }
     }
 
-    function deSelectAllProductForDiscount(stt) {
-        var categories_checkboxes = document.querySelectorAll('.category');
-        for (var i = 0; i < categories_checkboxes.length; i++) {
-            let id = categories_checkboxes[i].id;
-            if (categories_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
-                categories_checkboxes[i].checked = false;
-        }
-        var products_checkboxes = document.querySelectorAll('.product');
-        for (var i = 0; i < products_checkboxes.length; i++) {
-            let id = products_checkboxes[i].id;
-            if (products_checkboxes[i].type == 'checkbox' && id.startsWith(stt))
-                products_checkboxes[i].checked = false;
-        }
-    }
-
-    function changeSelectByCategory(checkbox, stt, categoryId) {
+    function changeSelectByProduct(checkbox, categoryId, productId) {
         const isChecked = checkbox.checked;
-        const products_checkboxes = document.querySelectorAll('.product');
-        for (let i = 0; i < products_checkboxes.length; i++) {
-            let id = products_checkboxes[i].id;//stt_category_productId
-            if (products_checkboxes[i].type == 'checkbox' && id.startsWith(stt + "_" + categoryId))
-                if (isChecked) {
-                    products_checkboxes[i].checked = true;
-                } else {
-                    products_checkboxes[i].checked = false;
-                }
+        const current_discountId = document.getElementById("current_discountId").value;
+        if (isChecked) {
+            ajaxSelectByProduct(checkbox, current_discountId, productId, categoryId)
+        } else {
+            ajaxUnSelectByProduct(checkbox, current_discountId, productId, categoryId)
         }
     }
 
-    function changeSelectByProduct(checkbox, stt, categoryId) {
-        const isChecked = checkbox.checked;
-        const categories_checkboxes = document.querySelectorAll('.category');
-        for (let i = 0; i < categories_checkboxes.length; i++) {
-            let id = categories_checkboxes[i].id;//stt_category
-            if (categories_checkboxes[i].type == 'checkbox' && id.startsWith(stt + "_" + categoryId))
-                if (!isChecked) {
-                    categories_checkboxes[i].checked = false;
+    function selectByQuantity() {
+        const current_discountId = document.getElementById("current_discountId").value;
+        // comparison
+        const radios = document.getElementsByName('comparison');
+        let selectedValue = null;
+        radios.forEach(radio => {
+            if (radio.checked) {
+                selectedValue = radio.value;
+            }
+        });
+        // number
+        const number = document.getElementById("number").value;
+        if (number == undefined || number == null || number < 0) {
+            document.getElementById("numberValid").innerHTML = "Số lượng có sẵn không khả dụng";
+        } else {
+            document.getElementById("numberValid").innerHTML = "";
+            $.ajax({
+                method: "POST",
+                url: "/HandMadeStore/discount-ajax-handle",
+                data: {
+                    action: "discountByQuantity",
+                    discountId: current_discountId,
+                    number: number,
+                    comparison: selectedValue
+                },
+                success: function (response) {
+                    // Lấy tất cả các thẻ input có class p_all và là loại checkbox
+                    const inputs = document.querySelectorAll('input.p_all[type="checkbox"]');
+                    const filteredInputs = [];
+                    inputs.forEach(input => {
+                        const classList = input.classList;
+                        classList.forEach(cls => {
+                            if (cls.startsWith('pquantity_')) {
+                                const value = parseInt(cls.split('_')[1], 10);
+                                console.log("input 1", value)
+                                if (!isNaN(value) &&
+                                    ((value > number && selectedValue == 1) ||
+                                        (value == number && selectedValue == 0) ||
+                                        (value < number && selectedValue == -1))) {
+                                    console.log("2", input)
+                                    input.checked = true;
+                                    input.onchange();
+                                }
+                            }
+                        });
+                    });
+                },
+                error: function () {
+                    alert("Thay đổi không thành công!");
                 }
+            })
         }
+    }
+
+    function unSelectByQuantity() {
+        const current_discountId = document.getElementById("current_discountId").value;
+        // comparison
+        const radios = document.getElementsByName('comparison');
+        let selectedValue = null;
+        radios.forEach(radio => {
+            if (radio.checked) {
+                selectedValue = radio.value;
+            }
+        });
+        // number
+        const number = document.getElementById("number").value;
+        if (number == undefined || number == null || number < 0) {
+            document.getElementById("numberValid").innerHTML = "Số lượng có sẵn không khả dụng";
+        } else {
+            $.ajax({
+                method: "POST",
+                url: "/HandMadeStore/discount-ajax-handle",
+                data: {
+                    action: "unDiscountByQuantity",
+                    discountId: current_discountId,
+                    number: number,
+                    comparison: selectedValue
+                },
+                success: function (response) {
+                    // Lấy tất cả các thẻ input có class p_all và là loại checkbox
+                    const inputs = document.querySelectorAll('input.p_all[type="checkbox"]');
+                    const filteredInputs = [];
+                    inputs.forEach(input => {
+                        const classList = input.classList;
+                        classList.forEach(cls => {
+                            if (cls.startsWith('pquantity_')) {
+                                const value = parseInt(cls.split('_')[1], 10);
+                                if (!isNaN(value) &&
+                                    ((value > number && selectedValue == 1) ||
+                                        (value == number && selectedValue == 0) ||
+                                        (value < number && selectedValue == -1))) {
+                                    input.checked = false;
+                                    input.onchange();
+                                }
+                            }
+                        });
+                    });
+                },
+                error: function () {
+                    alert("Thay đổi không thành công!");
+                }
+            })
+        }
+    }
+
+    function formattedPrice(value) {
+        const formattedPrice = new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(value);
+        return formattedPrice;
     }
 </script>
 <script

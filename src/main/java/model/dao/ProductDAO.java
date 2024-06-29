@@ -351,59 +351,114 @@ public class ProductDAO {
 
     public static void removeDiscount(int product_id) {
         JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate("UPDATE product SET discountId = 'null' WHERE id=?")
+                handle.createUpdate("UPDATE product SET discountId = null WHERE id=?")
                         .bind(0, product_id)
                         .execute()
         );
     }
 
-    public static void setDiscountForProductList(String discountId, List<String> product_id_list) {
-        if (product_id_list != null && !product_id_list.isEmpty()) {
-            StringBuilder ids = new StringBuilder();
-            for (int i = 0; i < product_id_list.size(); i++) {
-                String id = product_id_list.get(i);
-                ids.append("'" + id + "'");
-                if (i != product_id_list.size() - 1)
-                    ids.append(",");
-            }
-            System.out.println("thay đổi 1 số");
-            JDBIConnector.me().useHandle(handle ->
-                    handle.createUpdate(
-                                    "UPDATE product " +
-                                            "SET discountId = null WHERE id NOT IN (" + ids + ") AND discountId = :id "
-                            )
-                            .bind("id", discountId)
-                            .execute()
-            );
-
-            JDBIConnector.me().useHandle(handle ->
-                    handle.createUpdate(
-                                    "UPDATE product " +
-                                            "SET discountId = :id WHERE id IN (" + ids + ")"
-                            )
-                            .bind("id", discountId)
-                            .execute()
-            );
-        } else {
-            System.out.println("bỏ tất cả");
-            JDBIConnector.me().useHandle(handle ->
-                    handle.createUpdate(
-                                    "UPDATE product " +
-                                            "SET discountId = null WHERE discountId= :id"
-                            )
-                            .bind("id", discountId)
-                            .execute()
-            );
-        }
-
-    }
-
-    public static void setNullDiscountForProductList(String discountId) {
+    public static void setDiscountForAllProducts(String discountId) {
         JDBIConnector.me().useHandle(handle ->
                 handle.createUpdate(
                                 "UPDATE product " +
-                                        "SET discountId = null WHERE discountId=?"
-                        ).bind(0, discountId)
+                                        "SET discountId = :id"
+                        )
+                        .bind("id", discountId)
+                        .execute()
+        );
+    }
+
+    public static void unSetDiscountForAllProducts(String discountId) {
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = null WHERE discountId = :id"
+                        )
+                        .bind("id", discountId)
+                        .execute()
+        );
+    }
+
+    public static void unSetDiscountForAllProducts() {
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = null"
+                        )
+                        .execute()
+        );
+    }
+
+    public static void setDiscountByCategory(String discountId, String categoryId) {
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = :discountId WHERE categoryId = :categoryId"
+                        )
+                        .bind("discountId", discountId)
+                        .bind("categoryId", categoryId)
+                        .execute()
+        );
+    }
+
+
+    public static void unSetDiscountByCategory(String discountId, String categoryId) {
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = null WHERE discountId = :discountId and categoryId = :categoryId"
+                        )
+                        .bind("discountId", discountId)
+                        .bind("categoryId", categoryId)
+                        .execute()
+        );
+    }
+
+
+    public static void setDiscountByProduct(String discountId, String productId) {
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = :discountId WHERE id = :productId"
+                        )
+                        .bind("discountId", discountId)
+                        .bind("productId", productId)
+                        .execute()
+        );
+    }
+
+    public static void unSetDiscountByProduct(String discountId, String productId) {
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = null WHERE discountId = :discountId and id = :productId"
+                        )
+                        .bind("discountId", discountId)
+                        .bind("productId", productId)
+                        .execute()
+        );
+    }
+
+    public static void setDiscountByQuantity(String discountId, int number, int comparison) {
+        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = :discountId WHERE quantity " + comparisonNumber + number
+                        )
+                        .bind("discountId", discountId)
+                        .execute()
+        );
+    }
+
+    public static void unSetDiscountByQuantity(String discountId, int number, int comparison) {
+        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = null WHERE discountId=:discountId and quantity " + comparisonNumber + number
+                        )
+                        .bind("discountId", discountId)
                         .execute()
         );
     }
@@ -573,8 +628,9 @@ public class ProductDAO {
                         .stream().toList());
         return rateList;
     }
-//    Lấy discount trong từng sản phẩm theo id
-    public static Integer discountProduct(int idProduct){
+
+    //    Lấy discount trong từng sản phẩm theo id
+    public static Integer discountProduct(int idProduct) {
         double discount = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select discount.percentageOff from discount inner join product on product.discountId = discount.id Where product.id =:id")
                         .bind("id", idProduct)
@@ -582,8 +638,9 @@ public class ProductDAO {
         int result = (int) Math.round((discount * 100));
         return result;
     }
+
     public static void main(String[] args) {
-        System.out.println(discountProduct(1));
+        unSetDiscountForAllProducts(1 + "");
     }
 }
 
