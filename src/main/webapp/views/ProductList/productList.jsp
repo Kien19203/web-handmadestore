@@ -293,7 +293,7 @@ let amd = document.getElementById("asort_md");
 
 
     <%--    Add sản phẩm vào giỏ hàng--%>
-let idProductList = [];
+    let idProductList = [];
     function addcart(btn,idProduct){
         let actionCart = "post";
         let num = 1;

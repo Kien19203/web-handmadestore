@@ -48,6 +48,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Inline+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
     <!--https://datatables.net/download/-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
@@ -62,6 +63,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
             crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
 
         <%@include file="../css/product.css"%>
@@ -121,10 +123,10 @@
 
 <!-- Nội dung Product-details-->
 <!-- Thẻ navigation : thanh chuyển hướng -->
-<section class="product-details container  pt-2">
+<section class="product-details container">
 
-    <nav aria-label="breadcrumb">
-        <ol class="breadcrumb ">
+    <nav aria-label="breadcrumb ">
+        <ol class="breadcrumb m-0 ">
             <li class="breadcrumb-item"><a
                     href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
             <li class="breadcrumb-item"><a
@@ -134,25 +136,29 @@
             </li>
         </ol>
     </nav>
-    <div class="row mt-3 ">
+    <div class="row ">
         <%--    Phần hiển thị ảnh sản phẩm. (trái)--%>
         <!--  zoom container start-->
-        <div class="xzoom-container col-lg-5 col-md-12 col-12">
+
+        <div class="xzoom-container col-lg-6 col-md-12 col-12 left-pd">
+            <div class="small-img-group col-lg-2 ">
+                <%
+                    for (int i = 0; i < Math.min(imageList.size(), 4); i++) {
+                        Image secondImage = imageList.get(i);
+                %>
+                <div class="small-img-col ">
+                    <img src="<%= secondImage.getPath()%>" width="100%" class="small-img" alt="">
+                </div>
+                <%}%>
+            </div>
             <%
                 if (imageList != null && !imageList.isEmpty()) {
                     Image mainImage = imageList.get(0);
             %>
-            <img class="img-fluid w-100 pb-1 xzoom large-img" id="MainImg" src="<%=mainImage.getPath()%>" alt="">
-            <div class="small-img-group">
+            <div class="main-img col-lg-10">
+            <img class=" large-img " id="MainImg" src="<%=mainImage.getPath()%>" alt="">
+                <img class="large-img " id="imgZoom" src="<%=mainImage.getPath()%>" alt="">
                 <%
-                    for (int i = 1; i < Math.min(imageList.size(), 4); i++) {
-                        Image secondImage = imageList.get(i);
-                %>
-                <div class="small-img-col">
-                    <img src="<%= secondImage.getPath()%>" width="100%" class="small-img" alt="">
-                </div>
-                <%
-                        }
                     }
                 %>
 
@@ -160,7 +166,7 @@
 
         </div>
         <%--     Phần hiển thị thông tin chi tiết của sản phẩm (phải)--%>
-        <div class="col-lg-7 col-md-12 col-12 right-pd">
+        <div class="col-lg-6 col-md-12 col-12 right-pd">
 
             <h3 class=""><%=product.getName() %>
             </h3>
@@ -171,47 +177,56 @@
                     <i class="bi bi-star"></i>
                     <i class="bi bi-star"></i>
                     <i class="bi bi-star"></i></div>
-                <a href="#rating-comment">Đánh giá của bạn</a>
+                <a href="#rating-comment">Xem chi tiết</a>
 
             </div>
+
+            <% if(product.getStock() > 0) {
+            %>
             <div class="state-pd my-2">
-                <label class="me-2 gray-content">Trạng thái: </label>
-                <%--                Xử lý trạng thái còn hàng , hết hàng --%>
-                <%int countProduct = product.getQuantity() - product.getSoldout(); %>
-
-                <%if (countProduct > 1) {%>
-                <span>Còn hàng</span>
-
-                <% } else { %>
-
-                <span style="color:#e32124 ">Tạm hết hàng</span>
-
-                <%}%>
-
-
+                <label class="me-2 label-title">Còn <strong style="color: #ff1a1a"><%=product.getStock()%></strong> sản phẩm</label>
+                <label class="me-2 ">  <strong>|       Trạng thái :</strong>
+                <%
+                     String status = "Ngừng kinh doanh";
+                     switch (product.getIsSale()) {
+                    case 1:
+                        status = "Có sẵn";
+                        break;
+                    case 2:
+                        status = "Tạm hết hàng";
+                        break;
+                }
+                %>
+                    <%=status%>
+                </label>
             </div>
+
+            <%
+                }
+            %>
             <h2 class="price-pd mb-4">
                     <%=numberFormat.format(product.getSellingPrice())%>
 
                 <div class="row mt-3">
+
+                    <%
+                    if(product.getIsSale() == 1) {
+                    %>
                     <div class="quantity-pd mb-4 col-4">
-                        <label class="me-2" style="font-size: 14px">Số lượng: </label>
+                        <label class="me-2 label-title" style="font-size: 14px">Số lượng: </label>
                         <div class="qu-value">
-                            <button class="pd-des m-0">-</button>
-                            <input type="text" class="quantity-input p-0" value="1">
-                            <button class="pd-inc m-0">+</button>
+                            <button class="pd-des m-0" id="#minus-button">-</button>
+                            <input type="text" class="quantity-input p-0" id="#quantity-label" value="1">
+                            <button class="pd-inc m-0" id="#plus-button">+</button>
                         </div>
                     </div>
-
-
                     <button class="buy-btn col-4" style="font-size: 16px" <%=request.getAttribute("disable")%>>
-
-                        Thêm vào
-                        giỏ hàng
-
-
+                        Thêm vào giỏ hàng
                     </button>
 
+                    <% } else {%>
+                    <a href="#relate" style="font-style: italic; font-size: 14px" > Xem các sản phẩm khác </a>
+                    <%}%>
 
                 </div>
 
@@ -245,9 +260,9 @@
             <%String pathImage = ImageService.getInstance().pathImageOnly(pr.getId());%>
 
             <div class="col info-item mx-3">
-                <div class="info-img ">
+                <div class="info-img w-100 ">
                     <img src="<%=request.getContextPath()%>/<%=pathImage%>" alt=""
-                         class="img-fluid d-block mx-auto mt-2">
+                         class="img-fluid d-block mx-auto mt-2 w-100 h-100">
 
 
                     <div class="row btns w-100 mx-auto ">
@@ -261,9 +276,9 @@
                         </button>
                     </div>
                 </div>
-                <div class="info-product p-3">
+                <div class="info-product py-3 ">
                     <a href="product-detail?id=<%=pr.getId()%>"
-                       class="d-block text-dark text-decoration-none py-2 info-name">
+                       class="d-block text-dark text-decoration-none info-name">
                         <%=pr.getName()%>
                     </a>
                     <span class="info-price fw-bold"><%=numberFormat.format(pr.getSellingPrice()) %></span>
@@ -272,7 +287,6 @@
                         <span>(<%=rateList.size()%> đánh giá)</span>
                     </div>
                 </div>
-
             </div>
             <%}%>
 
@@ -417,49 +431,134 @@
         crossorigin="anonymous"></script>
 
 <script>
+
+<%--    XỬ LÝ ẢNH  START--%>
     var MainImg = document.getElementById('MainImg');
     var smallimg = document.getElementsByClassName('small-img');
-    smallimg[0].onclick = function () {
-        MainImg.src = smallimg[0].src;
+    let imgZoom = document.getElementById('imgZoom')
+
+
+    for (var i = 0; i < smallimg.length; i++) {
+        smallimg[i].onclick = function () {
+            // Thay đổi src của MainImg
+            MainImg.src = this.src;
+            imgZoom.src = this.src;
+
+
+            // Đặt lại blur của tất cả các small-img về 20px
+            for (var j = 0; j < smallimg.length; j++) {
+                smallimg[j].style.filter = 'blur(1px)';
+                smallimg[j].style.border = 'none';
+            }
+
+            // Đặt blur của small-img được click về 0
+            this.style.filter = 'blur(0)';
+            this.style.border = '2px solid #ff1a1a'
+        };
     }
-    smallimg[1].onclick = function () {
-        MainImg.src = smallimg[1].src;
-    }
-    smallimg[2].onclick = function () {
-        MainImg.src = smallimg[2].src;
-    }
-    smallimg[3].onclick = function () {
-        MainImg.src = smallimg[3].src;
-    }
+
+    // Đặt blur của smallimg[0] về 0 ban đầu
+    smallimg[0].style.filter = 'blur(0)';
+    smallimg[0].style.border = '2px solid #ff1a1a'
+
+
+
+    MainImg.addEventListener('mousemove', (event) => {
+        imgZoom.style.opacity = 1;
+        let positionPx = event.x - MainImg.getBoundingClientRect().left;
+        let positionx = (positionPx / MainImg.offsetWidth) *100;
+
+        let positionPy = event.y - MainImg.getBoundingClientRect().top;
+        let positiony = (positionPy / MainImg.offsetHeight) * 100;
+
+
+        imgZoom.style.setProperty('--zoom-x', positionx + '%');
+        imgZoom.style.setProperty('--zoom-y', positiony + '%');
+
+        let transformX = - (positionx - 50) /3.5;
+        let transformY = - (positionx - 50) /3.5;
+        imgZoom.style.transform = 'scale(1.1)' + 'translateX(' + transformX + ') translateY(' + transformY + ')';
+
+    })
+
+    MainImg.addEventListener('mouseout', ()=> {
+        imgZoom.style.opacity=0;
+    })
+
+    //  XỬ LÝ ẢNH END
+
+
+    // XỬ LÝ THÊM VÀO GIỎ HÀNG START.
 
     document.addEventListener("DOMContentLoaded", function () {
-        const incrementButton = document.querySelector(".pd-inc");
-        const decrementButton = document.querySelector(".pd-des");
-        const quantityInput = document.querySelector(".quantity-input");
+        console.log("generilze");
+        let incrementButton = document.getElementById("#plus-button")
+        let decrementButton = document.getElementById("#minus-button");
+        const quantityInput = document.getElementById("#quantity-label");
         const addToCartLink = document.querySelector(".buy-btn");
 
-        incrementButton.addEventListener("click", function () {
-            console.log("Button + clicked");
-            quantityInput.value = parseInt(quantityInput.value) + 1;
-        });
 
-        decrementButton.addEventListener("click", function () {
-            console.log("Button - clicked");
-            const currentValue = parseInt(quantityInput.value);
+            incrementButton.addEventListener("click", function () {
+                console.log("Button + clicked");
+                quantityInput.value = parseInt(quantityInput.value) + 1;
+                console.log(quantityInput.value)
+            });
 
-            if (currentValue > 1) {
-                quantityInput.value = currentValue - 1;
-            }
-        });
-        addToCartLink.addEventListener("click", function (event) {
-            event.preventDefault();
-            const productId = <%=product.getId()%>;
-            const quantity = parseInt(quantityInput.value);
-            const URL = `<%=request.getContextPath()%>/add-cart?actionCart=post&num=${quantity}&id=${productId}`;
-            window.location.href = URL;
-            quantityInput.value = 1;
-        });
-    });
+            decrementButton.addEventListener("click", function () {
+                console.log("Button - clicked");
+                const currentValue = parseInt(quantityInput.value);
+
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+
+            });
+
+            let idProductList = [];
+            addToCartLink.addEventListener("click", function (event) {
+                let actionCart = "post";
+                $.ajax({
+                    url: "/HandMadeStore/add-cart",
+                    method: "GET",
+                    data:{
+                        id: <%=product.getId()%>,
+                        actionCart: actionCart,
+                        num: quantityInput.value
+                    },
+                    success:function(response){
+                        if(!idProductList.includes(<%=product.getId()%>)) {
+                            idProductList.push(<%=product.getId()%>);
+                            handleAddToCart(response);
+
+                        }
+                            Swal.fire({
+                                position: "center",
+                                icon: "success",
+                                title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                                showConfirmButton: false,
+                                timer: 1500
+                            });
+
+                    },
+                    error:function () {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Số lượng không hợp lệ !",
+                            showConfirmButton: true,
+                        });
+
+                    }
+
+                })
+
+                    quantityInput.value = 1;
+                })
+    })
+
+
+
+    // XỬ LÝ THÊM VÀO GIỎ HÀNG END.
     $(document).ready(function () {
         $('#rate_table').DataTable({
             "paging": true, // Phân trang
@@ -469,6 +568,7 @@
             "info": false
         });
     });
+
 
     function renderRateByStarNumber(starNumber) {
         $.ajax({
@@ -670,6 +770,7 @@
             })
         }
     }
+
 </script>
 </body>
 </html>

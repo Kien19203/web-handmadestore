@@ -130,7 +130,7 @@
                     </th>
                     <th scope="row"><%=p.getName()%>
                     </th>
-                    <th><%=p.getSoldout()%>
+                    <th><%="Đang lỗi hãy đơi !"%>
                     </th>
                     <th><%=p.getQuantity()%>
                     </th>

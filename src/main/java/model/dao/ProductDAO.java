@@ -153,59 +153,61 @@ public class ProductDAO {
         }
     }
 
+/*-----------------------------------------THEM SAN PHAM MOI ------------------------------------*/
 
-    public static void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, List<String> imagesPath) {
-        JDBIConnector.me().useHandle(handle -> {
-            // Insert into product table with auto-increment ID
-            int productId = handle.createUpdate("INSERT INTO product(name, description, costPrice, sellingPrice, quantity, categoryId) VALUES (:name, :description, :costPrice, :sellingPrice, :quantity, :categoryId)")
-                    .bind("name", name)
-                    .bind("description", description)
-                    .bind("costPrice", costPrice)
-                    .bind("sellingPrice", sellingPrice)
-                    .bind("quantity", quantity)
-                    .bind("categoryId", categoryId)
-                    .executeAndReturnGeneratedKeys("id")
-                    .mapTo(Integer.class)
-                    .one();
 
-            for (String imagePath : imagesPath) {
-                // Insert into image table with auto-increment ID
-                int imageId = handle.createUpdate("INSERT INTO image(name, path, productId) VALUES (:name, :path, :productId)")
-                        .bind("name", name + " " + imagePath)
-                        .bind("path", imagePath)
-                        .bind("productId", productId)
-                        .executeAndReturnGeneratedKeys("id")
-                        .mapTo(Integer.class)
-                        .one();
-            }
-        });
-
-    }
-
-    public static void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, int discountId, List<String> imagesPath) {
-        JDBIConnector.me().useHandle(handle -> {
-                    int productId = handle.createUpdate("INSERT INTO product (name, description, costPrice, sellingPrice,quantity,categoryId,discountId) VALUES (:name, :description, :costPrice, :sellingPrice,:quantity,:categoryId,:discountId)")
-                            .bind("name", name)
-                            .bind("description", description)
-                            .bind("costPrice", costPrice)
-                            .bind("sellingPrice", sellingPrice)
-                            .bind("quantity", quantity)
-                            .bind("categoryId", categoryId)
-                            .bind("discountId", discountId)
-                            .executeAndReturnGeneratedKeys("id")
-                            .mapTo(Integer.class).one();
-
-                    for (String imagePath : imagesPath) {
-                        handle.createUpdate("INSERT INTO image (name, path, productId) VALUES (:name, :path, :productId)")
-                                .bind("name", name)
-                                .bind("path", imagePath)
-                                .bind("productId", productId)
-                                .executeAndReturnGeneratedKeys("id")
-                                .mapTo(Integer.class).one();
-                    }
-                }
-        );
-    }
+//    public static void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, List<String> imagesPath) {
+//        JDBIConnector.me().useHandle(handle -> {
+//            // Insert into product table with auto-increment ID
+//            int productId = handle.createUpdate("INSERT INTO product(name, description, costPrice, sellingPrice, quantity, categoryId) VALUES (:name, :description, :costPrice, :sellingPrice, :quantity, :categoryId)")
+//                    .bind("name", name)
+//                    .bind("description", description)
+//                    .bind("costPrice", costPrice)
+//                    .bind("sellingPrice", sellingPrice)
+//                    .bind("quantity", quantity)
+//                    .bind("categoryId", categoryId)
+//                    .executeAndReturnGeneratedKeys("id")
+//                    .mapTo(Integer.class)
+//                    .one();
+//
+//            for (String imagePath : imagesPath) {
+//                // Insert into image table with auto-increment ID
+//                int imageId = handle.createUpdate("INSERT INTO image(name, path, productId) VALUES (:name, :path, :productId)")
+//                        .bind("name", name + " " + imagePath)
+//                        .bind("path", imagePath)
+//                        .bind("productId", productId)
+//                        .executeAndReturnGeneratedKeys("id")
+//                        .mapTo(Integer.class)
+//                        .one();
+//            }
+//        });
+//
+//    }
+//
+//    public static void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, int discountId, List<String> imagesPath) {
+//        JDBIConnector.me().useHandle(handle -> {
+//                    int productId = handle.createUpdate("INSERT INTO product (name, description, costPrice, sellingPrice,quantity,categoryId,discountId) VALUES (:name, :description, :costPrice, :sellingPrice,:quantity,:categoryId,:discountId)")
+//                            .bind("name", name)
+//                            .bind("description", description)
+//                            .bind("costPrice", costPrice)
+//                            .bind("sellingPrice", sellingPrice)
+//                            .bind("quantity", quantity)
+//                            .bind("categoryId", categoryId)
+//                            .bind("discountId", discountId)
+//                            .executeAndReturnGeneratedKeys("id")
+//                            .mapTo(Integer.class).one();
+//
+//                    for (String imagePath : imagesPath) {
+//                        handle.createUpdate("INSERT INTO image (name, path, productId) VALUES (:name, :path, :productId)")
+//                                .bind("name", name)
+//                                .bind("path", imagePath)
+//                                .bind("productId", productId)
+//                                .executeAndReturnGeneratedKeys("id")
+//                                .mapTo(Integer.class).one();
+//                    }
+//                }
+//        );
+//    }
 
     public static List<Product> getTrueIsSaleProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
@@ -247,7 +249,7 @@ public class ProductDAO {
 
     public static List<Product> getNullQuantityProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product where quantity = 0")
+                handle.createQuery("select * from product where stock = 0")
                         .mapToBean(Product.class)
                         .stream()
                         .toList());
@@ -439,34 +441,34 @@ public class ProductDAO {
         );
     }
 
-    public static void setDiscountByQuantity(String discountId, int number, int comparison) {
-        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
-        JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate(
-                                "UPDATE product " +
-                                        "SET discountId = :discountId WHERE quantity " + comparisonNumber + number
-                        )
-                        .bind("discountId", discountId)
-                        .execute()
-        );
-    }
+//    public static void setDiscountByQuantity(String discountId, int number, int comparison) {
+//        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
+//        JDBIConnector.me().useHandle(handle ->
+//                handle.createUpdate(
+//                                "UPDATE product " +
+//                                        "SET discountId = :discountId WHERE quantity " + comparisonNumber + number
+//                        )
+//                        .bind("discountId", discountId)
+//                        .execute()
+//        );
+//    }
 
-    public static void unSetDiscountByQuantity(String discountId, int number, int comparison) {
-        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
-        JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate(
-                                "UPDATE product " +
-                                        "SET discountId = null WHERE discountId=:discountId and quantity " + comparisonNumber + number
-                        )
-                        .bind("discountId", discountId)
-                        .execute()
-        );
-    }
+//    public static void unSetDiscountByQuantity(String discountId, int number, int comparison) {
+//        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
+//        JDBIConnector.me().useHandle(handle ->
+//                handle.createUpdate(
+//                                "UPDATE product " +
+//                                        "SET discountId = null WHERE discountId=:discountId and quantity " + comparisonNumber + number
+//                        )
+//                        .bind("discountId", discountId)
+//                        .execute()
+//        );
+//    }
 
     //Trang chính xuất 15 sản phẩm trong từng category và phải còn hàng
     public static List<Product> list4product(int idCategory) {
         List<Product> productList = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product WHERE categoryId = :id AND quantity > 0 AND isSale = 1 LIMIT 4")
+                handle.createQuery("SELECT * FROM product WHERE categoryId = :id AND stock > 0 AND isSale = 1 LIMIT 4")
                         .bind("id", idCategory)
                         .mapToBean(Product.class)
                         .stream().toList()
@@ -485,51 +487,52 @@ public class ProductDAO {
     }
 
 
-    public static void updateProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId, String discountId) {
-        JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate(
-                                "UPDATE product" +
-                                        " SET name=:name, description=:description, costPrice=:costPrice, sellingPrice=:sellingPrice, quantity=:quantity, categoryId=:categoryId, discountId=:discountId" +
-                                        " WHERE id=:id"
-                        )
-                        .bind("name", name)
-                        .bind("description", description)
-                        .bind("costPrice", costPrice)
-                        .bind("sellingPrice", sellingPrice)
-                        .bind("quantity", quantity)
-                        .bind("categoryId", categoryId)
-                        .bind("discountId", discountId)
-                        .bind("id", id)
-                        .execute()
-        );
-    }
+//    public static void updateProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId, String discountId) {
+//        JDBIConnector.me().useHandle(handle ->
+//                handle.createUpdate(
+//                                "UPDATE product" +
+//                                        " SET name=:name, description=:description, costPrice=:costPrice, sellingPrice=:sellingPrice, quantity=:quantity, categoryId=:categoryId, discountId=:discountId" +
+//                                        " WHERE id=:id"
+//                        )
+//                        .bind("name", name)
+//                        .bind("description", description)
+//                        .bind("costPrice", costPrice)
+//                        .bind("sellingPrice", sellingPrice)
+//                        .bind("quantity", quantity)
+//                        .bind("categoryId", categoryId)
+//                        .bind("discountId", discountId)
+//                        .bind("id", id)
+//                        .execute()
+//        );
+//    }
 
-    public static void updateProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId) {
-        JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate(
-                                "UPDATE product" +
-                                        " SET name=:name, description=:description, costPrice=:costPrice, sellingPrice=:sellingPrice, quantity=:quantity, categoryId=:categoryId" +
-                                        " WHERE id=:id"
-                        )
-                        .bind("name", name)
-                        .bind("description", description)
-                        .bind("costPrice", costPrice)
-                        .bind("sellingPrice", sellingPrice)
-                        .bind("quantity", quantity)
-                        .bind("categoryId", categoryId)
-                        .bind("id", id)
-                        .execute()
-        );
-    }
+//    public static void updateProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId) {
+//        JDBIConnector.me().useHandle(handle ->
+//                handle.createUpdate(
+//                                "UPDATE product" +
+//                                        " SET name=:name, description=:description, costPrice=:costPrice, sellingPrice=:sellingPrice, quantity=:quantity, categoryId=:categoryId" +
+//                                        " WHERE id=:id"
+//                        )
+//                        .bind("name", name)
+//                        .bind("description", description)
+//                        .bind("costPrice", costPrice)
+//                        .bind("sellingPrice", sellingPrice)
+//                        .bind("quantity", quantity)
+//                        .bind("categoryId", categoryId)
+//                        .bind("id", id)
+//                        .execute()
+//        );
+//    }
 
     public static long getNumberAvailProduct() {
         return JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select count(id) from product where quantity>0 and isSale!=0").mapTo(Long.class).one());
+                handle.createQuery("select count(id) from product where stock>0 and isSale!=0").mapTo(Long.class).one());
     }
 
     public static List<Product> getTopSoldoutProduct(int number) {
+        String sql = "SELECT p.* FROM product p JOIN inventory i ON p.id = i.productId WHERE i.soldOut > 0 order BY i.soldOut limit ?";
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT * FROM product where soldout > 0 order by soldout limit ?")
+                handle.createQuery(sql)
                         .bind(0, number)
                         .mapToBean(Product.class)
                         .stream().toList());
@@ -639,8 +642,16 @@ public class ProductDAO {
         return result;
     }
 
+
+
     public static void main(String[] args) {
-        unSetDiscountForAllProducts(1 + "");
+        Product o = getProductById("1");
+
+        System.out.println(o);
+
+
+
+        ;
     }
 }
 

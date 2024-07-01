@@ -43,8 +43,8 @@ public class ProductDetailsController extends HttpServlet {
 
         //Kiểm tra số lượng có sẵn , nếu quantity = soldout => disable lẹ ko cho thêm vào giỏ hàng
         String disable = "";
-        int available = product.getQuantity() - product.getSoldout();
-        if(available <= 0) {
+
+        if(product.getStock() <= 0) {
         disable = "disable";
 
         }

@@ -182,32 +182,38 @@ public class ProductAdminController extends HttpServlet {
                     if (radio_choiceCategory.equals("choiceAvailableCategory")) {
                         //Danh mục có sẵn
                         categoryId = availableCategory;
-                        try {
-                            if (discount.equals(""))
-                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        categoryId);
-                            else
-                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        categoryId, discount);
-                            req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
-                        } catch (NullPointerException e) {
-                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
-                        }
+
+/*--------------------------------------updateProduct START ------------------------------------------*/
+
+//                        try {
+//                            if (discount.equals(""))
+//                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+//                                        categoryId);
+//                            else
+//                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+//                                        categoryId, discount);
+//                            req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
+//                        } catch (NullPointerException e) {
+//                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
+//                        }
                     } else if (radio_choiceCategory.equals("choiceNewCategory")) {
                         //create new category in table
                         categoryId = CategoryService.getInstance().createNewCategory(newCategory) + "";
-                        try {
-                            if (discount.equals(""))
-                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        categoryId);
-                            else
-                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        categoryId, discount);
-                            req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
-                        } catch (NullPointerException e) {
-                            CategoryService.getInstance().deleteNoUsedCategoryById(categoryId);
-                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
-                        }
+//                        try {
+//                            if (discount.equals(""))
+//                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+//                                        categoryId);
+//                            else
+//                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+//                                        categoryId, discount);
+//                            req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
+//                        } catch (NullPointerException e) {
+//                            CategoryService.getInstance().deleteNoUsedCategoryById(categoryId);
+//                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
+//                        }
+
+                        /*--------------------------------------updateProduct END ------------------------------------------*/
+
                     }
                 }
             } else {
