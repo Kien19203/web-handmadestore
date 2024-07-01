@@ -396,9 +396,15 @@
             <button type="button" class="btn btn-sm btn-primary "><i class="fa-solid fa-user" style="color: white;"></i>
                 <span><%= u.getName()%></span></button>
             <ul id="dangxuat" class="dx dropdown-menu">
-
+                <%
+                    boolean isAdmin = ((request.getSession().getAttribute("isAdmin") == null) ? false : ((boolean) request.getSession().getAttribute("isAdmin")));
+                    if (isAdmin) {
+                %>
+                <li><a class="dropdown-item" href="<%=request.getContextPath()%>/admin">
+                    <i class="fa-solid fa-user-tie fs-3 me-1"></i>Quản lý hệ thống</a></li>
+                <%}%>
                 <li><a class="dropdown-item" href="<%=request.getContextPath()%>/views/Admin/changeUserInfo.jsp"><i
-                        class="fa-solid fa-user-pen"></i> Thay Đổi Thông Tin</a></li>
+                        class="fa-solid fa-user-pen"></i>Thông Tin Tài Khoản</a></li>
                 <li><a class="dropdown-item" href="<%=request.getContextPath()%>/logout"><i
                         class="fa-solid fa-right-from-bracket"></i> Đăng
                     Xuất</a></li>
@@ -409,7 +415,7 @@
         <li class="cart p-4 dropdown my-auto  position-relative">
             <%--            <i class="fa-solid fa-cart-shopping" style="color: #2a3241;"></i>--%>
             <%--            <a href="<%=request.getContextPath()%>/views/CartPage/cart.html">Giỏ Hàng</a>--%>
-            <a href="<%=request.getContextPath()%>/views/CartPage/cart.jsp">
+            <a href="<%=request.getContextPath()%>/views/CartPage/view/cart.jsp">
 
                 <i class="fa-solid fa-cart-shopping position-relative" style="color: #2a3241;">
             <span id="badge" class="position-absolute top-0 start-0  badge rounded-pill
@@ -478,7 +484,7 @@
                     <%if (!cart.getItems().isEmpty()) {%>
                     <div class="pda rigth-ct">
 
-                        <a href="<%=request.getContextPath()%>/views/CartPage/cart.jsp"
+                        <a href="<%=request.getContextPath()%>/views/CartPage/view/cart.jsp"
                            class="btn"><span>Giỏ hàng</span></a>
 
                         <%if (u != null) {%>
@@ -508,9 +514,15 @@
 <script>
     function handleAddToCart(response) {
         let totalItem = document.getElementById('badge');
-        console.log(totalItem);
         let currentValue = parseInt(totalItem.innerText);
         currentValue += 1;
+        totalItem.innerText = currentValue;
+    }
+    function handleDeleteToCart(response) {
+        let totalItem = document.getElementById('badge');
+        console.log(totalItem);
+        let currentValue = parseInt(totalItem.innerText);
+        currentValue -= 1;
         totalItem.innerText = currentValue;
     }
 

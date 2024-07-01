@@ -5,7 +5,6 @@ import model.bean.Order;
 import model.bean.OrderDetail;
 import model.dao.DiscountDAO;
 import model.dao.OrderDAO;
-import org.eclipse.tags.shaded.org.apache.xpath.operations.Or;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +28,21 @@ public class OrderService {
 
     public List<Order> getOrderByCustomerId(String customerId) {
         return OrderDAO.getOrderByCustomerId(customerId);
+    }
+
+    public List<Order> getOrderByCustomerId(String customerId, int limit, int offset) {
+        return OrderDAO.getOrderByCustomerId(customerId, limit, offset);
+    }
+    public List<Order> getOrderByCustomerId(String customerId, int limit, int offset, int statusNumber) {
+        return OrderDAO.getOrderByCustomerId(customerId, limit, offset, statusNumber);
+    }
+
+    public int ordersNumber(String customerId) {
+        return OrderDAO.ordersNumber(customerId);
+    }
+
+    public int ordersNumber(String customerId, int status) {
+        return OrderDAO.ordersNumber(customerId, status);
     }
 
     public List<Order> getOrderByCustomerNamePart(String customerNamePart) {
@@ -55,8 +69,6 @@ public class OrderService {
         OrderDAO.confirmOrder(orderId);
     }
 
-    public void packedOrder(String orderId) { OrderDAO.packedOrder(orderId);}
-
     public void deliveredOrder(String orderId) {
         OrderDAO.deliveredOrder(orderId);
     }
@@ -64,7 +76,10 @@ public class OrderService {
     public List<Order> getWaitConfirmOrders() {
         return OrderDAO.getWaitConfirmOrders();
     }
-    public List<Order> getPackingOrder() {return OrderDAO.getPackingOrder();}
+
+    public List<Order> getPreparingOrders() {
+        return OrderDAO.getPreparingOrders();
+    }
 
     public List<Order> getDeliveringOrders() {
         return OrderDAO.getDeliveringOrders();

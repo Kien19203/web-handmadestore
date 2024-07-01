@@ -1,4 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:ital,wght@1,700&family=Roboto:ital@1&display=swap');
+
+* {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
 
 /*MenuBar*/
 .menu {
@@ -30,35 +36,7 @@
 
 
 }
-/*Xu ly ảnh cho phaafn hiển thị */
-.xzoom-container {
-    position: relative;
-}
-#MainImg {
-    width: 100%;
-    height: auto;
-    display: block;
-}
 
-.small-img-group {
-    display: flex;
-    justify-content: center;
-    margin-top: 10px;
-    /*align-items: center;*/
-
-}
-
-.small-img-col {
-    /*flex-basis: 25%;*/
-    /*padding: 0px 10px;*/
-    margin-right: 10px;
-}
-.small-img {
-    width: 60px;
-    cursor: pointer;
-    height: auto;
-
-}
 
 
 
@@ -125,22 +103,110 @@ font-family: 'Alumni Sans Inline One', sans-serif;
 
 /*Product details*/
 
+
+.product-details nav {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    display: flex;
+    align-items: center;
+}
+
 .product-details .breadcrumb .breadcrumb-item a {
     color: #565959;
-
-  text-decoration: none;
+     text-decoration: none;
 }
 .product-details .breadcrumb .breadcrumb-item a:hover {
-    font-weight: bold;
+    color: #ff1a1a;
 }
 
 
 .product-details h6 {
-    color: #565959;
+    color: #000000;
 }
 
+.product-details .left-pd {
+    display: flex;
+    flex-direction: row;
+
+
+}
+.product-details .left-pd .main-img {
+    background-color: #faf5f5 ;
+    height: 500px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+
+}
+
+/*.product-details .left-pd .large-img {*/
+/*    overflow: hidden;*/
+/*}*/
+
+#MainImg {
+    max-width: 100%;
+    max-height: 100%;
+    /*display: block;*/
+    object-fit: cover;
+    cursor: zoom-in;
+
+}
+
+#imgZoom {
+    max-width: 100%;
+    max-height: 100%;
+    position: absolute;
+    transform: scale(1.1);
+    object-fit: cover;
+    opacity: 0;
+    --zoom-x : 50%;
+    --zoom-y: 50%;
+    pointer-events: none;
+    clip-path: circle(100px at var(--zoom-x) var(--zoom-y));
+}
+
+
+
+.product-details .left-pd .small-img-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    /*margin-right: 10px;*/
+
+}
+
+/*Xu ly ảnh cho phaafn hiển thị */
+/*.xzoom-container {*/
+/*    position: relative;*/
+/*}*/
+
+
+.small-img-col {
+    display: flex;
+    justify-content: center;
+    background-color: #faf5f5 ;
+    margin-bottom: 10px;
+    aspect-ratio: 1 / 1;
+
+}
+.small-img {
+    filter: blur(1px);
+    width: 100%;
+    height : 100%;
+    cursor: pointer;
+}
+
+
+
+
+
+
 .product-details .right-pd h3 {
-    font-family: 'Roboto', sans-serif;
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
 }
 .product-details .rate-content .icon-rate {
     color: #ffcc00;
@@ -153,6 +219,13 @@ font-family: 'Alumni Sans Inline One', sans-serif;
 .product-details .rate-content a:hover {
      text-decoration: underline;
 }
+
+.label-title {
+    color: #000000;
+    font-weight: bold;
+
+}
+
 .gray-content {
     color: #898989;
 }
@@ -168,10 +241,7 @@ font-family: 'Alumni Sans Inline One', sans-serif;
 }
 
 
-.product-details .right-pd span {
 
-
-}
 
 /*Số lượng*/
 
@@ -295,11 +365,17 @@ figure {
 }
 
 /*relate product*/
+
+
 .info-item {
-    border: 1px solid #e1e1e1;
+    /*border: 1px solid #e1e1e1;*/
+    background-color:  #faf5f5 ;
 }
 
 .info-img {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position : relative;
     overflow: hidden;
 }
@@ -342,15 +418,17 @@ figure {
     color: #ffffff;
 }
 .info-name {
-    transition: all 0.3s ease-in-out;
+    /*transition: all 0.3s ease-in-out;*/
+    font-weight: bold;
 
 }
 
-.info-name:hover {
-    color: #ff0000!important;
+/*.info-name:hover {*/
+/*    color: #ff0000!important;*/
+/*    font-weight: bold;*/
 
 
-}
+/*}*/
 .info-price {
     color: #e32124;
 }

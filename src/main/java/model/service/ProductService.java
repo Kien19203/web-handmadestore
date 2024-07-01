@@ -4,6 +4,7 @@ import model.bean.Discount;
 import model.bean.Product;
 import model.bean.Rate;
 import model.dao.ProductDAO;
+import model.dao.UserDAO;
 import model.db.JDBIConnector;
 
 import java.sql.Timestamp;
@@ -104,18 +105,53 @@ public class ProductService {
         ProductDAO.removeDiscount(product_id);
     }
 
-    public void setDiscountForProductList(String discountId, List<String> product_id_list) {
-        ProductDAO.setDiscountForProductList(discountId, product_id_list);
+    public void setDiscountForAllProducts(String discountId) {
+        ProductDAO.setDiscountForAllProducts(discountId);
     }
 
-    public void setNullDiscountForProductList(String discountId) {
-        ProductDAO.setNullDiscountForProductList(discountId);
+    public void unSetDiscountForAllProducts(String discountId) {
+        ProductDAO.unSetDiscountForAllProducts(discountId);
     }
 
-    public void insertNewProduct(String name, String description, double costPrice, double sellingPrice,
-                                 int quantity, int categoryId, List<String> imagesPath) {
-        ProductDAO.insertNewProduct(name, description, costPrice, sellingPrice, quantity, categoryId, imagesPath);
+    public void unSetDiscountForAllProducts() {
+        ProductDAO.unSetDiscountForAllProducts();
     }
+
+    public void setDiscountByCategory(String discountId, String categoryId) {
+        ProductDAO.setDiscountByCategory(discountId, categoryId);
+    }
+
+    public void unSetDiscountByCategory(String discountId, String categoryId) {
+        ProductDAO.unSetDiscountByCategory(discountId, categoryId);
+    }
+
+    public void setDiscountByProduct(String discountId, String productId) {
+        ProductDAO.setDiscountByProduct(discountId, productId);
+    }
+
+    public void unSetDiscountByProduct(String discountId, String productId) {
+        ProductDAO.unSetDiscountByProduct(discountId, productId);
+    }
+
+    /*
+    comparison: -1 <; 0 =; 1 >
+     */
+//    public void setDiscountByQuantity(String discountId, int number, int comparison) {
+//        ProductDAO.setDiscountByQuantity(discountId, number, comparison);
+//    }
+//
+//    public void unSetDiscountByQuantity(String discountId, int number, int comparison) {
+//        ProductDAO.unSetDiscountByQuantity(discountId, number, comparison);
+//    }
+
+    /*-------------------------INSERT NEW PRODUCT START-------------------------------*/
+
+//    public void insertNewProduct(String name, String description, double costPrice, double sellingPrice,
+//                                 int quantity, int categoryId, List<String> imagesPath) {
+//        ProductDAO.insertNewProduct(name, description, costPrice, sellingPrice, quantity, categoryId, imagesPath);
+//    }
+
+    /*-------------------------INSERT NEW PRODUCT END-------------------------------*/
 
 
     //Sắp xếp từ thấp đến cao
@@ -152,30 +188,68 @@ public class ProductService {
         return ProductDAO.getNumberRateStarsByUser(productId, userId);
     }
 
-    public void editProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId, String discountId) {
-        ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId, discountId);
+    public List<Rate> getRatesByStarNumber(int productId, int starRatings, Integer userId) {
+        return ProductDAO.getRatesByStarNumber(productId, starRatings, userId);
     }
 
-    public void editProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId) {
-        ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId);
+    public List<Rate> getRatesFirstUser(int productId, int userId) {
+        return ProductDAO.getRatesFirstUser(productId, userId);
     }
 
-    public static void main(String[] args) {
+    public Integer getStarNumberCount(int productId, int starRatings) {
+        return ProductDAO.getStarNumberCount(productId, starRatings);
+    }
 
-//        List<Product> productsa = ProductService.getInstance().getAllProduct();
-//        Product a = ProductService.getInstance().getProductById(10);
-//        System.out.println(a);
+    public Integer getStarNumberCount(int productId) {
+        return ProductDAO.getStarNumberCount(productId);
+    }
+
+    public void changeRate(int productId, int userId, int starRatings, String comment) {
+        if (ProductDAO.rateExists(productId, userId) != null) {
+            ProductDAO.updateRate(productId, userId, starRatings, comment);
+        } else {
+            ProductDAO.insertRate(productId, userId, starRatings, comment);
+        }
+    }
+
+    public Rate rateExists(int productId, int userId) {
+        return ProductDAO.rateExists(productId, userId);
+    }
+
+    public int getChangeNumber(int productId, int userId) {
+        boolean check = UserService.getInstance().checkUserAllowedToRate(productId, userId);
+        // nếu mua r => get Rate -> xem changeNumber
+        if (check) {
+            Rate rate = ProductService.getInstance().rateExists(productId, userId);
+            return (rate != null) ? rate.getChangeNumber() : -1;
+        }
+        return -1;
+    }
+
+//    public void editProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId, String discountId) {
+//        ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId, discountId);
+//    }
 //
-//        System.out.println(getInstance().getProductsByCategoryId(2));
-        System.out.println(ProductService.getInstance().listProductDiscount());
-    }
+//    public void editProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId) {
+//        ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId);
+//    }
 
-
-    public void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, int discountId, List<String> imagesPath) {
-        ProductDAO.insertNewProduct(name, description, costPrice, sellingPrice, quantity, categoryId, discountId, imagesPath);
-    }
+//    public void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, int discountId, List<String> imagesPath) {
+//        ProductDAO.insertNewProduct(name, description, costPrice, sellingPrice, quantity, categoryId, discountId, imagesPath);
+//    }
 
     public long getNumberAvailProduct() {
         return ProductDAO.getNumberAvailProduct();
+    }
+
+    public static Integer discountProduct(int idProduct) {
+        return ProductDAO.discountProduct(idProduct);
+    }
+
+    public static void main(String[] args) {
+//        System.out.println(UserDAO.checkUserAllowedToRate(118, 4));
+//        System.out.println(getInstance().getChangeNumber(118, 4));
+//         Rate changeNumber = ProductService.getInstance().rateExists(118, 4);
+//        System.out.println("rate -> number: " + changeNumber.getChangeNumber());
     }
 }

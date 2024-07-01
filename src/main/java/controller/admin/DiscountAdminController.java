@@ -1,5 +1,9 @@
 package controller.admin;
 
+import model.bean.Category;
+import model.bean.Discount;
+import model.bean.Product;
+import model.service.CategoryService;
 import model.service.DiscountService;
 import model.service.ProductService;
 
@@ -9,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -23,18 +28,6 @@ public class DiscountAdminController extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/jsp; charset=UTF-8");
         req.setCharacterEncoding("UTF-8");
-        String discountId = req.getParameter("submit_1_discountId");
-        if (discountId != null) {
-            String[] discountProductsId = req.getParameterValues(discountId);
-            if (discountProductsId != null) {
-                List<String> Plist = Arrays.asList(discountProductsId);
-                // Xử lý các giá trị của checkbox
-                ProductService.getInstance().setDiscountForProductList(discountId, Plist);
-            } else {
-//            Khong có product nao duoc chon
-                ProductService.getInstance().setDiscountForProductList(discountId, null);
-            }
-        }
         // Thêm KM
         String adddiscount = req.getParameter("submit_2_adddiscount");
         if (adddiscount != null) {
@@ -92,6 +85,8 @@ public class DiscountAdminController extends HttpServlet {
                 System.out.println("fall update");
             }
         }
+
+
         req.getRequestDispatcher("/views/Admin/discount_management.jsp").forward(req, resp);
     }
 }

@@ -42,41 +42,61 @@ public class OrderDAO {
         return orderDetails;
     }
 
+    public static int ordersNumber(String customerId, int status) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select count(id) from `order` where userId=? and status=?")
+                        .bind(0, customerId)
+                        .bind(1, status)
+                        .mapTo(Integer.class).one());
+    }
+
+    public static int ordersNumber(String userId) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select count(id) from `order` where userId=?")
+                        .bind(0, userId)
+                        .mapTo(Integer.class).one());
+    }
+
     public static long waitConfirmOrdersNumber() {
         return JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select count(id) from `order` where status='Chờ xác nhận'")
+                handle.createQuery("select count(id) from `order` where status=0")
                         .mapTo(Long.class).one());
     }
+
+    public static long isPreparingOrdersNumber() {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select count(id) from `order` where status=1")
+                        .mapTo(Long.class).one());
+    }
+
 
     public static long deliveringOrdersNumber() {
         return JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select count(id) from `order` where status='Đang giao'")
+                handle.createQuery("select count(id) from `order` where status=2")
                         .mapTo(Long.class).one());
     }
 
-    // HIỂN THỊ CÁC TRẠNG THÁI CỦA ĐƠN HÀNG.
-
     public static List<Order> getWaitConfirmOrders() {
         List<Order> orders = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from `order` where status='Chờ xác nhận' order by orderDate desc")
+                handle.createQuery("select * from `order` where status=0 order by orderDate desc")
                         .mapToBean(Order.class)
                         .stream().collect(Collectors.toList())
         );
         return orders;
     }
 
-    public static List<Order> getPackingOrder() {
-        List<Order> orders = JDBIConnector.me().withHandle(
-                handle -> handle.createQuery("select * from `order` where status='Đang đóng gói' order by orderDate desc")
+    public static List<Order> getPreparingOrders() {
+        List<Order> orders = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from `order` where status=1 order by orderDate desc")
                         .mapToBean(Order.class)
                         .stream().collect(Collectors.toList())
-
         );
         return orders;
     }
+
     public static List<Order> getDeliveringOrders() {
         List<Order> orders = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from `order` where status='Đang giao' order by orderDate desc")
+                handle.createQuery("select * from `order` where status=2 order by orderDate desc")
                         .mapToBean(Order.class)
                         .stream().collect(Collectors.toList())
         );
@@ -85,7 +105,7 @@ public class OrderDAO {
 
     public static List<Order> getCanceledOrders() {
         List<Order> orders = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from `order` where status='Đã hủy' order by orderDate desc")
+                handle.createQuery("select * from `order` where status=4 order by orderDate desc")
                         .mapToBean(Order.class)
                         .stream().collect(Collectors.toList())
         );
@@ -94,7 +114,7 @@ public class OrderDAO {
 
     public static List<Order> getSucccessfulOrders() {
         List<Order> orders = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from `order` where status='Thành công' order by orderDate desc")
+                handle.createQuery("select * from `order` where status=3 order by orderDate desc")
                         .mapToBean(Order.class)
                         .stream().collect(Collectors.toList())
         );
@@ -105,6 +125,31 @@ public class OrderDAO {
         List<Order> orders = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from `order` where userId=? order by orderDate desc")
                         .bind(0, customerId)
+                        .mapToBean(Order.class)
+                        .stream().collect(Collectors.toList())
+        );
+        return orders;
+    }
+
+    public static List<Order> getOrderByCustomerId(String customerId, int limit, int offset) {
+        List<Order> orders = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from `order` where userId=? order by orderDate desc LIMIT ? OFFSET ?")
+                        .bind(0, customerId)
+                        .bind(1, limit)
+                        .bind(2, offset)
+                        .mapToBean(Order.class)
+                        .stream().collect(Collectors.toList())
+        );
+        return orders;
+    }
+
+    public static List<Order> getOrderByCustomerId(String customerId, int limit, int offset, int statusNumber) {
+        List<Order> orders = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from `order` where userId=? and status=? order by orderDate desc LIMIT ? OFFSET ?")
+                        .bind(0, customerId)
+                        .bind(1, statusNumber)
+                        .bind(2, limit)
+                        .bind(3, offset)
                         .mapToBean(Order.class)
                         .stream().collect(Collectors.toList())
         );
@@ -122,10 +167,9 @@ public class OrderDAO {
         return orders;
     }
 
-// XỬ LÝ CẬP NHẬT TRẠNG THÁI ĐƠN HÀNG (CHỜ XÁC NHẬN -> ĐANG ĐÓNG GÓI -> ĐANG VẬN CHUYỂN -> HỦY / THÀNH CÔNG
     public static void cancelOrder(String orderId) {
         JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate("UPDATE `order` SET status = 'Đã hủy' WHERE id=?")
+                handle.createUpdate("UPDATE `order` SET status = 4 WHERE id=?")
                         .bind(0, orderId)
                         .execute()
         );
@@ -133,30 +177,22 @@ public class OrderDAO {
 
     public static void confirmOrder(String orderId) {
         JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate("UPDATE `order` SET status = 'Đang đóng gói' WHERE id=?")
+                handle.createUpdate("UPDATE `order` SET status = 1 WHERE id=?")
                         .bind(0, orderId)
                         .execute()
         );
     }
 
-    public static void packedOrder(String orderId) {
-        JDBIConnector.me().useHandle( handle ->
-                handle.createUpdate("UPDATE `order` SET status = 'Đang giao' where id=?")
-                        .bind(0, orderId)
-                        .execute()
-                );
-            }
-
     public static void deliveredOrder(String orderId) {
         JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate("UPDATE `order` SET status = 'Thành công' WHERE id=?")
+                handle.createUpdate("UPDATE `order` SET status = 2 WHERE id=?")
                         .bind(0, orderId)
                         .execute()
         );
     }
 
     public static double getRevenueForMonth(int month, int year) {
-        String sql = "SELECT SUM(totalPrice) FROM `order` WHERE MONTH(orderDate) = ? AND YEAR(orderDate) = ? AND status='Thành công'";
+        String sql = "SELECT SUM(totalPrice) FROM `order` WHERE MONTH(orderDate) = ? AND YEAR(orderDate) = ? AND status=3";
         Double re = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery(sql)
                         .bind(0, month)
@@ -166,7 +202,7 @@ public class OrderDAO {
     }
 
     public static double getMonthRevenueMax(int year) {
-        String sql = "SELECT MAX(totalPrice) FROM (SELECT SUM(totalPrice) AS totalPrice FROM `order` WHERE YEAR(orderDate) = ? AND status='Thành công' GROUP BY MONTH(orderDate)) AS monthlyRevenue";
+        String sql = "SELECT MAX(totalPrice) FROM (SELECT SUM(totalPrice) AS totalPrice FROM `order` WHERE YEAR(orderDate) = ? AND status=3 GROUP BY MONTH(orderDate)) AS monthlyRevenue";
         Double re = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery(sql)
                         .bind(0, year)
@@ -176,7 +212,6 @@ public class OrderDAO {
 
     /**
      * Thêm giỏ hàng - đặt hàng vào dâtabase !
-     *
      *
      * @param order
      * @param cart
@@ -203,23 +238,23 @@ public class OrderDAO {
 
                 //Lấy id của order
                 int orderId = handle.createUpdate(sql)
-                        .bind("totalPrice",cart.getTotalMoney() + 35000 )
+                        .bind("totalPrice", cart.getTotalMoney() + 35000)
                         .bind("orderDate", date)
-                        .bind("status", "Chờ xác nhận")
+                        .bind("status", 0)
                         .bind("consigneeName", order.getConsigneeName())
                         .bind("consigneePhoneNumber", order.getConsigneePhoneNumber())
                         .bind("address", order.getAddress())
                         .bind("shippingFee", 35000)
                         .bind("userId", u.getId())
-                        .bind("note", order.getNote() )
+                        .bind("note", order.getNote())
                         .executeAndReturnGeneratedKeys("id")
                         .mapTo(Integer.class)
                         .one();
 
 
-                System.out.println("check 0: "+orderId);
+                System.out.println("check 0: " + orderId);
                 for (Item i : cart.getItems().values()) {
-                    System.out.println("check 1: "+i.getProduct().getId());
+                    System.out.println("check 1: " + i.getProduct().getId());
                     //add vào bảng order-details !
                     String sql1 = "INSERT INTO `order_details` (orderId, productId, quantity, sellingPrice, finalSellingPrice)"
                             + "VALUES(:orderId, :productId, :quantity, :sellingPrice, :finalSellingPrice)";
@@ -242,12 +277,12 @@ public class OrderDAO {
 
 //            cập nhật lại số lượng sản phẩm
             String sql3 = "UPDATE `product` SET quantity= quantity - :quantityOrder where id= :id";
-            for(Item item : cart.getItems().values() ) {
-            JDBIConnector.me().useHandle(handle3 ->
-                    handle3.createUpdate(sql3)
-                            .bind("quantityOrder", item.getQuantity() )
-                            .bind("id", item.getProduct().getId())
-                            .execute());
+            for (Item item : cart.getItems().values()) {
+                JDBIConnector.me().useHandle(handle3 ->
+                        handle3.createUpdate(sql3)
+                                .bind("quantityOrder", item.getQuantity())
+                                .bind("id", item.getProduct().getId())
+                                .execute());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -271,7 +306,6 @@ public class OrderDAO {
 
         return re;
     }
-
 
 
 }

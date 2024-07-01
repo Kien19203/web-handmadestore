@@ -2,6 +2,8 @@
 <%@ page import="model.bean.User" %>
 <%@ page import="model.service.RoleService" %>
 <%@ page import="model.service.OrderService" %>
+<%@ page import="logs.LogService" %>
+<%@ page import="logs.Log" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <% String framePath = ((String) request.getAttribute("framePath") == null) ?
         request.getContextPath() + "/views/Admin/dashboard.jsp"
@@ -65,7 +67,6 @@
                 <h3 class="text-primary">HandMadeStore</h3>
             </a>
 
-
             <div class="navbar-nav w-100">
                 <a href="<%=request.getContextPath()%>/admin?func=dashboard"
                    class="nav-item nav-link
@@ -73,25 +74,15 @@
                    active
                   <%}%>">
                     <i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
-
-
- <%--                QUẢN LÝ SẢN PHẨM - START     --%>
-
                 <div class="nav-item dropdown">
-                    <%if (func.equals("product_management")|| func.equals("inventory_management") || func.equals("category_management")
-                            || func.equals("add_product") || func.equals("discount_management")) {%>
+                    <%
+                        if (func.equals("product_management") || func.equals("category_management")
+                                || func.equals("add_product") || func.equals("discount_management")) {
+                    %>
                     <a href="#" class="nav-link dropdown-toggle show active" data-bs-toggle="dropdown"
                        aria-expanded="true"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
                     <div class="dropdown-menu bg-transparent border-0 show ms-5" data-bs-popper="none">
-                        <a href="<%=request.getContextPath()%>/admin?func=inventory_management"
-                           class="dropdown-item
-                                 <%if(func.equals("inventory_management")){%>
-                                     active
-                                 <%}%>">
-                            <i class="fa-solid fa-list me-2"></i>
-                            Kho lưu trữ hàng
-                        </a>
                         <a href="<%=request.getContextPath()%>/admin?func=product_management"
                            class="dropdown-item
                                  <%if(func.equals("product_management")){%>
@@ -127,31 +118,29 @@
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
                     <div class="dropdown-menu bg-transparent border-0 ms-5">
-                        <a href="<%=request.getContextPath()%>/admin?func=inventory_management" class="dropdown-item"><i class="fa-solid fa-layer-group me-2"></i>
-                            Kho lưu trữ hàng
-                        </a>
-                                              <a href="<%=request.getContextPath()%>/admin?func=product_management"
+                        <a href="<%=request.getContextPath()%>/admin?func=product_management"
                            class="dropdown-item
                          <%if(func.equals("product_management")){%>
                              active
                          <%}%>"><i
                                 class="fa-solid fa-list me-2"
                         ></i>Danh sách sản phẩm</a>
-
-                        <a href="<%=request.getContextPath()%>/admin?func=category_management" class="dropdown-item"><i class="fa-solid fa-layer-group me-2"></i>
+                        <a href="<%=request.getContextPath()%>/admin?func=category_management" class="dropdown-item"><i
+                                class="fa-solid fa-layer-group me-2"></i>
                             Quản lý danh mục
                         </a>
-                        <a href="<%=request.getContextPath()%>/admin?func=add_product" class="dropdown-item"><i class="fa-solid fa-circle-plus me-2"></i>
+                        <a href="<%=request.getContextPath()%>/admin?func=add_product" class="dropdown-item"><i
+                                class="fa-solid fa-circle-plus me-2"></i>
                             Thêm sản phẩm mới
                         </a>
-                        <a href="<%=request.getContextPath()%>/admin?func=discount_management" class="dropdown-item"><i class="fa-solid fa-tag me-2"></i>
+                        <a href="<%=request.getContextPath()%>/admin?func=discount_management" class="dropdown-item"><i
+                                class="fa-solid fa-tag me-2"></i>
                             Quản lý khuyến mãi
                         </a>
                     </div>
                     <%}%>
                 </div>
 
-<%--                QUẢN LÝ SẢN PHẨM - END     --%>
 
                 <a href="<%=request.getContextPath()%>/admin?func=order_management"
                    class="nav-item nav-link
@@ -160,51 +149,26 @@
                     <%}%>"><i
                         class="bi bi-minecart me-2"
                 ></i>Quản lý đơn hàng
+                    <span id="waitConfirmOrdersNumber" style="color:white; font-size:small; text-align: center">
                     <%--                new order--%>
                     <%if (OrderService.getInstance().waitConfirmOrdersNumber() > 0) {%>
-                    <span style="color:white; font-size:small; text-align: center">
                         (<%=OrderService.getInstance().waitConfirmOrdersNumber()%>)
-                    </span>
                     <%}%>
+                    </span>
                 </a>
                 <a href="<%=request.getContextPath()%>/admin?func=customer_management"
                    class="nav-item nav-link
                    <%if(func.equals("customer_management")){%>
                    active
                     <%}%>">
-                    <i class="fa-regular fa-address-book me-2"></i>Quản lý khách hàng</a>
-                <div class="nav-item dropdown">
-                    <%if (func.equals("banners_tips") || func.equals("theme_setting")) {%>
-                    <a href="#" class="nav-link dropdown-toggle show active" data-bs-toggle="dropdown"
-                       aria-expanded="true"><i
-                            class="fa-solid fa-palette me-2"></i>Giao diện bán hàng</a>
-                    <div class="dropdown-menu bg-transparent border-0 show ms-5" data-bs-popper="none">
-                        <a href="<%=request.getContextPath()%>/admin?func=banners_tips"
-                           class="dropdown-item
-                                 <%if(func.equals("banners_tips")){%>
+                    <i class="fa-regular fa-address-book me-2"></i>Quản lý tài khoản</a>
+                <a href="<%=request.getContextPath()%>/admin?func=banners_tips"
+                   class="nav-item nav-link
+                  <%if(func.equals("banners_tips")){%>
                                      active
                                  <%}%>"><i
-                                class="fa-brands fa-gratipay me-2"
-                        ></i>Thay đổi banners, tips</a>
-                        <a href="chart.html" class="dropdown-item"><i class="fa fa-chart-bar me-2"></i>Điều
-                            chỉnh giao diện</a>
-                    </div>
-                    <%} else {%>
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
-                            class="fa-solid fa-palette me-2"></i>Giao diện bán hàng</a>
-                    <div class="dropdown-menu bg-transparent border-0 ms-5">
-                        <a href="<%=request.getContextPath()%>/admin?func=banners_tips"
-                           class="dropdown-item
-                         <%if(func.equals("banners_tips")){%>
-                             active
-                         <%}%>"><i
-                                class="fa-brands fa-gratipay me-2"
-                        ></i>Thay đổi banners, tips</a>
-                        <a href="chart.html" class="dropdown-item"><i class="fa fa-chart-bar me-2"></i>
-                            Điều chỉnh giao diện</a>
-                    </div>
-                    <%}%>
-                </div>
+                        class="fa-brands fa-gratipay me-2"
+                ></i>Thay đổi banners, tips</a>
                 <a href="<%=request.getContextPath()%>/admin?func=support"
                    class="nav-item nav-link
                     <%if(func.equals("support")){%>
@@ -222,87 +186,48 @@
     <div class="content">
         <!-- Navbar Start -->
         <nav class="navbar navbar-expand bg-secondary navbar-dark sticky-top px-4 py-0">
-            <a href="index.html" class="navbar-brand d-flex d-lg-none me-4">
-                <h2 class="text-primary mb-0"><i class="fa fa-user-edit"></i></h2>
-            </a>
             <a href="#" class="sidebar-toggler flex-shrink-0">
                 <i class="fa fa-bars"></i>
             </a>
 
             <div class="navbar-nav align-items-center ms-auto">
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <div class="nav-link dropdown-toggle" style="cursor: default" data-bs-toggle="dropdown">
                         <i class="fa-solid fa-scroll me-lg-2"></i>
                         <span class="d-none d-lg-inline-flex">Lịch sử hệ thống</span>
-                    </a>
+                    </div>
                     <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                        <a href="#" class="dropdown-item">
+                        <%for (Log log : LogService.getInstance().getThreeRecentlyLogs()) {%>
+                        <div class="dropdown-item">
                             <div class="d-flex align-items-center">
-                                <img class="rounded-circle" src="img/user.jpg" alt=""
-                                     style="width: 40px; height: 40px;">
+                                <div class="fs-5">
+                                    <%if (log.isWARNINGLevel()) {%>
+                                    <i class="text-warning fa-solid fa-triangle-exclamation"></i>
+                                    <%} else if (log.isINFORLevel()) {%>
+                                    <i class="text-info fa-solid fa-circle-info"></i>
+                                    <%} else if (log.isDANGERLevel()) {%>
+                                    <i class="text-danger fa-solid fa-circle-exclamation"></i>
+                                    <%}%>
+                                </div>
                                 <div class="ms-2">
-                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                    <small>15 minutes ago</small>
+                                    <h6 style="text-wrap: initial" class="fw-normal mb-0"><%=log.getMessage()%></h6>
+                                    <small style="color: rgb(128,128,128)"><%=log.getFormattedCreatedTime()%>
+                                    </small>
                                 </div>
                             </div>
-                        </a>
+                        </div>
                         <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle" src="img/user.jpg" alt=""
-                                     style="width: 40px; height: 40px;">
-                                <div class="ms-2">
-                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                    <small>15 minutes ago</small>
-                                </div>
-                            </div>
-                        </a>
-                        <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item">
-                            <div class="d-flex align-items-center">
-                                <img class="rounded-circle" src="img/user.jpg" alt=""
-                                     style="width: 40px; height: 40px;">
-                                <div class="ms-2">
-                                    <h6 class="fw-normal mb-0">Jhon send you a message</h6>
-                                    <small>15 minutes ago</small>
-                                </div>
-                            </div>
-                        </a>
-                        <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item text-center">See all message</a>
+                        <%}%>
+                        <a href="<%=request.getContextPath()%>/admin?func=banners_tips" class="dropdown-item text-center">Xem tất cả</a>
                     </div>
                 </div>
                 <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                        <i class="fa fa-bell me-lg-2"></i>
-                        <span class="d-none d-lg-inline-flex">Notifications</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
-                        <a href="#" class="dropdown-item">
-                            <h6 class="fw-normal mb-0">Profile updated</h6>
-                            <small>15 minutes ago</small>
-                        </a>
-                        <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item">
-                            <h6 class="fw-normal mb-0">New user added</h6>
-                            <small>15 minutes ago</small>
-                        </a>
-                        <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item">
-                            <h6 class="fw-normal mb-0">Password changed</h6>
-                            <small>15 minutes ago</small>
-                        </a>
-                        <hr class="dropdown-divider">
-                        <a href="#" class="dropdown-item text-center">See all notifications</a>
-                    </div>
-                </div>
-                <div class="nav-item dropdown">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                    <div style="cursor: default" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                         <i class="rounded-circle me-lg-2 fa-solid fa-user"
                            style="width: 40px; height: 40px;">
                         </i>
                         <span class="d-none d-lg-inline-flex"><%= u.getName()%></span>
-                    </a>
+                    </div>
                     <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                         <a href="<%=request.getContextPath()%>/changeUserInfo" class="dropdown-item">Tài khoản cá
                             nhân</a>
@@ -313,7 +238,7 @@
         </nav>
         <!-- Navbar End -->
         <iframe src="<%=framePath%>"
-                frameborder="0" name="content" id="frame" width="100%" height="100%"
+                frameborder="0" name="content" id="frame" width="100%" height="110%"
                 scrolling="yes"
                 class="container-fluid mt-2"
         ></iframe>

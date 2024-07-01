@@ -36,20 +36,12 @@
 </div>
 <div class="main-content">
     <div class="card-box m-4 d-flex align-middle">
-        <div class="card mb-3 me-3" style="max-width: 300px;">
-            <div class="row g-0">
-                <div class="col-md-4 card-icon">
-                    <i class="bi bi-eye"></i>
-                    <p class="card-text"><%=CounterFilter.getCount()%>
-                    </p>
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">Lượt xem</h5>
-                        <p class="card-text">Tổng số lượt ghé thăm trang web</p>
-                    </div>
-                </div>
+        <div class="row border border border-success rounded-2">
+            <div class="col-6 d-flex align-items-center fs-5">
+                <div class="fw-bold"><%=CounterFilter.getCount()%>
+                <i class="bi bi-eye"></i>
             </div>
+            <div class="col-6">Tổng số lượt ghé thăm trang web</div>
         </div>
 
         <div class="card mb-3 me-3 " style="max-width: 300px;">
@@ -130,7 +122,7 @@
                     </th>
                     <th scope="row"><%=p.getName()%>
                     </th>
-                    <th><%=p.getSoldout()%>
+                    <th><%="Đang lỗi chỗ bán ra!"%>
                     </th>
                     <th><%=p.getQuantity()%>
                     </th>

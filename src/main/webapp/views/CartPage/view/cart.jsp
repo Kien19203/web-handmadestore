@@ -19,29 +19,34 @@
 <html>
 <head>
     <title>Giỏ Hàng</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <%--   IMPORT DATATABLES.  --%>
+    <%--    1. Cài bootstrap cdn v5 --%>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.datatables.net/v/bs5/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.datatables.net/2.0.7/css/dataTables.dataTables.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/buttons/3.0.2/css/buttons.dataTables.css">
+
+    <%--   2. Cài Jquery v3--%>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <%-- 3. Cài datatables--%>
+
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.6/datatables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
 
 
-<%--    <link rel="stylesheet" href="cartCSS.css"/>--%>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+
 
     <style>
-        .pause_bt {
-            padding: 10px 40px;
-            margin-right: 10px;
-            border: none;
-            font-weight: bold;
-        }
-
-        .complete_bt {
-            padding: 10px 40px;
-            border: none;
-            font-weight: bold;
-            background-color: red;
-            color: white;
-        }
+        <%@include file="../css/cartstyle.css"%>
     </style>
 </head>
 <body>
@@ -52,9 +57,11 @@
 <%--<%Map<Integer, Item> list = cart. %>--%>
 
 
-<nav aria-label="breadcrumb">
-    <ol class="breadcrumb ">
-        <li class="breadcrumb-item"><a style="text-decoration: none" href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
+<nav aria-label="breadcrumb ">
+    <ol class="breadcrumb m-0 ">
+        <li class="breadcrumb-item"><a
+                href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
+
         <li class="breadcrumb-item active" aria-current="page" style="color: #e32124">Giỏ hàng
         </li>
     </ol>
@@ -67,7 +74,7 @@
             <div class="vh-100 w-100 bg-body d-flex justify-content-center align-items-center ">
                 <!--Main-->
                 <div>
-                    <div class="w-70">
+                    <div class="m-auto" style="height: 400px;width: 90%; overflow-y: auto;">
                         <table id="order-list" class="table table-borderless text-center mb-5">
                             <thead>
                             <tr class="align-middle border">
@@ -93,7 +100,7 @@
                                 </td>
                                 <td class="align-middle">
                                     <div>
-                                        <a class="text-decoration-none" href="<%=request.getContextPath()%>/product-detail?id=<%=item.getProduct().getId()%>"> <h6><%=item.getProduct().getName()%>
+                                        <a class="text-decoration-none" href="<%=request.getContextPath()%>/product-detail?id=<%=item.getProduct().getId()%>"> <h6 style="color: black"><%=item.getProduct().getName()%>
                                         </h6> </a>
 
                                     </div>
@@ -124,22 +131,17 @@
                                                 style="width:30px;" >
                                             <a style="text-decoration: none" href="<%=request.getContextPath()%>/add-cart?actionCart=put&num=1&id=<%=itemTemp.getProduct().getId()%>">+</a>
                                         </button>
+
+
+
                                     </div>
                                 </td>
                                 <td class="align-middle">
                                     <%=numberFormat.format(item.getQuantity() * item.getPrice())%>
                                 </td>
                                 <td class="align-middle">
-
-
-
-
-
-                                    <a href="<%=request.getContextPath()%>/add-cart?actionCart=delete&id=<%=item.getProduct().getId()%>">
-                                        <i class="fa-solid fa-trash-can"></i> </a>
-
-
-
+                                    <button onclick="deleteRow(this,<%=item.getProduct().getId()%>,<%=item.getPrice()%>,<%=item.getQuantity()%>)" style="border: none;background: white;color: blue;">
+                                        <i class="fa-solid fa-trash-can"></i> </button>
                                 </td>
                             </tr>
 
@@ -150,22 +152,21 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="line-block text-end mb-3">
+                    <div class="line-block text-end mb-3 mt-5 me-5">
                         <span class="total-amount h4 me-1 fw-normal">Tổng tiền:</span>
+                        <p id="total_Cart" class="d-none"><%=total%></p>
                         <span id="total_amount" class="h5"><%=numberFormat.format(total)%></span>
                     </div>
-
                     <div class="line-block text-end">
-
                         <button type="button" class="pause_bt"
-                                onclick="window.location = '../MainPage/view_mainpage/mainpage.jsp'">Tiếp tục mua hàng
+                                onclick="window.location = '../../MainPage/view_mainpage/mainpage.jsp'">Tiếp tục mua hàng
                         </button>
                      <%if(u != null){%>
-                        <button type="button" class="complete_bt"
-                                onclick="window.location = '<%=request.getContextPath()%>/views/PaymentPage/payment.jsp'">Thanh Toán
+                        <button type="button" class="complete_bt me-5"
+                                onclick="window.location = '../../PaymentPage/payment.jsp'">Thanh Toán
                         </button>
                         <%}else{%>
-                        <button type="button" class="complete_bt"
+                        <button type="button" class="complete_bt me-5"
                                 onclick="window.location = '<%=request.getContextPath()%>/login'">Thanh Toán
                         </button>
                         <%}%>
@@ -179,8 +180,60 @@
 
 <!--    Footer-->
 <%@include file="/views/Footer/footer.jsp" %>
+<%--JS--%>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
+<%--<a href="<%=request.getContextPath()%>/add-cart?actionCart=delete&id=<%=item.getProduct().getId()%>">
+--%>
 
+
+
+
+
+function deleteRow(btn,idProduct,priceProduct,amountProduct) {
+    let actionCart = "delete";
+    let total_amount = document.getElementById("total_amount");
+    let total_Cart = document.getElementById("total_Cart");
+    let total = parseInt(total_Cart.innerText);
+    console.log(total);
+    let newTotal = total - (priceProduct*amountProduct);
+    const numberFomat = Intl.NumberFormat('vi-VN',{
+        style: 'currency',
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    console.log(total);
+    console.log(priceProduct);
+    console.log(amountProduct);
+    console.log(priceProduct*amountProduct);
+    $.ajax({
+        url: "/HandMadeStore/add-cart",
+        method: "POST",
+        data: {
+            actionCart: actionCart,
+            id: idProduct
+        },
+        success: function (response) {
+            console.log("Thành Công Xóa");
+            btn.closest("tr").remove();
+            let formatTotal = numberFomat.format(newTotal);
+            console.log(formatTotal);
+            total_amount.innerText = formatTotal;
+            total_Cart.innerText = newTotal;
+            handleDeleteToCart(response);
+            Swal.fire({
+                position: "center",
+                icon: "success",
+                title: "Xóa Sản Phẩm Thành Công!",
+                showConfirmButton: false,
+                timer: 1500
+            });
+
+        }
+    })
+}
 
 
 </script>

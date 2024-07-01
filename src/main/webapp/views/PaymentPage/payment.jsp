@@ -277,7 +277,7 @@
                         </div>
                         <div class="row py-3 ">
                             <div class="col-4 d-flex align-items-center">
-                        <span><a href="../CartPage/cart.jsp"
+                        <span><a href="../CartPage/view/cart.jsp"
                                  class="text-decoration-none color-for-text"><strong><</strong> Quay lại giỏ hàng</a></span>
                             </div>
                             <div class="col-8 text-end">

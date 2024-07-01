@@ -10,7 +10,7 @@ public class Order implements Serializable {
     private int id;
     private double totalPrice;
     private Timestamp orderDate;
-    private String status;
+    private int status;
     private String consigneeName;
     private String consigneePhoneNumber;
     private String address;
@@ -47,11 +47,11 @@ public class Order implements Serializable {
         this.orderDate = orderDate;
     }
 
-    public String getStatus() {
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
@@ -104,25 +104,55 @@ public class Order implements Serializable {
     }
 
     public boolean isWaitConfirmOrder() {
-        return this.getStatus().equalsIgnoreCase("Chờ xác nhận");
+        return this.getStatus() == 0;
     }
 
-    public boolean isPackingOrder() {
-        return this.getStatus().equalsIgnoreCase("Đang đóng gói");
+    public boolean isPreparing() {
+        return this.getStatus() == 1;
     }
 
     public boolean isDeliveringOrder() {
-        return this.getStatus().equalsIgnoreCase("Đang giao");
+        return this.getStatus() == 2;
     }
 
     public boolean isSucccessfulOrder() {
-        return this.getStatus().equalsIgnoreCase("Thành công");
+        return this.getStatus() == 3;
     }
 
     public boolean isCanceledOrder() {
-        return this.getStatus().equalsIgnoreCase("Đã hủy");
+        return this.getStatus() == 4;
     }
 
+    public String getStatusAsName() {
+        String re = null;
+        if (this.isWaitConfirmOrder()) {
+            re = "Cần xác nhận";
+        } else if (this.isPreparing()) {
+            re = "Đang đóng gói";
+        } else if (this.isDeliveringOrder()) {
+            re = "Đang giao";
+        } else if (this.isCanceledOrder()) {
+            re = "Đã hủy";
+        } else if (this.isSucccessfulOrder()) {
+            re = "Thành công";
+        }
+        return re;
+    }
+    public String getStatusAsColor(){
+        String backgroundColor = null;
+        if (this.isWaitConfirmOrder()) {
+            backgroundColor = "#ffcc00";
+        } else if (this.isPreparing()) {
+            backgroundColor = "cadetblue";
+        } else if (this.isDeliveringOrder()) {
+            backgroundColor = "#0171d3";
+        } else if (this.isCanceledOrder()) {
+            backgroundColor = "#ff0000";
+        } else if (this.isSucccessfulOrder()) {
+            backgroundColor = "#4d8a54";
+        }
+        return backgroundColor;
+    }
     @Override
     public String toString() {
         return "Order{" +

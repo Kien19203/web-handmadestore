@@ -1,6 +1,8 @@
 package controller;
 
 import model.bean.Cart;
+import model.bean.Product;
+import model.service.ProductService;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -30,7 +32,6 @@ public class AddCartController extends HttpServlet {
         Cart cart = (Cart) sessions.getAttribute("cart");
         String action = req.getParameter("actionCart");
         String referer = req.getHeader("Referer");//Hàm lấy url của trang hiện tại để reload
-
         switch (action) {
             case "get":
 
@@ -41,7 +42,7 @@ public class AddCartController extends HttpServlet {
 
             case "delete":
                 DeleteP(req,resp);
-                resp.sendRedirect(referer);
+//                resp.sendRedirect(referer);
                 break;
             case "put":
                 putP(req,resp);
@@ -52,6 +53,16 @@ public class AddCartController extends HttpServlet {
             case "post":
                 int id = Integer.parseInt(req.getParameter("id")); // lay id product
                 int num = Integer.parseInt(req.getParameter("num"));
+                resp.setContentType("application/json");
+                resp.setCharacterEncoding("UTF-8");
+
+                Product p = ProductService.getInstance().getProductById(id);
+                    if(num <= 0 || num > p.getStock()) {
+                    resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+                    resp.getWriter().write("{\"status\": \"error\", \"message\": \"Hãy nhập số lượng cho đúng.\"}");
+                    return;
+                }
+
                 cart.add(id, num);
                 sessions.setAttribute("cart", cart);
                 resp.sendRedirect(referer);

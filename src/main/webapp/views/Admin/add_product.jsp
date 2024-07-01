@@ -39,130 +39,131 @@
     boolean isAdmin = ((request.getSession().getAttribute("isAdmin") == null) ? false : ((boolean) request.getSession().getAttribute("isAdmin")));
     if (isAdmin) {
 %>
-<body >
+<body>
 
 <div class="container-fluid mx-auto mt-2">
-<form action="<%=request.getContextPath()%>/addproduct" method="post" enctype="multipart/form-data"
-      onsubmit="return validateForm()">
-    <div class="err">
-        <% String re = request.getAttribute("result") == null ? "" : request.getAttribute("result").toString(); %>
-        <p id="errPass" class="text-center" style="color: red"><%=re%>
-        </p>
-    </div>
-    <div class="row my-4">
-        <div class="col-md-6 mb-2">
-            <div class="form-floating w-75 mx-5 my-2 p-2 ">
-                <input type="text" class="form-control" id="productName" name="productName" value="<%=productName%>"
-                       placeholder="Thiệp sinh nhật">
-                <label for="productName">Tên sản phẩm (Lưu ý: Không nên chứa ký tự '#')</label>
+    <form action="<%=request.getContextPath()%>/addproduct" method="post" enctype="multipart/form-data"
+          onsubmit="return validateForm()">
+        <div class="row my-4">
+            <div class="col-md-6 mb-2">
+                <div class="form-floating w-75 mx-5 my-2 p-2 ">
+                    <input type="text" class="form-control" id="productName" name="productName" value="<%=productName%>"
+                           placeholder="Thiệp sinh nhật" oninput="validateNotEmpty(this)">
+                    <label for="productName">Tên sản phẩm (Lưu ý: Không nên chứa ký tự '#')</label>
+                </div>
+                <div class="form-floating w-75 mx-5 my-2 p-2">
+                    <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Số lượng"
+                           value="<%=quantity%>" oninput="validateDouble(this)">
+                    <label for="quantity">Số lượng</label>
+                </div>
+                <div class="form-floating w-75 mx-5 my-2 p-2">
+                    <input type="number" class="form-control" id="costPrice" name="costPrice" placeholder="Giá nhập vào"
+                           value="<%=costPrice%>" oninput="validateDouble(this)">
+                    <label for="costPrice">Giá nhập vào</label>
+                </div>
+                <div class="form-floating w-75 mx-5 my-2 p-2">
+                    <input type="number" class="form-control" id="sellingPrice" name="sellingPrice"
+                           placeholder="Giá bán"
+                           value="<%=sellingPrice%>" oninput="validateDouble(this)">
+                    <label for="sellingPrice">Giá bán</label>
+                </div>
             </div>
-            <div class="form-floating w-75 mx-5 my-2 p-2">
-                <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Số lượng"
-                       value="<%=quantity%>">
-                <label for="quantity">Số lượng</label>
-            </div>
-            <div class="form-floating w-75 mx-5 my-2 p-2">
-                <input type="number" class="form-control" id="costPrice" name="costPrice" placeholder="Giá nhập vào"
-                       value="<%=costPrice%>">
-                <label for="costPrice">Giá nhập vào</label>
-            </div>
-            <div class="form-floating w-75 mx-5 my-2 p-2">
-                <input type="number" class="form-control" id="sellingPrice" name="sellingPrice" placeholder="Giá bán"
-                       value="<%=sellingPrice%>">
-                <label for="sellingPrice">Giá bán</label>
-            </div>
-        </div>
-        <%--        Choice category and create new category--%>
-        <div class="col-md-6 mb-5">
-            <div class="mt-4">
-                <div class="m-0 border alert alert-dismissible d-flex align-items-center w-75 mx-5 my-2 p-2">
-                    <div class="me-4">
-                        <input class="form-check-input fs-5" style="cursor: pointer" type="radio"
-                               name="choiceCategory" id="case1"
-                            <%if (radio_choiceCategory.equals("choiceAvailableCategory")){%>
-                               checked
-                            <%}%>
-                               value="choiceAvailableCategory"
-                               onclick="showAvailableCategory()">
-                        <label class="form-check-label" style="cursor: pointer" for="case1">
-                            Chọn danh mục có sẵn
-                        </label>
+            <%--        Choice category and create new category--%>
+            <div class="col-md-6 mb-5">
+                <div class="mt-4">
+                    <div class="m-0 border alert alert-dismissible d-flex align-items-center w-75 mx-5 my-2 p-2">
+                        <div class="me-4 ms-3">
+                            <input class="form-check-input fs-5" style="cursor: pointer" type="radio"
+                                   name="choiceCategory" id="case1"
+                                <%if (radio_choiceCategory.equals("choiceAvailableCategory")){%>
+                                   checked
+                                <%}%>
+                                   value="choiceAvailableCategory"
+                                   onclick="showAvailableCategory()">
+                            <label class="form-check-label" style="cursor: pointer" for="case1">
+                                Chọn danh mục có sẵn
+                            </label>
+                        </div>
+                        <div>
+                            <input class="form-check-input fs-5" style="cursor: pointer" type="radio"
+                                   name="choiceCategory"
+                                   id="case2"
+                                <%if (radio_choiceCategory.equals("choiceNewCategory")){%>
+                                   checked
+                                <%}%>
+                                   value="choiceNewCategory"
+                                   onclick="showInputToNewCategory()"
+                            >
+                            <label class="form-check-label" style="cursor: pointer" for="case2">
+                                Tạo danh mục mới
+                            </label>
+                        </div>
                     </div>
-                    <div>
-                        <input class="form-check-input fs-5" style="cursor: pointer" type="radio"
-                               name="choiceCategory"
-                               id="case2"
-                            <%if (radio_choiceCategory.equals("choiceNewCategory")){%>
-                               checked
+                    <div class="form-floating w-75 mx-5 my-2 p-2 align-content-start" style="display: none"
+                         id="showAvailableCategory">
+                        <select class="form-select" id="availableCategory" name="availableCategory"
+                                aria-label="Chọn danh mục liên quan">
+                            <%for (Category category : categories) {%>
+                            <option value="<%=category.getId()%>"><%=category.getName()%>
+                            </option>
                             <%}%>
-                               value="choiceNewCategory"
-                               onclick="showInputToNewCategory()"
-                        >
-                        <label class="form-check-label" style="cursor: pointer" for="case2">
-                            Tạo danh mục mới
-                        </label>
+                        </select>
+                        <label>Chọn danh mục liên quan</label>
+                    </div>
+                    <div class="form-floating w-75 mx-5 my-2 p-2 align-content-start" style="display: none"
+                         id="showInputToNewCategory">
+                        <input type="text" class="form-control" id="newCategory" name="newCategory"
+                               value="<%=newCategory%>">
+                        <label for="newCategory">Nhập tên danh mục mới</label>
                     </div>
                 </div>
-                <div class="form-floating w-75 mx-5 my-2 p-2 align-content-start" style="display: none"
-                     id="showAvailableCategory">
-                    <select class="form-select" id="availableCategory" name="availableCategory"
-                            aria-label="Chọn danh mục liên quan">
-                        <%for (Category category : categories) {%>
-                        <option value="<%=category.getId()%>"><%=category.getName()%>
-                        </option>
-                        <%}%>
-                    </select>
-                    <label>Chọn danh mục liên quan</label>
-                </div>
-                <div class="form-floating w-75 mx-5 my-2 p-2 align-content-start" style="display: none"
-                     id="showInputToNewCategory">
-                    <input type="text" class="form-control" id="newCategory" name="newCategory"
-                           value="<%=newCategory%>">
-                    <label for="newCategory">Nhập tên danh mục mới</label>
-                </div>
+            </div>
+            <div class="form-floating w-75 mx-5 my-2 p-2">
+                <select class="form-select" id="discount" aria-label="Giảm giá áp dụng" name="discount">
+                    <option value="" selected></option>
+                    <%for (Discount d : discounts) {%>
+                    <option value="<%=d.getId()%>"><%=d.getName()%> - giảm <%=d.getPercentageOff() * 100%>%
+                    </option>
+                    <%}%>
+                </select>
+                <label for="discount">Chọn giảm giá áp dụng</label>
             </div>
         </div>
-        <div class="form-floating w-75 mx-5 my-2 p-2">
-            <select class="form-select" id="discount" aria-label="Giảm giá áp dụng" name="discount">
-                <option value="" selected></option>
-                <%for (Discount d : discounts) {%>
-                <option value="<%=d.getId()%>"><%=d.getName()%> - giảm <%=d.getPercentageOff() * 100%>%
-                </option>
-                <%}%>
-            </select>
-            <label for="discount">Chọn giảm giá áp dụng</label>
+        <div class="row my-4 mx-5 border rounded-3">
+            <label for="description" class="form-label">Mô tả sản phẩm</label>
+            <textarea class="form-control mx-auto w-70" style="height: 200px" id="description" name="description"
+                      rows="3" oninput="validateNotEmpty(this)"><%=description%></textarea>
         </div>
-    </div>
-    <div class="row my-4 mx-5 border rounded-3">
-        <label for="description" class="form-label">Mô tả sản phẩm</label>
-        <textarea class="form-control mx-auto w-70" style="height: 200px" id="description" name="description"
-                  rows="3"><%=description%></textarea>
-    </div>
 
-    <div class="row my-4 mx-5 border rounded-3">
-        <!--    input Images-->
-        <div class="row">
-            <p class="fw-bold">Chọn một hoặc nhiều ảnh cho sản phẩm (Lưu ý rằng sẽ không thể thay đổi ảnh của sản phẩm
-                sau này và ảnh đại diện cho sản phẩm sẽ là ảnh đầu tiên theo thứ tự alphabet!)</p>
-        </div>
-        <div class="row align-items-center" style="height: 100px;">
+        <div class="row my-4 mx-5 border rounded-3">
+            <!--    input Images-->
             <div class="row">
-                <div class="col-8">
-                    <label for="uploadImage">Chọn File Ảnh ít hơn 5MB</label>
-                    <input id="uploadImage" type="file" name="images" placeholder="Chọn File Ảnh ít hơn 5MB"
-                           multiple onchange="displayFileNames(this)" accept="image/*" required>
-                    <div id="fileNamesContainer"></div>
+                <p class="fw-bold">Chọn một hoặc nhiều ảnh cho sản phẩm (Lưu ý rằng sẽ không thể thay đổi ảnh của sản
+                    phẩm
+                    sau này và ảnh đại diện cho sản phẩm sẽ là ảnh đầu tiên theo thứ tự alphabet!)</p>
+            </div>
+            <div class="row align-items-center" style="height: 100px;">
+                <div class="row">
+                    <div class="col-8">
+                        <label for="uploadImage">Chọn File Ảnh ít hơn 5MB</label>
+                        <input id="uploadImage" type="file" name="images" placeholder="Chọn File Ảnh ít hơn 5MB"
+                               multiple onchange="displayFileNames(this)" accept="image/*" required>
+                        <div id="fileNamesContainer"></div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row mb-2 me-5 mb-2">
-        <div class="d-flex justify-content-end m-0" id="submit">
-            <button type="submit" value="addproduct" class="btn btn-outline-success m-3">Hoàn tất thêm sản phẩm mới
-            </button>
+        <% String re = request.getAttribute("result") == null ? "" : request.getAttribute("result").toString(); %>
+        <div id="errorAlert" class="alert alert-danger" role="alert">
+            <%=re%>
         </div>
-    </div>
-</form>
+        <div class="row mb-2 me-5 mb-2">
+            <div class="d-flex justify-content-end m-0" id="submit">
+                <button type="submit" value="addproduct" class="btn btn-outline-success m-3">Hoàn tất thêm sản phẩm mới
+                </button>
+            </div>
+        </div>
+    </form>
 </div>
 <script>
     function showAvailableCategory() {
@@ -192,16 +193,38 @@
     }
 
     function validateForm() {
-        var fileInput = document.getElementById('imageUpload');
-        var fileSize = fileInput.files[0].size; // kích thước tệp trong byte
+        var fileInput = document.getElementById('uploadImage');
         var maxSize = 5 * 1024 * 1024; // 5 MB
 
-        if (fileSize > maxSize) {
-            alert('Kích thước tệp ảnh không được vượt quá 5 MB.');
-            return false;
+        if (fileInput.files.length > 0) {
+            for (var i = 0; i < fileInput.files.length; i++) {
+                if (fileInput.files[i].size > maxSize) {
+                    alert('Kích thước tệp ảnh không được vượt quá 5 MB.');
+                    return false;
+                }
+            }
         }
-
         return true;
+    }
+
+    function validateNotEmpty(inputElement) {
+        if (inputElement.value.trim() === "") {
+            document.getElementById("errorAlert").textContent = "Trường không được bỏ trống."
+            inputElement.setCustomValidity('Trường này không được bỏ trống.');
+        } else {
+            document.getElementById("errorAlert").textContent = ""
+            inputElement.setCustomValidity('');
+        }
+    }
+
+    function validateDouble(inputElement) {
+        if (parseFloat(inputElement.value) <= 0) {
+            document.getElementById("errorAlert").textContent = "Giá trị không nhỏ hơn 0."
+            inputElement.setCustomValidity('Giá trị không nhỏ hơn 0');
+        } else {
+            document.getElementById("errorAlert").textContent = ""
+            inputElement.setCustomValidity('');
+        }
     }
 </script>
 </body>

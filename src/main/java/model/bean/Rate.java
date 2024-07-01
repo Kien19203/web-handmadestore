@@ -9,6 +9,7 @@ public class Rate {
     private String comment;
     private Timestamp createDate;
 
+    private int changeNumber;
     public Rate() {
 
     }
@@ -19,6 +20,14 @@ public class Rate {
         this.starRatings = starRatings;
         this.comment = comment;
         this.createDate = createDate;
+    }
+
+    public int getChangeNumber() {
+        return changeNumber;
+    }
+
+    public void setChangeNumber(int changeNumber) {
+        this.changeNumber = changeNumber;
     }
 
     public int getProductId() {

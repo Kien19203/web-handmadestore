@@ -30,8 +30,7 @@
                 stt++;
         %>
         <div class="row mb-3">
-            <div class="col-2 text-center d-flex justify-content-center align-items-center fs-5 fw-bold"><%=stt%>
-            </div>
+            <div class="col-2 text-center d-flex justify-content-center align-items-center fs-5 fw-bold"><%=stt%></div>
             <div class="col-10">
                 <div class="input-group">
                     <input type="text" class="form-control"
@@ -74,6 +73,10 @@
         <%}%>
         <!-- Thêm trường ẩn để chứa categoryId -->
         <input type="hidden" id="currentEditCategoryId" name="currentEditCategoryId" value=""/>
+        <!-- Thêm alert để hiển thị lỗi -->
+        <div id="errorAlert" class="alert alert-danger" role="alert" style="display: none;">
+            Các trường không được để trống!
+        </div>
     </form>
 </div>
 
@@ -96,15 +99,23 @@
         // Tìm button đã được click
         var clickedButton = document.activeElement;
         var categoryId = clickedButton.value;
-        // Cập nhật giá trị của trường ẩn
-        document.getElementById("currentEditCategoryId").value = categoryId;
-        // Tiếp tục submit form nếu cần
-        document.getElementById("categoryForm").submit();
+        var inputField = document.getElementById('input_' + categoryId);
+
+        // Kiểm tra xem input có trống không
+        if (inputField && inputField.value.trim() === '') {
+            document.getElementById('errorAlert').style.display = 'block';
+            editCategory(categoryId)
+        }else {
+            // Ẩn alert lỗi nếu không có lỗi
+            document.getElementById('errorAlert').style.display = 'none';
+
+            // Cập nhật giá trị của trường ẩn
+            document.getElementById("currentEditCategoryId").value = categoryId;
+
+            // Tiếp tục submit form nếu cần
+            document.getElementById("categoryForm").submit();
+        }
     }
-</script>
-
-</script>
-
 </script>
 </body>
 <%
