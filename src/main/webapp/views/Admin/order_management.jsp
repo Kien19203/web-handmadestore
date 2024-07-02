@@ -35,19 +35,6 @@
             orders = OrderService.getInstance().getCanceledOrders();
         } else if (currentFilter.equals("succcessfulOrders")) {
             orders = OrderService.getInstance().getSucccessfulOrders();
-        } else if (currentFilter.startsWith("orderId_rdo")) {
-            StringTokenizer st = new StringTokenizer(currentFilter, ":");
-            st.nextToken();
-            orders = new ArrayList<>();
-            orders.add(OrderService.getInstance().getOrderById(st.nextToken()));
-        } else if (currentFilter.startsWith("customerId_rdo")) {
-            StringTokenizer st = new StringTokenizer(currentFilter, ":");
-            st.nextToken();
-            orders = OrderService.getInstance().getOrderByCustomerId(st.nextToken());
-        } else if (currentFilter.startsWith("customerName_rdo")) {
-            StringTokenizer st = new StringTokenizer(currentFilter, ":");
-            st.nextToken();
-            orders = OrderService.getInstance().getOrderByCustomerNamePart(st.nextToken());
         } else {
             currentFilter = "all";
             orders = OrderService.getInstance().getAllOrder();
@@ -84,7 +71,7 @@
     <style>
         #showBox, #cancelBox {
             position: fixed;
-            top: 40%;
+            top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             overflow: auto;
@@ -103,9 +90,11 @@
             transform: translateX(-50%);
             z-index: 1000;
         }
-        .dt-empty,.dt-info {
+
+        .dt-empty, .dt-info {
             display: none;
         }
+
         #data th:nth-child(4),
         #data td:nth-child(4) {
             width: 20%;
@@ -136,9 +125,6 @@
                         <div class="form-check mx-1">
                             <input class="form-check-input" type="radio" name="choiceFindType" id="customerId_rdo"
                                    value="customerId_rdo"
-                                <%if(currentFilter!=null && currentFilter.startsWith("customerId_rdo")){%>
-                                   checked
-                                <%}%>
                             >
                             <label class="form-check-label" for="customerId_rdo">
                                 Tìm theo mã khách hàng
@@ -148,27 +134,16 @@
                         <div class="form-check mx-1">
                             <input class="form-check-input" type="radio" name="choiceFindType" id="customerName_rdo"
                                    value="customerName_rdo"
-                                <%if(currentFilter!=null && currentFilter.startsWith("customerName_rdo")){%>
-                                   checked
-                                <%}%>
                             >
                             <label class="form-check-label" for="customerName_rdo">
                                 Tìm tên khách hàng
                             </label>
                         </div>
                     </div>
-                    <div class="d-flex">
-                        <div class="input-group">
-                            <input type="text" class="form-control 1" name="findText"
-                                   value="<%=currentFindText!=null?currentFindText:""%>">
-                            <div class="input-group-append">
-                                <button
-                                        class="btn btn-outline-secondary" type="submit" name="submit_filter"
-                                        value="submit_find">Tìm
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    <input type="text" class="form-control 1"
+                           name="findText"
+                           id="searchInput"
+                    >
                 </div>
                 <button type="submit" name="submit_filter" value="all" class="btn btn-secondary mx-2 col-lg-1 col-sm-1">
                     Tất cả đơn
@@ -259,7 +234,7 @@
     </form>
     <%if (currentOrder != null) {%>
     <%--        showbox--%>
-    <div id="showBox" class="w-75 p-3 rounded">
+    <div id="showBox" class="w-100 h-100 p-3 rounded">
         <div class="fw-bold text-start" style="font-size: 30px; color: #0dcaf0">
             <button id="back_btn" onclick="hideOrderBox()"><i
                     class="fa-solid fa-arrow-left" style="color: #183153"></i>
@@ -473,17 +448,45 @@
     <%}%>
 </div>
 <script>
+    const searchInput = document.querySelector('#searchInput');
+    let table;
     $(document).ready(function () {
-        var table = $('#data').DataTable({
-            "searching": false, // Không có tính năng tìm kiếm
+        table = $('#data').DataTable({
+            "paging": true,
+            "searching": true, // Không có tính năng tìm kiếm
             "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
-            "pageLength": 10,
-            "displayStart": document.getElementById("currentPageNumber").value
+            "pageLength": 5,
+            "infor": false,
+            "displayStart": document.getElementById("currentPageNumber").value * 5,
+            language: {
+                search: "Nhập từ khóa tìm kiếm"
+            }
         });
         table.on('page.dt', function () {
             let pageInfo = table.page.info();
             document.getElementById("currentPageNumber").value = pageInfo.page;
         });
+
+        const radios = document.getElementsByName('choiceFindType');
+        let selectedValue = "orderId_rdo"; // Giá trị mặc định
+        for (const radio of radios) {
+            radio.addEventListener('change', function () {
+                selectedValue = this.value;
+            });
+        }
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const searchValue = this.value;
+                if (selectedValue == "orderId_rdo") {
+                    table.columns(0).search(searchValue).draw();
+                } else if (selectedValue == "customerId_rdo") {
+                    table.columns(1).search(searchValue).draw();
+                } else if (selectedValue == "customerName_rdo") {
+                    table.columns(2).search(searchValue).draw();
+                }
+            });
+        }
     });
 
     function deliveredOrder(orderId) {

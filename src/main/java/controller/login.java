@@ -1,8 +1,10 @@
 package controller;
 
 import io.ipinfo.api.IPinfo;
-import io.ipinfo.api.errors.RateLimitedException;
 import io.ipinfo.api.model.IPResponse;
+import logs.EAction;
+import logs.ELevel;
+import logs.LoggingService;
 import model.bean.Cart;
 import model.bean.User;
 import model.dao.UserDAO;
@@ -13,10 +15,15 @@ import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import java.io.IOException;
-import java.net.Socket;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 @WebServlet("/login")
 public class login extends HttpServlet {
+    private static final int WRONG_PASS_MAX = 5;
+    private static final int LOCK_TIME = 10 * 60 * 1000; // 10 minutes in milliseconds
+
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doPost(req, resp);
@@ -25,8 +32,10 @@ public class login extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/jsp; charset=UTF-8");
-        req.getSession().invalidate();
+        req.setCharacterEncoding("UTF-8");
+
         req.removeAttribute("auth");
+
         req.getSession().removeAttribute("isAdmin");
         String email = req.getParameter("email");
         String pw = req.getParameter("password");
@@ -35,47 +44,99 @@ public class login extends HttpServlet {
         User checkEmail = UserDAO.getUserByEmail(email);
         User user = UserService.getInstance().checkLogin(email, pw);
 
-        String clientIP = req.getRemoteAddr();
-        String clientLocation = getLocation(clientIP);
-
-        System.out.println("Ip: " + clientIP + " - Location: " + clientLocation);
         if (email == null) {
             req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
         } else if (checkEmail == null) {
             req.setAttribute("errEmail", "Email không tồn tại!");
             req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
         }
+
+        HttpSession session = req.getSession();
+        Map<String, Integer> wrongPassCounterMap = (Map<String, Integer>) session.getAttribute("wrongPassCounterMap");
+        Map<String, Long> firstFailedTimeMap = (Map<String, Long>) session.getAttribute("firstFailedTimeMap");
+
+        if (wrongPassCounterMap == null) {
+            wrongPassCounterMap = new HashMap<>();
+            session.setAttribute("wrongPassCounterMap", wrongPassCounterMap);
+        }
+
+        if (firstFailedTimeMap == null) {
+            firstFailedTimeMap = new HashMap<>();
+            session.setAttribute("firstFailedTimeMap", firstFailedTimeMap);
+        }
+
+        int wrongPassCounter = wrongPassCounterMap.getOrDefault(email, 0);
+        long firstFailedTime = firstFailedTimeMap.getOrDefault(email, System.currentTimeMillis());
+
+        long currentTime = System.currentTimeMillis();
+
+        if (currentTime - firstFailedTime > LOCK_TIME) {
+            // Reset counter and time after 10 minutes
+            wrongPassCounter = 0;
+            firstFailedTime = currentTime;
+        }
+
+        if (wrongPassCounter >= WRONG_PASS_MAX) {
+            if (currentTime - firstFailedTime <= LOCK_TIME) {
+                String clientIP = req.getRemoteAddr();
+                String[] clientLocation = getLocation(clientIP);
+                LoggingService.getInstance().log(ELevel.ALERT, EAction.LOGIN, clientIP, clientLocation[0], clientLocation[1], clientLocation[2], email + ": Nhập sai mật khẩu quá 5 lần");
+                req.setAttribute("result", "Bạn đã nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 10 phút.");
+                req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
+                return;
+            } else {
+                // Reset after lock time passed
+                wrongPassCounter = 0;
+                firstFailedTime = currentTime;
+            }
+        }
+
         if (user != null) {
             if (user.isLock()) {
                 req.setAttribute("result", "Tài khoản đã bị vô hiệu hóa!");
                 req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
             } else {
-                HttpSession session = req.getSession();
                 session.setAttribute("auth", user);
+                wrongPassCounterMap.remove(email);
+                firstFailedTimeMap.remove(email);
+                session.removeAttribute("wrongPassCounterMap");
+                session.removeAttribute("firstFailedTimeMap");
+
+                String clientIP = req.getRemoteAddr();
+                String[] clientLocation = getLocation(clientIP);
+                if (!clientLocation[2].equals("Không tìm thấy") && clientLocation[2].equals("VN"))
+                    LoggingService.getInstance().log(ELevel.ALERT, EAction.LOGIN, clientIP, clientLocation[0], clientLocation[1], clientLocation[2], email + ": Đăng nhập từ nước ngoài");
+
                 if (user.isOwn() || user.isAdmin()) {
-                    req.getSession().setAttribute("isAdmin", true);
+                    session.setAttribute("isAdmin", true);
                     resp.sendRedirect(req.getContextPath() + "/views/Admin/admin.jsp");
                 } else {
-                    req.getSession().setAttribute("isAdmin", false);
+                    session.setAttribute("isAdmin", false);
                     resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
                 }
             }
         } else {
+            wrongPassCounter++;
+            wrongPassCounterMap.put(email, wrongPassCounter);
+            firstFailedTimeMap.put(email, firstFailedTime);
+            session.setAttribute("wrongPassCounterMap", wrongPassCounterMap);
+            session.setAttribute("firstFailedTimeMap", firstFailedTimeMap);
+
             req.setAttribute("result", "Mật khẩu không chính xác!");
             req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
         }
     }
 
-    private String getLocation(String ipAddress) {
-        IPinfo ipInfo = new IPinfo.Builder()
-                .setToken("c354a4c7f892c2")
-                .build();
+    private String[] getLocation(String ipAddress) {
+        IPinfo ipInfo = new IPinfo.Builder().setToken("c354a4c7f892c2").build();
         try {
             IPResponse response = ipInfo.lookupIP(ipAddress);
-            return response.getCity() + ", " + response.getRegion() + ", " + response.getCountryName();
-        } catch (RateLimitedException ex) {
+            return new String[]{response.getCity() == null ? "Không tìm thấy" : response.getCity(),
+                    response.getRegion() == null ? "Không tìm thấy" : response.getRegion(),
+                    response.getCountryName() == null ? "Không tìm thấy" : response.getCountryName()};
+        } catch (Exception ex) {
             ex.printStackTrace();
-            return "Rate limit exceeded";
+            return new String[]{"Không tìm thấy", "Không tìm thấy", "Không tìm thấy"};
         }
     }
 }
