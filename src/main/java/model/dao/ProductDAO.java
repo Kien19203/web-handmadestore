@@ -1,5 +1,7 @@
 package model.dao;
 
+import model.adapter.InventoryProduct;
+import model.adapter.InventoryProductMappers;
 import model.bean.*;
 import model.db.JDBIConnector;
 
@@ -153,61 +155,6 @@ public class ProductDAO {
         }
     }
 
-/*-----------------------------------------THEM SAN PHAM MOI ------------------------------------*/
-
-
-//    public static void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, List<String> imagesPath) {
-//        JDBIConnector.me().useHandle(handle -> {
-//            // Insert into product table with auto-increment ID
-//            int productId = handle.createUpdate("INSERT INTO product(name, description, costPrice, sellingPrice, quantity, categoryId) VALUES (:name, :description, :costPrice, :sellingPrice, :quantity, :categoryId)")
-//                    .bind("name", name)
-//                    .bind("description", description)
-//                    .bind("costPrice", costPrice)
-//                    .bind("sellingPrice", sellingPrice)
-//                    .bind("quantity", quantity)
-//                    .bind("categoryId", categoryId)
-//                    .executeAndReturnGeneratedKeys("id")
-//                    .mapTo(Integer.class)
-//                    .one();
-//
-//            for (String imagePath : imagesPath) {
-//                // Insert into image table with auto-increment ID
-//                int imageId = handle.createUpdate("INSERT INTO image(name, path, productId) VALUES (:name, :path, :productId)")
-//                        .bind("name", name + " " + imagePath)
-//                        .bind("path", imagePath)
-//                        .bind("productId", productId)
-//                        .executeAndReturnGeneratedKeys("id")
-//                        .mapTo(Integer.class)
-//                        .one();
-//            }
-//        });
-//
-//    }
-//
-//    public static void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, int discountId, List<String> imagesPath) {
-//        JDBIConnector.me().useHandle(handle -> {
-//                    int productId = handle.createUpdate("INSERT INTO product (name, description, costPrice, sellingPrice,quantity,categoryId,discountId) VALUES (:name, :description, :costPrice, :sellingPrice,:quantity,:categoryId,:discountId)")
-//                            .bind("name", name)
-//                            .bind("description", description)
-//                            .bind("costPrice", costPrice)
-//                            .bind("sellingPrice", sellingPrice)
-//                            .bind("quantity", quantity)
-//                            .bind("categoryId", categoryId)
-//                            .bind("discountId", discountId)
-//                            .executeAndReturnGeneratedKeys("id")
-//                            .mapTo(Integer.class).one();
-//
-//                    for (String imagePath : imagesPath) {
-//                        handle.createUpdate("INSERT INTO image (name, path, productId) VALUES (:name, :path, :productId)")
-//                                .bind("name", name)
-//                                .bind("path", imagePath)
-//                                .bind("productId", productId)
-//                                .executeAndReturnGeneratedKeys("id")
-//                                .mapTo(Integer.class).one();
-//                    }
-//                }
-//        );
-//    }
 
     public static List<Product> getTrueIsSaleProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
@@ -441,29 +388,29 @@ public class ProductDAO {
         );
     }
 
-//    public static void setDiscountByQuantity(String discountId, int number, int comparison) {
-//        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
-//        JDBIConnector.me().useHandle(handle ->
-//                handle.createUpdate(
-//                                "UPDATE product " +
-//                                        "SET discountId = :discountId WHERE quantity " + comparisonNumber + number
-//                        )
-//                        .bind("discountId", discountId)
-//                        .execute()
-//        );
-//    }
+    public static void setDiscountByQuantity(String discountId, int number, int comparison) {
+        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = :discountId WHERE stock " + comparisonNumber + number
+                        )
+                        .bind("discountId", discountId)
+                        .execute()
+        );
+    }
 
-//    public static void unSetDiscountByQuantity(String discountId, int number, int comparison) {
-//        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
-//        JDBIConnector.me().useHandle(handle ->
-//                handle.createUpdate(
-//                                "UPDATE product " +
-//                                        "SET discountId = null WHERE discountId=:discountId and quantity " + comparisonNumber + number
-//                        )
-//                        .bind("discountId", discountId)
-//                        .execute()
-//        );
-//    }
+    public static void unSetDiscountByQuantity(String discountId, int number, int comparison) {
+        String comparisonNumber = comparison == -1 ? "<" : (comparison == 1 ? ">" : "=");
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                "UPDATE product " +
+                                        "SET discountId = null WHERE discountId=:discountId and stock " + comparisonNumber + number
+                        )
+                        .bind("discountId", discountId)
+                        .execute()
+        );
+    }
 
     //Trang chính xuất 15 sản phẩm trong từng category và phải còn hàng
     public static List<Product> list4product(int idCategory) {
@@ -485,59 +432,22 @@ public class ProductDAO {
                         .stream().toList());
         return products;
     }
-
-
-//    public static void updateProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId, String discountId) {
-//        JDBIConnector.me().useHandle(handle ->
-//                handle.createUpdate(
-//                                "UPDATE product" +
-//                                        " SET name=:name, description=:description, costPrice=:costPrice, sellingPrice=:sellingPrice, quantity=:quantity, categoryId=:categoryId, discountId=:discountId" +
-//                                        " WHERE id=:id"
-//                        )
-//                        .bind("name", name)
-//                        .bind("description", description)
-//                        .bind("costPrice", costPrice)
-//                        .bind("sellingPrice", sellingPrice)
-//                        .bind("quantity", quantity)
-//                        .bind("categoryId", categoryId)
-//                        .bind("discountId", discountId)
-//                        .bind("id", id)
-//                        .execute()
-//        );
-//    }
-
-//    public static void updateProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId) {
-//        JDBIConnector.me().useHandle(handle ->
-//                handle.createUpdate(
-//                                "UPDATE product" +
-//                                        " SET name=:name, description=:description, costPrice=:costPrice, sellingPrice=:sellingPrice, quantity=:quantity, categoryId=:categoryId" +
-//                                        " WHERE id=:id"
-//                        )
-//                        .bind("name", name)
-//                        .bind("description", description)
-//                        .bind("costPrice", costPrice)
-//                        .bind("sellingPrice", sellingPrice)
-//                        .bind("quantity", quantity)
-//                        .bind("categoryId", categoryId)
-//                        .bind("id", id)
-//                        .execute()
-//        );
-//    }
-
     public static long getNumberAvailProduct() {
         return JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select count(id) from product where stock>0 and isSale!=0").mapTo(Long.class).one());
     }
 
-    public static List<Product> getTopSoldoutProduct(int number) {
-        String sql = "SELECT p.* FROM product p JOIN inventory i ON p.id = i.productId WHERE i.soldOut > 0 order BY i.soldOut limit ?";
-        List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery(sql)
-                        .bind(0, number)
-                        .mapToBean(Product.class)
-                        .stream().toList());
-        return products;
+    public static List<InventoryProduct> getTopSoldoutProduct(int number) {
+        String sql = "SELECT p.id, p.name, i.quantity - i.soldout AS quantityRemaining, i.soldOut " +
+                "FROM product p join  inventory i on p.id = i.productId  WHERE i.soldOut > 0 order BY i.soldOut desc limit ?";
+        List<InventoryProduct> inventoryProducts = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).bind(0, number)
+                        .map(new InventoryProductMappers.SoldOutMapper())
+                        .stream()
+                        .toList());
+                return inventoryProducts;
     }
+
 
     public static List<Rate> getRatesByStarNumber(int productId, int starRatings, Integer userId) {
         Integer star = starRatings;
@@ -645,9 +555,13 @@ public class ProductDAO {
 
 
     public static void main(String[] args) {
-        Product o = getProductById("1");
+       List<InventoryProduct> i = getTopSoldoutProduct(5);
+       for(InventoryProduct iz : i) {
 
-        System.out.println(o);
+        System.out.println(iz);
+
+       }
+
 
 
 

@@ -136,22 +136,13 @@ public class ProductService {
     /*
     comparison: -1 <; 0 =; 1 >
      */
-//    public void setDiscountByQuantity(String discountId, int number, int comparison) {
-//        ProductDAO.setDiscountByQuantity(discountId, number, comparison);
-//    }
-//
-//    public void unSetDiscountByQuantity(String discountId, int number, int comparison) {
-//        ProductDAO.unSetDiscountByQuantity(discountId, number, comparison);
-//    }
+    public void setDiscountByQuantity(String discountId, int number, int comparison) {
+        ProductDAO.setDiscountByQuantity(discountId, number, comparison);
+    }
 
-    /*-------------------------INSERT NEW PRODUCT START-------------------------------*/
-
-//    public void insertNewProduct(String name, String description, double costPrice, double sellingPrice,
-//                                 int quantity, int categoryId, List<String> imagesPath) {
-//        ProductDAO.insertNewProduct(name, description, costPrice, sellingPrice, quantity, categoryId, imagesPath);
-//    }
-
-    /*-------------------------INSERT NEW PRODUCT END-------------------------------*/
+    public void unSetDiscountByQuantity(String discountId, int number, int comparison) {
+        ProductDAO.unSetDiscountByQuantity(discountId, number, comparison);
+    }
 
 
     //Sắp xếp từ thấp đến cao
@@ -168,9 +159,6 @@ public class ProductService {
         return ProductDAO.getAll();
     }
 
-    public List<Product> getTopSoldoutProduct(int number) {
-        return ProductDAO.getTopSoldoutProduct(number);
-    }
 
     public Product getProductById(int productID) {
         return ProductDAO.getProduct(productID);
@@ -226,17 +214,6 @@ public class ProductService {
         return -1;
     }
 
-//    public void editProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId, String discountId) {
-//        ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId, discountId);
-//    }
-//
-//    public void editProduct(String id, String name, String description, double costPrice, double sellingPrice, int quantity, String categoryId) {
-//        ProductDAO.updateProduct(id, name, description, costPrice, sellingPrice, quantity, categoryId);
-//    }
-
-//    public void insertNewProduct(String name, String description, double costPrice, double sellingPrice, int quantity, int categoryId, int discountId, List<String> imagesPath) {
-//        ProductDAO.insertNewProduct(name, description, costPrice, sellingPrice, quantity, categoryId, discountId, imagesPath);
-//    }
 
     public long getNumberAvailProduct() {
         return ProductDAO.getNumberAvailProduct();

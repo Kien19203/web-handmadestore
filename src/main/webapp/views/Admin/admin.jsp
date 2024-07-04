@@ -76,13 +76,21 @@
                     <i class="fa fa-tachometer-alt me-2"></i>Dashboard</a>
                 <div class="nav-item dropdown">
                     <%
-                        if (func.equals("product_management") || func.equals("category_management")
+                        if (func.equals("product_management") || func.equals("inventory_management")  || func.equals("category_management")
                                 || func.equals("add_product") || func.equals("discount_management")) {
                     %>
                     <a href="#" class="nav-link dropdown-toggle show active" data-bs-toggle="dropdown"
                        aria-expanded="true"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
                     <div class="dropdown-menu bg-transparent border-0 show ms-5" data-bs-popper="none">
+                        <a href="<%=request.getContextPath()%>/admin?func=inventory_management"
+                           class="dropdown-item
+                                 <%if(func.equals("inventory_management")){%>
+                                     active
+                                 <%}%>">
+                            <i class="fa-solid fa-list me-2"></i>
+                            Kho lưu trữ hàng
+                        </a>
                         <a href="<%=request.getContextPath()%>/admin?func=product_management"
                            class="dropdown-item
                                  <%if(func.equals("product_management")){%>
@@ -118,6 +126,9 @@
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
                     <div class="dropdown-menu bg-transparent border-0 ms-5">
+                        <a href="<%=request.getContextPath()%>/admin?func=inventory_management" class="dropdown-item"><i class="fa-solid fa-layer-group me-2"></i>
+                            Kho lưu trữ hàng
+                        </a>
                         <a href="<%=request.getContextPath()%>/admin?func=product_management"
                            class="dropdown-item
                          <%if(func.equals("product_management")){%>

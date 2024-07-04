@@ -3,6 +3,7 @@ package controller.admin;
 import controller.Validation;
 import model.service.CategoryService;
 import model.service.ImageService;
+import model.service.InventoryService;
 import model.service.ProductService;
 
 import javax.servlet.ServletException;
@@ -46,83 +47,83 @@ public class AddProductAdminController extends HttpServlet {
 
 //      Kiểm tra đủ tt? Chưa -> forward kèm attribute để khỏi nhập lại, đủ rồi thì write + insert
 //      Yêu cầu: xử lý file name = product Id +'stt';
-//        if (!(productName.equals("") || quantity.equals("") || costPrice.equals("") || sellingPrice.equals("") || description.equals("") ||
-//                (radio_choiceCategory == null || radio_choiceCategory.equals("")))) {
-//            if (radio_choiceCategory != null) {
-//                String categoryId = null;
-//                System.out.println(availableCategory + " - " + newCategory);
-//                if (radio_choiceCategory.equals("choiceAvailableCategory")) {
-//                    //Danh mục có sẵn
-//                    categoryId = availableCategory;
-//                } else if (radio_choiceCategory.equals("choiceNewCategory")) {
-//                    //create new category in table
-//                    categoryId = CategoryService.getInstance().createNewCategory(newCategory) + "";
-//                }
-//                if (categoryId != null) {
-//                    try {
-//                        //write
-//                        List<String> paths = ImageService.writeProductImagesFromClient(productName, req, resp, getServletContext());
-//                        System.out.println("paths: " + paths);
-//                        //insert
-//                        try {
-//                            if (Validation.isPositiveNumber(costPrice) && Validation.isPositiveNumber(sellingPrice) && Validation.isPositiveNumber(quantity)) {
-//                                if (!discount.equals("")) {
-//                                    ProductService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-//                                            Integer.parseInt(categoryId), Integer.parseInt(discount), paths);
-//                                } else {
-//                                    // không áp dụng discount
-//                                    ProductService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-//                                            Integer.parseInt(categoryId), paths);
-//                                }
-//                                //forward
-//                                req.setAttribute("result", "Thêm sản phẩm mới thành công! Bạn có thể thêm sản phẩm tiếp theo.");
-//                                req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
-//                            }
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                            req.setAttribute("productName", productName);
-//                            req.setAttribute("quantity", quantity);
-//                            req.setAttribute("costPrice", costPrice);
-//                            req.setAttribute("sellingPrice", sellingPrice);
-//                            req.setAttribute("radio_choiceCategory", radio_choiceCategory);
-//                            req.setAttribute("discount", discount);
-//                            req.setAttribute("description", description);
-//                            req.setAttribute("availableCategory", availableCategory);
-//                            req.setAttribute("newCategory", newCategory);
-//
-//                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
-//                            req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
-//                        }
-//                    } catch (IOException e) {
-//                        req.setAttribute("productName", productName);
-//                        req.setAttribute("quantity", quantity);
-//                        req.setAttribute("costPrice", costPrice);
-//                        req.setAttribute("sellingPrice", sellingPrice);
-//                        req.setAttribute("radio_choiceCategory", radio_choiceCategory);
-//                        req.setAttribute("discount", discount);
-//                        req.setAttribute("description", description);
-//                        req.setAttribute("availableCategory", availableCategory);
-//                        req.setAttribute("newCategory", newCategory);
-//
-//                        req.setAttribute("result", "Vui lòng tải ảnh cho sản phẩm!");
-//                        req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
-//                    }
-//                }
-//            }
-//        } else {
-//            req.setAttribute("productName", productName);
-//            req.setAttribute("quantity", quantity);
-//            req.setAttribute("costPrice", costPrice);
-//            req.setAttribute("sellingPrice", sellingPrice);
-//            req.setAttribute("radio_choiceCategory", radio_choiceCategory);
-//            req.setAttribute("discount", discount);
-//            req.setAttribute("description", description);
-//            req.setAttribute("availableCategory", availableCategory);
-//            req.setAttribute("newCategory", newCategory);
-//
-//            System.out.println("Thieu thong tin!!!");
-//            req.setAttribute("result", "Điền đủ thông tin để thêm sản phẩm mới! Vui lòng thử lại");
-//            req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
-//        }
+        if (!(productName.equals("") || quantity.equals("") || costPrice.equals("") || sellingPrice.equals("") || description.equals("") ||
+                (radio_choiceCategory == null || radio_choiceCategory.equals("")))) {
+            if (radio_choiceCategory != null) {
+                String categoryId = null;
+                System.out.println(availableCategory + " - " + newCategory);
+                if (radio_choiceCategory.equals("choiceAvailableCategory")) {
+                    //Danh mục có sẵn
+                    categoryId = availableCategory;
+                } else if (radio_choiceCategory.equals("choiceNewCategory")) {
+                    //create new category in table
+                    categoryId = CategoryService.getInstance().createNewCategory(newCategory) + "";
+                }
+                if (categoryId != null) {
+                    try {
+                        //write
+                        List<String> paths = ImageService.writeProductImagesFromClient(productName, req, resp, getServletContext());
+                        System.out.println("paths: " + paths);
+                        //insert
+                        try {
+                            if (Validation.isPositiveNumber(costPrice) && Validation.isPositiveNumber(sellingPrice) && Validation.isPositiveNumber(quantity)) {
+                                if (!discount.equals("")) {
+                                    InventoryService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+                                            Integer.parseInt(categoryId), Integer.parseInt(discount), paths);
+                                } else {
+                                    // không áp dụng discount
+                                    InventoryService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+                                            Integer.parseInt(categoryId), paths);
+                                }
+                                //forward
+                                req.setAttribute("result", "Thêm sản phẩm mới thành công! Bạn có thể thêm sản phẩm tiếp theo.");
+                                req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            req.setAttribute("productName", productName);
+                            req.setAttribute("quantity", quantity);
+                            req.setAttribute("costPrice", costPrice);
+                            req.setAttribute("sellingPrice", sellingPrice);
+                            req.setAttribute("radio_choiceCategory", radio_choiceCategory);
+                            req.setAttribute("discount", discount);
+                            req.setAttribute("description", description);
+                            req.setAttribute("availableCategory", availableCategory);
+                            req.setAttribute("newCategory", newCategory);
+
+                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
+                            req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
+                        }
+                    } catch (IOException e) {
+                        req.setAttribute("productName", productName);
+                        req.setAttribute("quantity", quantity);
+                        req.setAttribute("costPrice", costPrice);
+                        req.setAttribute("sellingPrice", sellingPrice);
+                        req.setAttribute("radio_choiceCategory", radio_choiceCategory);
+                        req.setAttribute("discount", discount);
+                        req.setAttribute("description", description);
+                        req.setAttribute("availableCategory", availableCategory);
+                        req.setAttribute("newCategory", newCategory);
+
+                        req.setAttribute("result", "Vui lòng tải ảnh cho sản phẩm!");
+                        req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
+                    }
+                }
+            }
+        } else {
+            req.setAttribute("productName", productName);
+            req.setAttribute("quantity", quantity);
+            req.setAttribute("costPrice", costPrice);
+            req.setAttribute("sellingPrice", sellingPrice);
+            req.setAttribute("radio_choiceCategory", radio_choiceCategory);
+            req.setAttribute("discount", discount);
+            req.setAttribute("description", description);
+            req.setAttribute("availableCategory", availableCategory);
+            req.setAttribute("newCategory", newCategory);
+
+            System.out.println("Thieu thong tin!!!");
+            req.setAttribute("result", "Điền đủ thông tin để thêm sản phẩm mới! Vui lòng thử lại");
+            req.getRequestDispatcher("/views/Admin/add_product.jsp").forward(req, resp);
+        }
     }
 }

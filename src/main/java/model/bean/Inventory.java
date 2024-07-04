@@ -12,6 +12,7 @@ import java.util.Date;
  * costPrice : Giá nhập sản phẩm.
  * soldOut : Số lượng sản phẩm đã bán ra.
  * createDate: Ngày tạo sản phẩm.
+ * costPrice_update:
  */
 
 @NoArgsConstructor
@@ -22,8 +23,8 @@ import java.util.Date;
 public class Inventory implements Serializable {
     private int productId;
     private int quantity;
-    private double costPrice;
+    private int costPrice;
     private int soldOut;
     private Date createDate;
-
+    private int costPrice_update;
 }

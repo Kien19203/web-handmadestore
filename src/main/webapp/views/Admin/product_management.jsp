@@ -116,12 +116,12 @@
                 </div>
                 <div class="form-floating w-100 mx-5 my-2 p-2">
                     <input type="number" class="form-control" id="quantity" name="quantity"
-                           value="<%=edit_product.getQuantity()%>">
+                           value="<%="Đang lỗi nha"%>">
                     <label for="quantity">Số lượng</label>
                 </div>
                 <div class="form-floating w-100 mx-5 my-2 p-2">
                     <input type="number" class="form-control" id="costPrice" name="costPrice"
-                           value="<%=edit_product.getCostPrice()%>">
+                           value="<%="Đang lỗi nha"%>">
                     <label for="costPrice">Giá nhập vào</label>
                 </div>
                 <div class="form-floating w-100 mx-5 my-2 p-2">
@@ -340,6 +340,7 @@
                 >
             </select>
         </div>
+<%--        THANH TÌM KIẾM THEO TÊN         --%>
         <div class="col-6">
             <form action="<%=request.getContextPath()%>/admin/product">
                 <div class="input-group justify-content-end">
@@ -360,6 +361,8 @@
             </form>
         </div>
     </div>
+
+<%--    BẢNG SẢN PHẨM CHÍNH.--%>
     <div class="table-wrapper-scroll-y my-custom-scrollbar  d-flex justify-content-center">
         <table id="data" class="table table-striped table-hover">
             <thead>
@@ -394,11 +397,11 @@
                 </td>
                 <td><%=p.getName()%>
                 </td>
-                <td><%=p.getQuantity()%>
+                <td><%="Đang lỗi nha"%>
                 </td>
-                <td><%=p.getSoldout()%>
+                <td><%="Đang lỗi nha"%>
                 </td>
-                <td><%=numberFormat.format(p.getCostPrice())%>
+                <td><%="Đang lỗi nha"%>
                 </td>
                 <td><%=numberFormat.format(p.getSellingPrice())%>
                 </td>

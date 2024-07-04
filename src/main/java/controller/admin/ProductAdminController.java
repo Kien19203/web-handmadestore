@@ -1,9 +1,11 @@
 package controller.admin;
 
 import model.bean.Category;
+import model.bean.Inventory;
 import model.bean.Product;
 import model.service.CategoryService;
 import model.service.ImageService;
+import model.service.InventoryService;
 import model.service.ProductService;
 
 import javax.servlet.ServletException;
@@ -160,6 +162,7 @@ public class ProductAdminController extends HttpServlet {
 
             String discount = req.getParameter("discount");
             String description = req.getParameter("description");
+            String isSale = req.getParameter("isSale");
 
             String availableCategory = req.getParameter("availableCategory");//category id
             String newCategory = req.getParameter("newCategory");
@@ -185,32 +188,29 @@ public class ProductAdminController extends HttpServlet {
 
 /*--------------------------------------updateProduct START ------------------------------------------*/
 
-//                        try {
-//                            if (discount.equals(""))
-//                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-//                                        categoryId);
-//                            else
-//                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-//                                        categoryId, discount);
-//                            req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
-//                        } catch (NullPointerException e) {
-//                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
-//                        }
+                        try {
+                            if (discount.equals(""))
+                                InventoryService.getInstance().editProduct(last_edit_product_id,productName,description, Double.parseDouble(sellingPrice), categoryId, Integer.parseInt(isSale) );
+
+                            else
+                                InventoryService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(sellingPrice), categoryId, discount, Integer.parseInt(isSale));
+                            req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
+                        } catch (NullPointerException e) {
+                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
+                        }
                     } else if (radio_choiceCategory.equals("choiceNewCategory")) {
                         //create new category in table
                         categoryId = CategoryService.getInstance().createNewCategory(newCategory) + "";
-//                        try {
-//                            if (discount.equals(""))
-//                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-//                                        categoryId);
-//                            else
-//                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-//                                        categoryId, discount);
-//                            req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
-//                        } catch (NullPointerException e) {
-//                            CategoryService.getInstance().deleteNoUsedCategoryById(categoryId);
-//                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
-//                        }
+                        try {
+                            if (discount.equals(""))
+                                InventoryService.getInstance().editProduct(last_edit_product_id, productName, description,Double.parseDouble(sellingPrice), categoryId, Integer.parseInt(isSale));
+                            else
+                                InventoryService.getInstance().editProduct(last_edit_product_id, productName, description,Double.parseDouble(sellingPrice), categoryId, discount, Integer.parseInt(isSale));
+                            req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
+                        } catch (NullPointerException e) {
+                            CategoryService.getInstance().deleteNoUsedCategoryById(categoryId);
+                            req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
+                        }
 
                         /*--------------------------------------updateProduct END ------------------------------------------*/
 
