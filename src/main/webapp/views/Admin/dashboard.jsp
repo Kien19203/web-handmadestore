@@ -1,6 +1,4 @@
-<<<<<<< HEAD
 <%@ page import="model.bean.User" %>
-<%@ page import="model.bean.Product" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="model.adapter.InventoryProduct" %>
 <%@ page import="model.service.*" %>

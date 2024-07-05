@@ -71,6 +71,7 @@
             display: none;
         }
 
+
         .rate {
             float: left;
             height: 46px;
@@ -185,7 +186,7 @@
             %>
             <div class="state-pd my-2">
                 <label class="me-2 label-title">Còn <strong style="color: #ff1a1a"><%=product.getStock()%></strong> sản phẩm</label>
-                <label class="me-2 ">  <strong>|       Trạng thái :</strong>
+                <label class="me-2 ">  <strong>| Trạng thái :</strong>
                 <%
                      String status = "Ngừng kinh doanh";
                      switch (product.getIsSale()) {
@@ -204,9 +205,25 @@
             <%
                 }
             %>
-            <h2 class="price-pd mb-4">
-                    <%=numberFormat.format(product.getSellingPrice())%>
 
+
+            <%
+                double discountPrice = ProductService.getInstance().productPriceIncludeDiscount(product);
+                if(product.getSellingPrice() > discountPrice) {
+                    int discountProductKM = ProductService.getInstance().discountProduct(product.getId());
+            %>
+
+            <div class="price-discount d-flex flex-row">
+            <h2 class="price-pd">
+                <%=numberFormat.format(discountPrice)%>
+            </h2>
+                <span class="ms-2" style="color: #4d8a54"> <strong>  <%=discountProductKM + "%"%><strong/></span>
+            </div>
+                <span>Giá gốc : <span class="text-decoration-line-through fst-italic"><%=numberFormat.format(product.getSellingPrice())%></span></span>
+            <% }  else {%>
+            <h2 class="price-pd">
+                <%=numberFormat.format(product.getSellingPrice())%> </h2>
+            <%}%>
                 <div class="row mt-3">
 
                     <%

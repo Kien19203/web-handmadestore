@@ -5,8 +5,5 @@ public enum EAction {
     CREATE,
     UPDATE,
     DELETE
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> main
+

@@ -20,8 +20,6 @@ public class LogService {
     }
     //    getLogById
 
-<<<<<<< HEAD
+
 }
-=======
-}
->>>>>>> main
+

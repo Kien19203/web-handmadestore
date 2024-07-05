@@ -120,11 +120,7 @@
                     </th>
                     <th scope="row"><%=p.getName()%>
                     </th>
-<<<<<<< HEAD
                     <th><%=p.getSoldOut()%>
-=======
-                    <th><%="Đang lỗi chỗ bán ra!"%>
->>>>>>> main
                     </th>
                     <th><%=p.getQuantityRemaining()%>
                     </th>
