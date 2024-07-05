@@ -488,12 +488,7 @@ List<Category> categories = CategoryService.getInstance().getALl();
 
                             }
                             return data;
-
-
                             }
-
-
-
 
 
                         },

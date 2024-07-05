@@ -35,7 +35,9 @@ doPost(req,resp);    }
             req.setAttribute("edit_product", InventoryService.getInstance().getIdProduct(Integer.parseInt(edit_product_id)));
         } else if (last_edit_product_id != null) {
           /*
+
           Chỉnh sửa thông tin bao gồm:
+
           tên, giá bán, loại danh mục, loại khuyến mãi, mô tả sản phẩm, trạng thái sản phẩm
 
            */
