@@ -104,15 +104,15 @@ public class User implements Serializable {
     }
 
     public boolean isOwn() {
-        return this.roleId == 3;
+        return this.roleId == -1;
     }
 
     public boolean isAdmin() {
-        return this.roleId == 1;
+        return this.roleId == 0;
     }
 
     public boolean isUser() {
-        return this.roleId == 2;
+        return this.roleId == 1;
     }
 
     public boolean isLock() {

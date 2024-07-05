@@ -183,9 +183,16 @@ public class OrderDAO {
         );
     }
 
-    public static void deliveredOrder(String orderId) {
+    public static void preparingOder(String orderId) {
         JDBIConnector.me().useHandle(handle ->
                 handle.createUpdate("UPDATE `order` SET status = 2 WHERE id=?")
+                        .bind(0, orderId)
+                        .execute()
+        );
+    }
+    public static void deliveredOrder(String orderId) {
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate("UPDATE `order` SET status = 3 WHERE id=?")
                         .bind(0, orderId)
                         .execute()
         );

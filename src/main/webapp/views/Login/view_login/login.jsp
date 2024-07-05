@@ -46,6 +46,8 @@
         <div class="forgotpassword">
             <span><a href="<%=request.getContextPath()%>/forgotpassword">Quên Mật Khẩu?</a></span>
         </div>
+<%--        reCaptcha--%>
+        <div class="g-recaptcha" id="reCaptcha" data-sitekey="6LcgQwQqAAAAAG3k-oxuw7EnMRr-GUOizIgmrAKf"></div>
         <div class="submit dn">
             <button type="submit">Đăng Nhập</button>
         </div>
@@ -81,6 +83,25 @@
     </form>
 
 </div>
+<%--reCaptcha--%>
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+<script>
+    window.onload = function (){
+        let isValid = false;
+        const form = document.getElementById("form");
+        const error = document.getElementById("errEmail");
+
+        form.addEventListener("submit",function (event){
+            event.preventDefault();
+            const response = grecaptcha.getResponse();
+            if(response){
+                form.submit();
+            }else{
+                error.innerHTML= "Chưa tick reCAPTCHA!";
+            }
+        });
+    }
+</script>
 </body>
 <style>
     body {
@@ -103,8 +124,8 @@
     }
 
     .container form {
-        width: 500px;
-        height: 550px;
+        width: 550px;
+        height: 650px;
         background-color: #afe2ea;
         margin: auto;
         border-radius: 5px;
@@ -119,18 +140,25 @@
 
     /*label : dang nhap*/
     .container form .title {
-        margin-left: 170px;
-        margin-top: 0;
+        text-align: center;
+    }
+    /*Recaptcha*/
+    #reCaptcha{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        margin-right: 10px;
     }
 
     /*email và password*/
     .container form .item {
-        margin-left: 50px;
+        margin-left: 15%;
         height: 40px;
         display: flex;
         margin-bottom: 20px;
     }
-
     .container form .item input {
         box-sizing: border-box;
         height: 40px;
@@ -179,6 +207,7 @@
     /*nut dang nhap va dang ky*/
     .container form .submit {
         margin-top: 10px;
+        text-align: center;
     }
 
     .container form .submit button {
@@ -186,9 +215,7 @@
         height: 50px;
         background-color: #0171d3;
         color: white;
-
         font-size: 15px;
-        margin-left: 175px;
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -207,9 +234,9 @@
     /*gach ngang*/
     .container form .solid {
         width: 200px;
+        margin: auto;
         margin-top: 20px;
         margin-bottom: 20px;
-        margin-left: 145px;
         border: 1px double grey;
     }
 
