@@ -1,37 +1,26 @@
 package logs;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
-/*
-CREATE TABLE Log (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    ipAddress VARCHAR(255),
-    location VARCHAR(255),
-    createdTime TIMESTAMP,
-    level VARCHAR(50),
-    action VARCHAR(255),
-    message TEXT
-);
-
- */
 public class Log {
     private int id;
-    private Timestamp createdTime;
+    private String formattedCreatedTime;
     private String ipAddress;
-    private String level;
-    private String action;
+    private String city;
+    private String region;
+    private String countryName;
+    private ELevel level;
+    private EAction action;
     private String message;
 
-    public Log() {
-    }
-
-    public Log(int id, Timestamp createdTime, String ipAddress, String level, String action, String message) {
+    public Log(int id, String formattedCreatedTime, String ipAddress, String city, String region, String countryName, ELevel level, EAction action, String message) {
         this.id = id;
-        this.createdTime = createdTime;
+        this.formattedCreatedTime = formattedCreatedTime;
         this.ipAddress = ipAddress;
+        this.city = city;
+        this.region = region;
+        this.countryName = countryName;
         this.level = level;
         this.action = action;
         this.message = message;
@@ -45,12 +34,12 @@ public class Log {
         this.id = id;
     }
 
-    public Timestamp getCreatedTime() {
-        return createdTime;
+    public String getFormattedCreatedTime() {
+        return formattedCreatedTime;
     }
 
-    public void setCreatedTime(Timestamp createdTime) {
-        this.createdTime = createdTime;
+    public void setFormattedCreatedTime(String formattedCreatedTime) {
+        this.formattedCreatedTime = formattedCreatedTime;
     }
 
     public String getIpAddress() {
@@ -61,19 +50,43 @@ public class Log {
         this.ipAddress = ipAddress;
     }
 
-    public String getLevel() {
+    public String getCity() {
+        return city;
+    }
+
+    public void setCity(String city) {
+        this.city = city;
+    }
+
+    public String getRegion() {
+        return region;
+    }
+
+    public void setRegion(String region) {
+        this.region = region;
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public ELevel getLevel() {
         return level;
     }
 
-    public void setLevel(String level) {
+    public void setLevel(ELevel level) {
         this.level = level;
     }
 
-    public String getAction() {
+    public EAction getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(EAction action) {
         this.action = action;
     }
 
@@ -85,20 +98,23 @@ public class Log {
         this.message = message;
     }
 
-    public boolean isINFORLevel() {
-        return this.level.equals("INFOR");
+    public boolean isINFORMLevel() {
+        return level == ELevel.INFORM;
+    }
+
+    public boolean isALERTLevel() {
+        return level == ELevel.ALERT;
     }
 
     public boolean isWARNINGLevel() {
-        return this.level.equals("WARNING");
+        return level == ELevel.WARNING;
     }
 
     public boolean isDANGERLevel() {
-        return this.level.equals("DANGER");
+        return level == ELevel.DANGER;
     }
 
-    public String getFormattedCreatedTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
-        return sdf.format(this.createdTime);
+    public String asNameForAction() {
+        return (action == EAction.LOGIN) ? "Vấn đề đăng nhập" : "Thay đổi hệ thống";
     }
 }

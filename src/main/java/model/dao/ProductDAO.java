@@ -26,6 +26,15 @@ public class ProductDAO {
         );
         return product;
     }
+    public static List<Product> getAllProducts() {
+        List<Product> product = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from product")
+                        .mapToBean(Product.class)
+                        .stream()
+                        .toList()
+        );
+        return product;
+    }
 
     public static Product getProductById(final String id) {
         Optional<Product> product = JDBIConnector.me().withHandle(handle ->

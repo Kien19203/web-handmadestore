@@ -4,6 +4,7 @@ import model.bean.Image;
 import model.bean.Product;
 import model.dao.ImageDAO;
 import model.db.JDBIConnector;
+import net.coobird.thumbnailator.Thumbnails;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -93,7 +94,7 @@ public class ImageService {
     public static void deleteImageInServer(ServletContext servletContext, String imagePath) {
         //vì path image bắt đầu: images/.....
         String absolutePath = servletContext.getRealPath(new File(servletContext.getContextPath()).getParent());
-
+        System.out.println("tiến hành xóa");
         try {
             Path filePath = Path.of(absolutePath, imagePath);
             System.out.println(filePath.toString());
@@ -145,22 +146,35 @@ public class ImageService {
             if (!(fileName.endsWith("unknown"))) {
                 count++;
                 String cleanedProductName = removeDiacritics(productName.replaceAll("\\s", "")).replace(" ", "");
-                String newFileName = count + "_"
-                        + cleanedProductName
-                        + getFileExtension(fileName);
+                String newFileName = count + "_" + cleanedProductName + getFileExtension(fileName);
                 String filePath = Path.of(absolutePath, newFileName).toString();
                 System.out.println("filePath: " + filePath);
-                part.write(filePath);
+
+                // Lưu tạm file vào thư mục tạm thời trước khi nén và thay đổi kích thước
+                File tempFile = File.createTempFile("temp_", getFileExtension(fileName));
+                part.write(tempFile.getAbsolutePath());
+
+                // Sử dụng Thumbnailator để nén và thay đổi kích thước
+                Thumbnails.of(tempFile)
+                        .size(1000, 700) // Kích thước tối đa (thay đổi theo nhu cầu)
+                        .outputQuality(0.75) // Chất lượng nén (0.75 = 75%)
+                        .toFile(new File(filePath));
+
+                // Xóa file tạm
+                tempFile.delete();
+
                 uploadedFiles.add("images/products/" + newFileName);
             }
         }
         return uploadedFiles;
     }
+
     public static String removeDiacritics(String str) {
         String nfdNormalizedString = Normalizer.normalize(str, Normalizer.Form.NFD);
         Pattern pattern = Pattern.compile("\\p{InCombiningDiacriticalMarks}+");
         return pattern.matcher(nfdNormalizedString).replaceAll("");
     }
+
     public static String writeBannerTipImagesFromClient(Part part, HttpServletRequest req, HttpServletResponse resp, ServletContext servletContext) throws ServletException, IOException {
         String uploadedFile = null;
 
@@ -191,7 +205,7 @@ public class ImageService {
 
     public static void insertImages(String productId, List<String> imagesPath) {
         Product product = ProductService.getInstance().getProductById(productId);
-        System.out.println("------------> "+productId);
+        System.out.println("------------> " + productId);
         if (product != null)
             JDBIConnector.me().useHandle(handle -> {
                         for (String imagePath : imagesPath) {
