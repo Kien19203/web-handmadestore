@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <%@ page import="model.bean.User" %>
 <%@ page import="model.bean.Product" %>
 <%@ page import="java.time.LocalDate" %>
@@ -119,6 +120,7 @@
                 <%
                     int count = 0;
                     for (InventoryProduct p : InventoryService.getInstance().getTopSoldoutProduct(5)) {
+
                         count++;
                 %>
                 <tr>

@@ -27,6 +27,7 @@
     NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
     numberFormat.setCurrency(currency);
 %>
+
 <%List<InventoryProduct> products = InventoryService.getInstance().showDiscountView();%>
 <%List<Category> categories = CategoryService.getInstance().getALl();%>
 <html lang="en">
@@ -397,6 +398,7 @@
                                 <td><%=numberFormat.format(p.getSellingPrice())%>
                                 </td>
                                 <%!double finalSellingPrice;%>
+
                                 <%
 
                                     Product productById = ProductService.getInstance().getProductById(p.getId());

@@ -83,14 +83,6 @@
                        aria-expanded="true"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
                     <div class="dropdown-menu bg-transparent border-0 show ms-5" data-bs-popper="none">
-                        <a href="<%=request.getContextPath()%>/admin?func=inventory_management"
-                           class="dropdown-item
-                                 <%if(func.equals("inventory_management")){%>
-                                     active
-                                 <%}%>">
-                            <i class="fa-solid fa-list me-2"></i>
-                            Kho lưu trữ hàng
-                        </a>
                         <a href="<%=request.getContextPath()%>/admin?func=product_management"
                            class="dropdown-item
                                  <%if(func.equals("product_management")){%>

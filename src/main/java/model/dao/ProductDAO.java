@@ -338,6 +338,7 @@ public class ProductDAO {
         );
     }
 
+
     public static void setDiscountByCategory(String discountId, String categoryId) {
         JDBIConnector.me().useHandle(handle ->
                 handle.createUpdate(
@@ -412,6 +413,13 @@ public class ProductDAO {
         );
     }
 
+
+
+
+
+
+
+
     //Trang chính xuất 15 sản phẩm trong từng category và phải còn hàng
     public static List<Product> list4product(int idCategory) {
         List<Product> productList = JDBIConnector.me().withHandle(handle ->
@@ -432,6 +440,7 @@ public class ProductDAO {
                         .stream().toList());
         return products;
     }
+
     public static long getNumberAvailProduct() {
         return JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select count(id) from product where stock>0 and isSale!=0").mapTo(Long.class).one());
@@ -555,17 +564,7 @@ public class ProductDAO {
 
 
     public static void main(String[] args) {
-       List<InventoryProduct> i = getTopSoldoutProduct(5);
-       for(InventoryProduct iz : i) {
 
-        System.out.println(iz);
-
-       }
-
-
-
-
-        ;
     }
 }
 

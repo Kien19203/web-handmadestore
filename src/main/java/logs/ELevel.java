@@ -4,4 +4,8 @@ public enum ELevel {
     INFO,
     WARNING,
     DANGER
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> main

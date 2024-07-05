@@ -101,4 +101,8 @@ public class Log {
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
         return sdf.format(this.createdTime);
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> main

@@ -490,7 +490,6 @@ List<Category> categories = CategoryService.getInstance().getALl();
                             return data;
                             }
 
-
                         },
                         {data: 'lastModified'},
                         {data: 'isSale',

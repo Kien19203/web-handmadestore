@@ -49,6 +49,7 @@ public class DiscountAjaxHandle extends HttpServlet {
                 String categoryId = req.getParameter("categoryId");
                 String productId = req.getParameter("productId");
                 ProductService.getInstance().unSetDiscountByProduct(discountId, productId);
+<<<<<<< HEAD
             } else if (action.equals("discountByQuantity")) {
                 String number = req.getParameter("number");
                 String comparison = req.getParameter("comparison");
@@ -58,6 +59,17 @@ public class DiscountAjaxHandle extends HttpServlet {
                 String number = req.getParameter("number");
                 String comparison = req.getParameter("comparison");
                 ProductService.getInstance().unSetDiscountByQuantity(discountId, Integer.parseInt(number), Integer.parseInt(comparison));
+=======
+//            } else if (action.equals("discountByQuantity")) {
+//                String number = req.getParameter("number");
+//                String comparison = req.getParameter("comparison");
+//                System.out.println(discountId + " - " + number + " - " + comparison);
+//                ProductService.getInstance().setDiscountByQuantity(discountId, Integer.parseInt(number), Integer.parseInt(comparison));
+//            } else if (action.equals("unDiscountByQuantity")) {
+//                String number = req.getParameter("number");
+//                String comparison = req.getParameter("comparison");
+//                ProductService.getInstance().unSetDiscountByQuantity(discountId, Integer.parseInt(number), Integer.parseInt(comparison));
+>>>>>>> main
             } else if (action.equals("reloadGUI")) {
                 String productId = req.getParameter("productId");
                 ProductService.getInstance().setDiscountByProduct(discountId, productId);

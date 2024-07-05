@@ -224,8 +224,8 @@
                                 <input id="uploadImage" type="file" name="images" placeholder="Chọn File Ảnh ít hơn 5MB"
                                        multiple onchange="displayFileNames(this)" accept="image/*">
                                 <div id="fileNamesContainer"></div>
-<%--                                <button class="mt-3 border-2 btn btn-outline-dark" style="width: 80px; height: 80px;"><i--%>
-<%--                                        style="font-size: 30px" class="fa-solid fa-circle-plus"></i></button>--%>
+                                <%--                                <button class="mt-3 border-2 btn btn-outline-dark" style="width: 80px; height: 80px;"><i--%>
+                                <%--                                        style="font-size: 30px" class="fa-solid fa-circle-plus"></i></button>--%>
                             </div>
                         </div>
                     </div>
@@ -340,7 +340,7 @@
                 >
             </select>
         </div>
-<%--        THANH TÌM KIẾM THEO TÊN         --%>
+        <%--        THANH TÌM KIẾM THEO TÊN         --%>
         <div class="col-6">
             <form action="<%=request.getContextPath()%>/admin/product">
                 <div class="input-group justify-content-end">
@@ -362,7 +362,7 @@
         </div>
     </div>
 
-<%--    BẢNG SẢN PHẨM CHÍNH.--%>
+    <%--    BẢNG SẢN PHẨM CHÍNH.--%>
     <div class="table-wrapper-scroll-y my-custom-scrollbar  d-flex justify-content-center">
         <table id="data" class="table table-striped table-hover">
             <thead>
