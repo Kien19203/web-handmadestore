@@ -1,5 +1,6 @@
 package model.service.JavaMail;
 
+import logs.Log;
 import model.bean.Order;
 import model.bean.User;
 
@@ -101,6 +102,18 @@ public class MailService {
                         "<hr>" +
                         "Vấn đề: <strong>" + problemTitle + "</strong>" +
                         "Mô tả của khách hàng: " + desc);
+    }
+
+    public static void sendAdminDANGERLog(String adminEmail, Log log) {
+        MailService emailService = new MailService();
+//        String formattedCreatedTime, String ipAddress, String location, ELevel level, EAction action, String message
+        emailService.send(adminEmail,
+                "CẢNH BÁO Từ HỆ THỐNG website HandMadeStore! ",
+                "<br>Hoạt động: <strong>" + log.asNameForAction() + "</strong>" +
+                        "<br> Từ địa chỉ IP: <strong>" + log.getIpAddress() + "</strong>" +
+                        "<br> Vị trí tương ứng: <strong>" + log.getCity() + ", " + log.getRegion() + ", " + log.getCountryName() + "</strong>" +
+                        "<hr>" +
+                        "Chi tiết: <p>" + log.getMessage() + "</p>");
     }
 
     public static void main(String[] args) {

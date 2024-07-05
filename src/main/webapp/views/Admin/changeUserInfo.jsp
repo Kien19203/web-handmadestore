@@ -780,7 +780,7 @@
                     $('#btnShowCancelOrder').remove()
                 }
                 console.log("rowIndex "+ rowIndex)
-                $('#data tbody').eq(rowIndex).remove();
+                $('#data tbody tr').eq(rowIndex).remove();
             },
             error: function () {
                 alert("Hủy đơn hàng thất bại!");

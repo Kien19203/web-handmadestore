@@ -109,7 +109,7 @@ public class ProductAdminController extends HttpServlet {
             req.setAttribute("nameFilter", nameFilter);
         } else {
             if (categoty_id == null || categoty_id.equals("all")) {
-                products = ProductService.getInstance().getAll();
+                products = ProductService.getInstance().getAllProducts();
                 categoty_id = "all";
             } else {
                 switch (categoty_id) {

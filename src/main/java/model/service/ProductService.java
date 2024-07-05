@@ -23,6 +23,9 @@ public class ProductService {
     public List<Product> getAll() {
         return ProductDAO.getAll();
     }
+    public List<Product> getAllProducts() {
+        return ProductDAO.getAllProducts();
+    }
 
     public Product getProductById(String id) {
         return ProductDAO.getProductById(id);

@@ -56,6 +56,9 @@ public class MainAdminController extends HttpServlet {
                     case "banners_tips":
                         framePath = "/views/Admin/banners_tips.jsp";
                         break;
+                    case "logs":
+                        framePath = "/views/Admin/logging_management.jsp";
+                        break;
 
                     case "support":
                         framePath = "/views/Admin/support.jsp";
