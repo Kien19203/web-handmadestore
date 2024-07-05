@@ -58,6 +58,7 @@ public class DiscountAjaxHandle extends HttpServlet {
                 String number = req.getParameter("number");
                 String comparison = req.getParameter("comparison");
                 ProductService.getInstance().unSetDiscountByQuantity(discountId, Integer.parseInt(number), Integer.parseInt(comparison));
+
             } else if (action.equals("reloadGUI")) {
                 String productId = req.getParameter("productId");
                 ProductService.getInstance().setDiscountByProduct(discountId, productId);

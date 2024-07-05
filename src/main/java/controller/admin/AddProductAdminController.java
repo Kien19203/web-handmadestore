@@ -3,6 +3,7 @@ package controller.admin;
 import controller.Validation;
 import model.service.CategoryService;
 import model.service.ImageService;
+import model.service.InventoryService;
 import model.service.ProductService;
 
 import javax.servlet.ServletException;
@@ -67,11 +68,11 @@ public class AddProductAdminController extends HttpServlet {
                         try {
                             if (Validation.isPositiveNumber(costPrice) && Validation.isPositiveNumber(sellingPrice) && Validation.isPositiveNumber(quantity)) {
                                 if (!discount.equals("")) {
-                                    ProductService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+                                    InventoryService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
                                             Integer.parseInt(categoryId), Integer.parseInt(discount), paths);
                                 } else {
                                     // không áp dụng discount
-                                    ProductService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
+                                    InventoryService.getInstance().insertNewProduct(productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
                                             Integer.parseInt(categoryId), paths);
                                 }
                                 //forward

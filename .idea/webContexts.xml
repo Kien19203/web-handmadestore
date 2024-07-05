@@ -23,6 +23,7 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/MenuBar/menuMainPage.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/MenuBar" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/PaymentPage/payment.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/PaymentPage" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/ProductList/productList.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/ProductList" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/views/product-details/view/productdetail.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/product-details/view" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/views/product-details/view/productdt.jsp" value="file://$PROJECT_DIR$/src/main/webapp/views/product-details/view" />
       </map>
     </option>

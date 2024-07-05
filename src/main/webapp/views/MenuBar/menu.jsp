@@ -415,7 +415,7 @@
         <li class="cart p-4 dropdown my-auto  position-relative">
             <%--            <i class="fa-solid fa-cart-shopping" style="color: #2a3241;"></i>--%>
             <%--            <a href="<%=request.getContextPath()%>/views/CartPage/cart.html">Giỏ Hàng</a>--%>
-            <a href="<%=request.getContextPath()%>/views/CartPage/cart.jsp">
+            <a href="<%=request.getContextPath()%>/views/CartPage/view/cart.jsp">
 
                 <i class="fa-solid fa-cart-shopping position-relative" style="color: #2a3241;">
             <span id="badge" class="position-absolute top-0 start-0  badge rounded-pill
@@ -484,7 +484,7 @@
                     <%if (!cart.getItems().isEmpty()) {%>
                     <div class="pda rigth-ct">
 
-                        <a href="<%=request.getContextPath()%>/views/CartPage/cart.jsp"
+                        <a href="<%=request.getContextPath()%>/views/CartPage/view/cart.jsp"
                            class="btn"><span>Giỏ hàng</span></a>
 
                         <%if (u != null) {%>

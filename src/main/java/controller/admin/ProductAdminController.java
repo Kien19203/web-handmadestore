@@ -1,9 +1,11 @@
 package controller.admin;
 
 import model.bean.Category;
+import model.bean.Inventory;
 import model.bean.Product;
 import model.service.CategoryService;
 import model.service.ImageService;
+import model.service.InventoryService;
 import model.service.ProductService;
 
 import javax.servlet.ServletException;
@@ -15,7 +17,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
 @WebServlet(name = "ProductForAdmin", value = "/admin/product")
 @MultipartConfig(
         fileSizeThreshold = 1024 * 1024,
@@ -160,6 +161,7 @@ public class ProductAdminController extends HttpServlet {
 
             String discount = req.getParameter("discount");
             String description = req.getParameter("description");
+            String isSale = req.getParameter("isSale");
 
             String availableCategory = req.getParameter("availableCategory");//category id
             String newCategory = req.getParameter("newCategory");
@@ -182,13 +184,15 @@ public class ProductAdminController extends HttpServlet {
                     if (radio_choiceCategory.equals("choiceAvailableCategory")) {
                         //Danh mục có sẵn
                         categoryId = availableCategory;
+
+/*--------------------------------------updateProduct START ------------------------------------------*/
+
                         try {
                             if (discount.equals(""))
-                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        categoryId);
+                                InventoryService.getInstance().editProduct(last_edit_product_id,productName,description, Double.parseDouble(sellingPrice), categoryId, Integer.parseInt(isSale) );
+
                             else
-                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        categoryId, discount);
+                                InventoryService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(sellingPrice), categoryId, discount, Integer.parseInt(isSale));
                             req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
                         } catch (NullPointerException e) {
                             req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
@@ -198,16 +202,17 @@ public class ProductAdminController extends HttpServlet {
                         categoryId = CategoryService.getInstance().createNewCategory(newCategory) + "";
                         try {
                             if (discount.equals(""))
-                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        categoryId);
+                                InventoryService.getInstance().editProduct(last_edit_product_id, productName, description,Double.parseDouble(sellingPrice), categoryId, Integer.parseInt(isSale));
                             else
-                                ProductService.getInstance().editProduct(last_edit_product_id, productName, description, Double.parseDouble(costPrice), Double.parseDouble(sellingPrice), Integer.parseInt(quantity),
-                                        categoryId, discount);
+                                InventoryService.getInstance().editProduct(last_edit_product_id, productName, description,Double.parseDouble(sellingPrice), categoryId, discount, Integer.parseInt(isSale));
                             req.setAttribute("result", "Đã thành công thay đổi thông tin sản phẩm.");
                         } catch (NullPointerException e) {
                             CategoryService.getInstance().deleteNoUsedCategoryById(categoryId);
                             req.setAttribute("result", "Dữ liệu không chính xác!Vui lòng thử lại");
                         }
+
+                        /*--------------------------------------updateProduct END ------------------------------------------*/
+
                     }
                 }
             } else {

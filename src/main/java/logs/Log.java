@@ -117,4 +117,5 @@ public class Log {
     public String asNameForAction() {
         return (action == EAction.LOGIN) ? "Vấn đề đăng nhập" : "Thay đổi hệ thống";
     }
+
 }

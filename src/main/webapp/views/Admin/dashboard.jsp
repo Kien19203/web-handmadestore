@@ -1,10 +1,7 @@
-<%@ page import="model.service.ProductService" %>
 <%@ page import="model.bean.User" %>
-<%@ page import="model.service.UserService" %>
-<%@ page import="model.service.OrderService" %>
-<%@ page import="model.bean.Product" %>
 <%@ page import="java.time.LocalDate" %>
-<%@ page import="model.service.CounterFilter" %>
+<%@ page import="model.adapter.InventoryProduct" %>
+<%@ page import="model.service.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html lang="en">
 <head>
@@ -114,13 +111,14 @@
                     <th scope="col">Mã sản phẩm</th>
                     <th scope="col">Tên sản phẩm</th>
                     <th scope="col">Số lượng đã bán</th>
-                    <th scope="col">Số lượng tồn kho</th>
+                    <th scope="col">Số lượng còn lại</th>
                 </tr>
                 </thead>
                 <tbody>
                 <%
                     int count = 0;
-                    for (Product p : ProductService.getInstance().getTopSoldoutProduct(5)) {
+                    for (InventoryProduct p : InventoryService.getInstance().getTopSoldoutProduct(5)) {
+
                         count++;
                 %>
                 <tr>
@@ -130,9 +128,9 @@
                     </th>
                     <th scope="row"><%=p.getName()%>
                     </th>
-                    <th><%=p.getSoldout()%>
+                    <th><%=p.getSoldOut()%>
                     </th>
-                    <th><%=p.getQuantity()%>
+                    <th><%=p.getQuantityRemaining()%>
                     </th>
                 </tr>
                 <%}%>

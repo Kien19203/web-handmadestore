@@ -10,6 +10,8 @@
 <%@ page import="java.util.Locale" %>
 <%@ page import="java.util.Currency" %>
 <%@ page import="java.text.NumberFormat" %>
+<%@ page import="model.adapter.InventoryProduct" %>
+<%@ page import="model.service.InventoryService" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%List<Discount> discounts = DiscountService.getInstance().getAll();%>
 
@@ -25,7 +27,8 @@
     NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
     numberFormat.setCurrency(currency);
 %>
-<%List<Product> products = ProductService.getInstance().getAll();%>
+
+<%List<InventoryProduct> products = InventoryService.getInstance().showDiscountView();%>
 <%List<Category> categories = CategoryService.getInstance().getALl();%>
 <html lang="en">
 <head>
@@ -364,11 +367,11 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <%for (Product p : products) {%>
+                            <%for (InventoryProduct p : products) {%>
                             <tr class="text-center">
                                 <td class="d-flex align-items-center">
                                     <div class="me-2 form-check form-switch">
-                                        <input class="form-check-input p_all p_<%=p.getCategoryId()%> pquantity_<%=p.getQuantity()%>"
+                                        <input class="form-check-input p_all p_<%=p.getCategoryId()%> pquantity_<%="Lỗi"%>"
                                                type="checkbox"
                                                id="p_<%=p.getId()%>"
                                                onclick="changeSelectByProduct(this, <%=p.getCategoryId()%>, <%=p.getId()%>)"
@@ -386,16 +389,20 @@
                                 </td>
                                 <td><%=p.getName()%>
                                 </td>
-                                <td><%=p.getQuantity()%>
+                                <td><%=p.getQuantityRemaining()%>
                                 </td>
-                                <td><%=p.getSoldout()%>
+                                <td><%=p.getSoldOut()%>
                                 </td>
-                                <td><%=numberFormat.format(p.getCostPrice())%>
+                                <td><%=p.getCostPrice()%>
                                 </td>
                                 <td><%=numberFormat.format(p.getSellingPrice())%>
                                 </td>
                                 <%!double finalSellingPrice;%>
-                                <%finalSellingPrice = ProductService.getInstance().productPriceIncludeDiscount(p);%>
+
+                                <%
+
+                                    Product productById = ProductService.getInstance().getProductById(p.getId());
+                                    finalSellingPrice = ProductService.getInstance().productPriceIncludeDiscount(productById);%>
                                 <td id="discount_for_<%=p.getId()%>">
                                     <%
                                         Discount d = DiscountService.getInstance().getDiscountById(p.getDiscountId() + "");%>

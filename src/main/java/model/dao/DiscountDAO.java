@@ -1,17 +1,11 @@
 package model.dao;
 
-import model.bean.Category;
 import model.bean.Discount;
-import model.bean.User;
 import model.db.JDBIConnector;
 import model.service.ProductService;
-import org.h2.expression.function.SysInfoFunction;
 
-import javax.xml.transform.stream.StreamSource;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class DiscountDAO {
