@@ -430,10 +430,6 @@
                     <button onclick="showEdit(<%=p.getId()%>)"
                             class="px-2">
                         <i class="fa-solid fa-pen fs-4" style="color: #5c7093;"></i></button>
-                    <button type="button" onclick="showDeleteProductBox(<%=p.getId()%>, this)"
-                            class="px-2">
-                        <i class="fa-solid fa-trash-can fs-4" style="color: #5c7093;"></i>
-                    </button>
                 </td>
             </tr>
             <%}%>
@@ -533,41 +529,6 @@
         }
     }
 
-    function showDeleteProductBox(productId, button) {
-        const rowIndex = button.closest('tr').rowIndex - 1;
-        const container = document.getElementById('delete_product_box');
-        container.innerHTML = `
-        <div>
-            <h4 class="text-danger">Bạn sẽ không thể hoàn tác thao tác này!</h1>
-            <button type="button" class="btn btn-outline-secondary" onclick="removeDeleteProductBox()">Hủy</button>
-            <button type="button" class="btn btn-outline-danger" onclick="deleteProduct(${productId}, ${rowIndex})">Tiếp tục xóa sản phẩm</button>
-        </div>`;
-        container.style.display = 'block';
-    }
-
-    function removeDeleteProductBox() {
-        const container = document.getElementById('delete_product_box');
-        container.innerHTML = ``;
-        container.style.display = 'none';
-    }
-
-    function deleteProduct(productId, rowIndex) {
-        $.ajax({
-            method: "POST",
-            url: "/HandMadeStore/product-ajax-handle",
-            data: {
-                action: "deleteById",
-                productId: productId
-            },
-            success: function (response) {
-                removeDeleteProductBox();
-                $('#data tbody tr').eq(rowIndex).remove();
-            },
-            error: function () {
-                alert("lỗi")
-            }
-        })
-    }
 
     function switchProductIsSale(productId, button) {
         $.ajax({
