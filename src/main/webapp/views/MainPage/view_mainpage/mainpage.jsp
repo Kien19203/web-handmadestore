@@ -24,9 +24,9 @@
 <!--menu-->
 
 <%--Thanh điều hướng - header--%>
-<%@include file="/views/MenuBar/menu.jsp" %>
-
-
+<div class="sticky-top">
+    <%@include file="/views/MenuBar/menuMainPage.jsp"%>
+</div>
 <!--carousel-->
 <div id="carouselExampleCaptions" class="carousel slide">
     <div class="carousel-indicators">
@@ -117,7 +117,7 @@
     <%}%>
     <%--  Sản Phẩm  --%>
     <% for (Category ca : categoryP) {%>
-    <div class="list_product container_product<%=ca.getId()%> d-flex">
+    <div class="list_product container_product<%=ca.getId()%> d-flex" id="sp">
         <div class="title_t" id="<%=ca.getId()%>">
             <p class="text-center fs-5 fw-bold"><%=ca.getName()%></p>
             <div class="button_seld"><a href="<%=request.getContextPath()%>/product?category=<%=ca.getId()%>">Xem Ngay!</a></div>

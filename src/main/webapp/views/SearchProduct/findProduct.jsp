@@ -121,14 +121,13 @@
 <script>
 <%--    Chưa khắc phục đc lỗi--%>
         function addcart(btn,idP){
-            let actionCart = "post";
             let num = 1;
             $.ajax({
-                url: "/HandMadeStore/add-cart",
-                method: "GET",
+                url: "/HandMadeStore/add-cart-2",
+                method: "POST",
                 data:{
                     id: idP,
-                    actionCart: actionCart,
+                    actionCart: "post",
                     num: num
                 },
                 success:function(response){
