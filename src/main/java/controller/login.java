@@ -80,7 +80,8 @@ public class login extends HttpServlet {
             if (currentTime - firstFailedTime <= LOCK_TIME) {
                 String clientIP = req.getRemoteAddr();
                 String[] clientLocation = getLocation(clientIP);
-                LoggingService.getInstance().log(ELevel.ALERT, EAction.LOGIN, clientIP, clientLocation[0], clientLocation[1], clientLocation[2], email + ": Nhập sai mật khẩu quá 5 lần");
+                if (wrongPassCounter == 5)
+                    LoggingService.getInstance().log(ELevel.ALERT, EAction.LOGIN, clientIP, clientLocation[0], clientLocation[1], clientLocation[2], email + ": Nhập sai mật khẩu quá 5 lần");
                 req.setAttribute("result", "Bạn đã nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 10 phút.");
                 req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
                 return;

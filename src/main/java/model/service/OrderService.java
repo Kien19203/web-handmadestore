@@ -68,6 +68,9 @@ public class OrderService {
     public void confirmOrder(String orderId) {
         OrderDAO.confirmOrder(orderId);
     }
+    public void preparingOder(String orderId) {
+        OrderDAO.confirmOrder(orderId);
+    }
 
     public void deliveredOrder(String orderId) {
         OrderDAO.deliveredOrder(orderId);

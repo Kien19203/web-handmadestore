@@ -44,6 +44,8 @@ public class OrderAjaxHandle extends HttpServlet {
                 MailService.sendNotifyConfirmOrder(UserService.getInstance().getUserById(order.getUserId() + "").getEmail(), order);
                 OrderService.getInstance().confirmOrder(orderId);
                 resp.getWriter().write("(" + OrderService.getInstance().waitConfirmOrdersNumber() + ")");
+            } else if (action.equals("preparingOder")) {
+                OrderService.getInstance().preparingOder(orderId);
             } else if (action.equals("cancelOrder")) {
                 String cancelReason = req.getParameter("cancelReason");
                 MailService.sendNotifyCanceledOrder(UserService.getInstance().getUserById(order.getUserId() + "").getEmail(), order, cancelReason == null ? "" : cancelReason);

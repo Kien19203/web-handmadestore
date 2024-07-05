@@ -36,34 +36,6 @@
         .dt-empty, .dt-info {
             display: none;
         }
-
-        #edit_product {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            overflow: auto;
-            display: none;
-            z-index: 1030;
-            background-color: #2c3e50; /* Adjust the background color as needed */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
-        }
-
-        #delete_image_box {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            overflow: auto;
-            display: none;
-            z-index: 1033;
-            background-color: #2c3e50; /* Adjust the background color as needed */
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
-        }
     </style>
 </head>
 <%
@@ -72,16 +44,13 @@
 %>
 <body>
 <div class="container-fluid mx-auto mt-2">
-    <h1><%=LoggingService.getInstance().getAbsolutePath()%>
-    </h1>
+    <h1><%=LoggingService.getInstance().getAbsolutePath()%></h1>
     <div class="table-wrapper-scroll-y my-custom-scrollbar  d-flex justify-content-center">
         <table id="data" class="table table-striped table-hover">
             <thead>
             <tr class="text-center sticky-top">
                 <th class="text-nowrap fix-column" scope="col"
-                    style=" position: sticky;left: 0;z-index: 1;"
-                >Mã Log
-                </th>
+                    style=" position: sticky;left: 0;z-index: 1;">Mã Log</th>
                 <th class="text-nowrap" scope="col">Mức độ</th>
                 <th class="text-nowrap" scope="col">Hoạt động</th>
                 <th class="text-nowrap" scope="col">Nội dung</th>
@@ -93,28 +62,30 @@
             </tr>
             </thead>
             <tbody>
-            <%for (int i = logs.size() - 1; i >= 0; i--) {%>
+            <% for (int i = logs.size() - 1; i >= 0; i--) { %>
             <tr class="text-center">
-                <td><%=logs.get(i).getId()%>
+                <td><%= logs.get(i).getId() %></td>
+                <td style="background-color:
+                    <% if (logs.get(i).isINFORMLevel()) { %>
+                        #0dcaf0
+                    <% } else if (logs.get(i).isALERTLevel()) { %>
+                        #ffecb3
+                    <% } else if (logs.get(i).isWARNINGLevel()) { %>
+                        #fd7e14
+                    <% } else if (logs.get(i).isDANGERLevel()) { %>
+                        #dc3545
+                        <% } %>">
+                    <%= logs.get(i).getLevel() %>
                 </td>
-                <td><%=logs.get(i).getLevel()%>
-                </td>
-                <td><%=logs.get(i).getAction()%>
-                </td>
-                <td><%=logs.get(i).getMessage()%>
-                </td>
-                <td><%=logs.get(i).getFormattedCreatedTime()%>
-                </td>
-                <td><%=logs.get(i).getIpAddress()%>
-                </td>
-                <td><%=logs.get(i).getCity()%>
-                </td>
-                <td><%=logs.get(i).getRegion()%>
-                </td>
-                <td><%=logs.get(i).getCountryName()%>
-                </td>
+                <td><%= logs.get(i).getAction() %></td>
+                <td><%= logs.get(i).getMessage() %></td>
+                <td><%= logs.get(i).getFormattedCreatedTime() %></td>
+                <td><%= logs.get(i).getIpAddress() %></td>
+                <td><%= logs.get(i).getCity() %></td>
+                <td><%= logs.get(i).getRegion() %></td>
+                <td><%= logs.get(i).getCountryName() %></td>
             </tr>
-            <%}%>
+            <% } %>
             </tbody>
         </table>
     </div>
@@ -123,8 +94,12 @@
     $(document).ready(function () {
         const table = $('#data').DataTable({
             "searching": true,
-            "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
-            "pageLength": 10
+            "lengthChange": false,
+            "pageLength": 10,
+            "order": [[0, "desc"]],
+            language: {
+                search: "Nhập từ khóa tìm kiếm"
+            }
         });
     });
 </script>
@@ -132,5 +107,6 @@
 <%
     } else {
         response.sendRedirect(request.getContextPath() + "/login");
-    }%>
+    }
+%>
 </html>

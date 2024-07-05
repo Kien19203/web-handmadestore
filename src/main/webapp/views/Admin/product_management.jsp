@@ -19,7 +19,7 @@
     numberFormat.setCurrency(currency);
 %>
 <%List<Product> products = (List<Product>) request.getAttribute("products");%>
-<%products = (products == null) ? ProductService.getInstance().getAll() : products;%>
+<%products = (products == null) ? ProductService.getInstance().getAllProducts() : products;%>
 <%List<Category> categories = (List<Category>) request.getAttribute("categories");%>
 <%categories = (categories == null) ? CategoryService.getInstance().getALl() : categories;%>
 <%
@@ -54,9 +54,11 @@
             transform: translateX(-50%);
             z-index: 1000;
         }
-        .dt-empty,.dt-info {
+
+        .dt-empty, .dt-info {
             display: none;
         }
+
         #edit_product {
             position: fixed;
             top: 50%;
@@ -71,7 +73,7 @@
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
         }
 
-        #delete_image_box {
+        #delete_image_box, #delete_product_box {
             position: fixed;
             top: 50%;
             left: 50%;
@@ -93,7 +95,7 @@
 <body>
 <%--edit--%>
 <%if (edit_product != null) {%>
-<form action="<%=request.getContextPath()%>/admin/product"  method="post" enctype="multipart/form-data">
+<form action="<%=request.getContextPath()%>/admin/product" method="post" enctype="multipart/form-data">
     <div id="edit_product" class="w-100 bg-secondary p-3 rounded"
          style="display: block">
         <div class="text-center fw-bold p-3" style="font-size: 30px; color: #0dcaf0">Chỉnh sửa thông tin sản phẩm có
@@ -224,8 +226,8 @@
                                 <input id="uploadImage" type="file" name="images" placeholder="Chọn File Ảnh ít hơn 5MB"
                                        multiple onchange="displayFileNames(this)" accept="image/*">
                                 <div id="fileNamesContainer"></div>
-<%--                                <button class="mt-3 border-2 btn btn-outline-dark" style="width: 80px; height: 80px;"><i--%>
-<%--                                        style="font-size: 30px" class="fa-solid fa-circle-plus"></i></button>--%>
+                                <%--                                <button class="mt-3 border-2 btn btn-outline-dark" style="width: 80px; height: 80px;"><i--%>
+                                <%--                                        style="font-size: 30px" class="fa-solid fa-circle-plus"></i></button>--%>
                             </div>
                         </div>
                     </div>
@@ -341,23 +343,16 @@
             </select>
         </div>
         <div class="col-6">
-            <form action="<%=request.getContextPath()%>/admin/product">
-                <div class="input-group justify-content-end">
-                    <div>
-                        <div class="form-text">Nhập ký tự # ở đầu để tìm theo mã sản phẩm</div>
-                        <div class="d-flex">
-                            <input type="text" class="form-control" placeholder="Nhập từ khóa"
-                                   name="nameFilter"
-                                   id="nameFilter"
-                                   value="<%=request.getAttribute("nameFilter")==null?"":request.getAttribute("nameFilter")%>">
-                            <button
-                                    class="btn btn-outline-secondary" type="submit">Tìm
-                            </button>
-                        </div>
-                        <input type="text" name="func" value="product_management" style="display: none">
+            <div class="input-group justify-content-end">
+                <div>
+                    <div class="d-flex">
+                        <input type="text" class="form-control" placeholder="Nhập mã sản phẩm"
+                               name="searchInput"
+                               id="searchInput">
                     </div>
+                    <input type="text" name="func" value="product_management" style="display: none">
                 </div>
-            </form>
+            </div>
         </div>
     </div>
     <div class="table-wrapper-scroll-y my-custom-scrollbar  d-flex justify-content-center">
@@ -419,46 +414,60 @@
                 <td>
                     <%if (p.getIsSale() == 0) {%>
                     <%--0: false--%>
-                    <a title="Nhấp vào để: Tiếp tục kinh doanh sản phẩm này" class="btn btn-outline-primary"
-                       href="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=<%=selectedCategory%>&switch_product_isSale=<%=p.getId()%>">
+                    <button title="Nhấp vào để: Tiếp tục kinh doanh sản phẩm này" class="btn btn-outline-primary"
+                            onclick="switchProductIsSale(<%=p.getId()%>, this)">
                         <i class="fa-solid fa-xmark fs-4" style="color: red"></i>
-                    </a>
+                    </button>
                     <%} else {%>
                     <%--1: true--%>
-                    <a title="Nhấp vào để: Ngừng kinh doanh sản phẩm này" class="btn btn-outline-primary"
-                       href="<%=request.getContextPath()%>/admin/product?func=product_management&category_id=<%=selectedCategory%>&switch_product_isSale=<%=p.getId()%>">
+                    <button title="Nhấp vào để: Ngừng kinh doanh sản phẩm này" class="btn btn-outline-primary"
+                            onclick="switchProductIsSale(<%=p.getId()%>, this)">
                         <i class="fa-solid fa-check fs-4"></i>
-                    </a>
+                    </button>
                     <%}%>
                 </td>
                 <td>
                     <button onclick="showEdit(<%=p.getId()%>)"
                             class="px-2">
                         <i class="fa-solid fa-pen fs-4" style="color: #5c7093;"></i></button>
-                    <a href="<%=request.getContextPath()%>/admin/product?func=product_management&func_2=showConfirmBox&delete_product_id=<%=p.getId()%>&category_id=<%=selectedCategory%>"
-                       class="px-2">
-                        <i class="fa-solid fa-trash-can fs-4" style="color: #5c7093;"></i></a>
+                    <button type="button" onclick="showDeleteProductBox(<%=p.getId()%>, this)"
+                            class="px-2">
+                        <i class="fa-solid fa-trash-can fs-4" style="color: #5c7093;"></i>
+                    </button>
                 </td>
             </tr>
             <%}%>
             </tbody>
         </table>
+        <div id="delete_product_box"></div>
     </div>
     <input type="hidden" id="currentPageNumber" name="currentPageNumber"
            value="<%=request.getAttribute("currentPageNumber")==null?0:request.getAttribute("currentPageNumber")%>">
 </div>
 <script>
+    const searchInput = document.querySelector('#searchInput');
+    let table;
     $(document).ready(function () {
-        var table = $('#data').DataTable({
-            "searching": false, // Không có tính năng tìm kiếm
+        table = $('#data').DataTable({
+            "searching": true, // Không có tính năng tìm kiếm
             "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
             "pageLength": 10,
-            "displayStart": document.getElementById("currentPageNumber").value * 10
+            "infor": false,
+            "displayStart": document.getElementById("currentPageNumber").value * 10,
+            language: {
+                search: "Nhập từ khóa tìm kiếm"
+            }
         });
         table.on('page.dt', function () {
             let pageInfo = table.page.info();
             document.getElementById("currentPageNumber").value = pageInfo.page;
         });
+        if (searchInput) {
+            searchInput.addEventListener('input', function () {
+                const searchValue = this.value;
+                table.columns(0).search(searchValue).draw();
+            });
+        }
     });
 
     function showEdit(productId) {
@@ -496,7 +505,7 @@
                 imageId: imageId
             },
             success: function (response) {
-                const imageDiv = document.getElementById('image_'+response);
+                const imageDiv = document.getElementById('image_' + response);
                 if (imageDiv) {
                     imageDiv.remove();
                 }
@@ -507,6 +516,7 @@
             }
         })
     }
+
     function displayFileNames(input) {
         var fileNamesContainer = document.getElementById("fileNamesContainer");
         fileNamesContainer.innerHTML = "";
@@ -522,6 +532,67 @@
             fileNamesContainer.innerHTML = "Không có file được chọn";
         }
     }
+
+    function showDeleteProductBox(productId, button) {
+        const rowIndex = button.closest('tr').rowIndex - 1;
+        const container = document.getElementById('delete_product_box');
+        container.innerHTML = `
+        <div>
+            <h4 class="text-danger">Bạn sẽ không thể hoàn tác thao tác này!</h1>
+            <button type="button" class="btn btn-outline-secondary" onclick="removeDeleteProductBox()">Hủy</button>
+            <button type="button" class="btn btn-outline-danger" onclick="deleteProduct(${productId}, ${rowIndex})">Tiếp tục xóa sản phẩm</button>
+        </div>`;
+        container.style.display = 'block';
+    }
+
+    function removeDeleteProductBox() {
+        const container = document.getElementById('delete_product_box');
+        container.innerHTML = ``;
+        container.style.display = 'none';
+    }
+
+    function deleteProduct(productId, rowIndex) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/product-ajax-handle",
+            data: {
+                action: "deleteById",
+                productId: productId
+            },
+            success: function (response) {
+                removeDeleteProductBox();
+                $('#data tbody tr').eq(rowIndex).remove();
+            },
+            error: function () {
+                alert("lỗi")
+            }
+        })
+    }
+
+    function switchProductIsSale(productId, button) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/product-ajax-handle",
+            data: {
+                action: "switchProductIsSale",
+                productId: productId
+            },
+            success: function (response) {
+                // Kiểm tra trạng thái hiện tại của sản phẩm và cập nhật nút
+                if (response.isSale === 1) {
+                    button.title = "Nhấp vào để: Ngừng kinh doanh sản phẩm này";
+                    button.innerHTML = '<i class="fa-solid fa-check fs-4"></i>';
+                } else {
+                    button.title = "Nhấp vào để: Tiếp tục kinh doanh sản phẩm này";
+                    button.innerHTML = '<i class="fa-solid fa-xmark fs-4" style="color: red"></i>';
+                }
+            },
+            error: function () {
+                alert("Lỗi khi cập nhật trạng thái sản phẩm");
+            }
+        });
+    }
+
 </script>
 </body>
 <%
