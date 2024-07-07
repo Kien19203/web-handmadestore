@@ -70,7 +70,6 @@
 
 <div class="row">
     <div class="col-12">
-        <form action="">
             <div class="vh-100 w-100 bg-body d-flex justify-content-center align-items-center ">
                 <!--Main-->
                 <div>
@@ -120,27 +119,24 @@
                                         <button id="increase_bt" type="submit" name="num" value="-1"
                                                 class="text-center border-0 bg-body fw-bold"
                                                 style="width: 30px;" >
-                                            <a style="text-decoration: none" href="<%=request.getContextPath()%>/add-cart?actionCart=put&num=-1&id=<%=item.getProduct().getId()%>">-</a>
+                                            <a style="text-decoration: none" onclick="giamSL(this,<%=item.getProduct().getId()%>,<%=item.getPrice()%>)">-</a>
                                         </button>
 
-                                        <input id="quantity_input" readonly class="border-0 w-50 text-center" type="text"
+                                        <input id="quantity_input<%=item.getProduct().getId()%>" readonly class="border-0 w-50 text-center" type="text"
                                                value="<%=item.getQuantity()%>" >
 
                                         <button type="submit"  name="num" value="1"
                                                 id="reduce_bt" class="text-center border-0 bg-body fw-bold"
                                                 style="width:30px;" >
-                                            <a style="text-decoration: none" href="<%=request.getContextPath()%>/add-cart?actionCart=put&num=1&id=<%=itemTemp.getProduct().getId()%>">+</a>
+                                            <a style="text-decoration: none" onclick="tangSL(this,<%=item.getProduct().getId()%>,<%=item.getPrice()%>,<%=item.getProduct().getStock()%>)">+</a>
                                         </button>
-
-
-
                                     </div>
                                 </td>
-                                <td class="align-middle">
+                                <td id="totalItem<%=item.getProduct().getId()%>" class="align-middle">
                                     <%=numberFormat.format(item.getQuantity() * item.getPrice())%>
                                 </td>
                                 <td class="align-middle">
-                                    <button onclick="deleteRow(this,<%=item.getProduct().getId()%>,<%=item.getPrice()%>,<%=item.getQuantity()%>)" style="border: none;background: white;color: blue;">
+                                    <button onclick="deleteRow(this,<%=item.getProduct().getId()%>,<%=item.getPrice()%>)" style="border: none;background: white;color: blue;">
                                         <i class="fa-solid fa-trash-can"></i> </button>
                                 </td>
                             </tr>
@@ -173,7 +169,6 @@
                     </div>
                 </div>
             </div>
-        </form>
     </div>
 </div>
 
@@ -184,20 +179,17 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-<%--<a href="<%=request.getContextPath()%>/add-cart?actionCart=delete&id=<%=item.getProduct().getId()%>">
---%>
 
-
-
-
-
-function deleteRow(btn,idProduct,priceProduct,amountProduct) {
+function deleteRow(btn,idProduct,priceProduct) {
     let actionCart = "delete";
     let total_amount = document.getElementById("total_amount");
     let total_Cart = document.getElementById("total_Cart");
     let total = parseInt(total_Cart.innerText);
+    let quantity_input = document.getElementById("quantity_input"+idProduct);
+    let quantityPresent = quantity_input.value;
+    console.log("quanty Present " + quantityPresent);
     console.log(total);
-    let newTotal = total - (priceProduct*amountProduct);
+    let newTotal = total - (priceProduct*quantityPresent);
     const numberFomat = Intl.NumberFormat('vi-VN',{
         style: 'currency',
         currency: "VND",
@@ -206,8 +198,8 @@ function deleteRow(btn,idProduct,priceProduct,amountProduct) {
     });
     console.log(total);
     console.log(priceProduct);
-    console.log(amountProduct);
-    console.log(priceProduct*amountProduct);
+    console.log(quantityPresent);
+    console.log(priceProduct*quantityPresent);
     $.ajax({
         url: "/HandMadeStore/add-cart",
         method: "POST",
@@ -233,6 +225,97 @@ function deleteRow(btn,idProduct,priceProduct,amountProduct) {
 
         }
     })
+}
+// Giảm So luong
+function giamSL(btn,idProduct,priceProduct){
+    console.log(idProduct);
+    let totalItem = document.getElementById("totalItem"+idProduct);
+    const numberFomat = Intl.NumberFormat('vi-VN',{
+        style: 'currency',
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    let total_amount = document.getElementById("total_amount");
+    let total_Cart = document.getElementById("total_Cart");
+    let total = parseInt(total_Cart.innerText);
+    let quantityInput = document.getElementById("quantity_input"+idProduct);
+    let quantity = quantityInput.value;
+    let num = -1;
+    console.log(quantity);
+    if(quantity > 1){
+        $.ajax({
+            url: "/HandMadeStore/add-cart",
+            data: {
+                actionCart: "put",
+                id: idProduct,
+                num: num
+            },
+            success: function (response){
+                console.log("Thành công giảm");
+                let  quantityAfter = quantity -1;
+                quantityInput.value = quantityAfter;
+                let formatTotalItem = numberFomat.format(quantityAfter * priceProduct);
+                totalItem.innerText = formatTotalItem;
+                let totalAfter = total - priceProduct;
+                total_Cart.innerText = totalAfter;
+                total_amount.innerText = numberFomat.format(totalAfter);
+            }
+        })
+    }else{
+        Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "Không thể giảm số lượng được nữa!",
+            showConfirmButton: false,
+            timer: 1500
+        });
+    }
+}
+// Tang So luong
+function tangSL(btn,idProduct,priceProduct,stockProduct){
+    let totalItem = document.getElementById("totalItem"+idProduct);
+    const numberFomat = Intl.NumberFormat('vi-VN',{
+        style: 'currency',
+        currency: "VND",
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
+    });
+    let total_amount = document.getElementById("total_amount");
+    let total_Cart = document.getElementById("total_Cart");
+    let total = parseInt(total_Cart.innerText);
+    let quantityInput = document.getElementById("quantity_input"+idProduct);
+    let quantity = quantityInput.value;
+    let num = 1;
+    console.log(quantity);
+    if(quantity < stockProduct){
+        $.ajax({
+            url: "/HandMadeStore/add-cart",
+            data: {
+                actionCart: "put",
+                id: idProduct,
+                num: num
+            },
+            success: function (response){
+                console.log("Thành công tang");
+                let  quantityAfter = parseInt(quantity) +1;
+                quantityInput.value = quantityAfter;
+                let formatTotalItem = numberFomat.format(quantityAfter * priceProduct);
+                totalItem.innerText = formatTotalItem;
+                let totalAfter = total + priceProduct;
+                total_Cart.innerText = totalAfter;
+                total_amount.innerText = numberFomat.format(totalAfter);
+            }
+        })
+    }else{
+        Swal.fire({
+            position: "center",
+            icon: "error",
+            title: "Không thể tăng số lượng vì sản phẩm không đủ!",
+            showConfirmButton: false,
+            timer: 1500
+        });
+    }
 }
 
 
