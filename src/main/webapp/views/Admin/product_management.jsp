@@ -429,7 +429,7 @@
                     </button>
                     <%}%>
                 </td>
-                <td>
+                 <td>
                     <button onclick="showEdit(<%=p.getId()%>)"
                             class="px-2">
                         <i class="fa-solid fa-pen fs-4" style="color: #5c7093;"></i></button>

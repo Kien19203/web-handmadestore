@@ -39,6 +39,14 @@
 
     <!-- Template Stylesheet -->
     <link href="<%=request.getContextPath()%>/views/Admin/css/style.custom.css" rel="stylesheet">
+    <style>
+        #frame {
+            height: calc(100% - 64px);
+        }
+
+
+
+    </style>
 </head>
 <%
     boolean isAdmin = ((request.getSession().getAttribute("isAdmin") == null) ? false : ((boolean) request.getSession().getAttribute("isAdmin")));
@@ -244,9 +252,9 @@
         </nav>
         <!-- Navbar End -->
         <iframe src="<%=framePath%>"
-                frameborder="0" name="content" id="frame" width="100%" height="110%"
+                frameborder="0" name="content" id="frame" width="100%"
                 scrolling="yes"
-                class="container-fluid mt-2"
+                class="container-fluid "
         ></iframe>
     </div>
     <!-- Content End -->

@@ -16,6 +16,7 @@ import java.util.Date;
 public class InventoryProduct implements Serializable {
         private int id;
         private String name;
+        private String description;
         private int costPrice;
         private int sellingPrice;
         private int quantityRemaining; // Số lượng hàng tồn kho
@@ -63,9 +64,10 @@ public class InventoryProduct implements Serializable {
         }
 
         //use to update product.
-        public InventoryProduct(int id, String name, int costPrice, int sellingPrice, int quantityRemaining, int soldOut,Date lastModified, int discountId, int categoryId,  int isSale) {
+        public InventoryProduct(int id, String name,String description, int costPrice, int sellingPrice, int quantityRemaining, int soldOut,Date lastModified, int discountId, int categoryId,  int isSale) {
                 this.id = id;
                 this.name = name;
+                this.description = description;
                 this.costPrice = costPrice;
                 this.sellingPrice = sellingPrice;
                 this.quantityRemaining = quantityRemaining;

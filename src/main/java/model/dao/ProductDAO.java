@@ -570,6 +570,47 @@ public class ProductDAO {
         return result;
     }
 
+//    chỉnh sửa thông tin sản phẩm.
+    //    --------------------UPDATE SẢN PHẨM.
+
+    public static void updateProduct(String id, String name, String description, int sellingPrice, String categoryId, String discountId, int isSale) {
+
+        String updateProduct = "UPDATE product SET name=:name, description=:description, sellingPrice=:sellingPrice, categoryId=:categoryId, discountId=:discountId, isSale=:isSale where id=:id";
+
+
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                updateProduct
+                        )
+                        .bind("name", name)
+                        .bind("description", description)
+                        .bind("sellingPrice", sellingPrice)
+                        .bind("categoryId", categoryId)
+                        .bind("discountId", discountId)
+                        .bind("isSale", isSale)
+                        .bind("id", id)
+                        .execute()
+        );
+    }
+
+    public static void updateProduct(String id, String name, String description, int sellingPrice, String categoryId, int isSale) {
+
+        String updateProduct = "UPDATE product SET name=:name, description=:description, sellingPrice=:sellingPrice, categoryId=:categoryId, isSale=:isSale where id=:id";
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                updateProduct
+                        )
+                        .bind("name", name)
+                        .bind("description", description)
+                        .bind("sellingPrice", sellingPrice)
+                        .bind("categoryId", categoryId)
+                        .bind("isSale", isSale)
+                        .bind("id", id)
+                        .execute()
+        );
+    }
+
+
 
 
     public static void main(String[] args) {

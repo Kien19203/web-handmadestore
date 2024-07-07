@@ -131,48 +131,9 @@ public class InventoryDAO {
         });
 
     }
-//    --------------------UPDATE SẢN PHẨM.
-
-    public static void updateProduct(String id, String name, String description, double sellingPrice, String categoryId, String discountId, int isSale) {
-
-        String updateProduct = "UPDATE product SET name=:name, description=:description, sellingPrice=:sellingPrice, categoryId=:categoryId, discountId=:discountId, isSale=:isSale where id=:id";
-
-
-        JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate(
-                                updateProduct
-                        )
-                        .bind("name", name)
-                        .bind("description", description)
-                        .bind("sellingPrice", sellingPrice)
-                        .bind("categoryId", categoryId)
-                        .bind("discountId", discountId)
-                        .bind("isSale", isSale)
-                        .bind("id", id)
-                        .execute()
-        );
-    }
-
-    public static void updateProduct(String id, String name, String description, double sellingPrice, String categoryId, int isSale) {
-
-        String updateProduct = "UPDATE product SET name=:name, description=:description, sellingPrice=:sellingPrice, categoryId=:categoryId, isSale=:isSale where id=:id";
-        JDBIConnector.me().useHandle(handle ->
-                handle.createUpdate(
-                                updateProduct
-                        )
-                        .bind("name", name)
-                        .bind("description", description)
-                        .bind("sellingPrice", sellingPrice)
-                        .bind("categoryId", categoryId)
-                        .bind("isSale", isSale)
-                        .bind("id", id)
-                        .execute()
-        );
-    }
-
 //    Lấy mọi thông tin product + inventory .
     public static InventoryProduct getIdProduct(int id) {
-        String sql = "SELECT p.id, p.name, i.costPrice, p.sellingPrice, i.quantity - i.soldOut AS quantityRemaining, i.soldOut, i.createDate AS lastModified , p.discountId,p.categoryId,  p.isSale " +
+        String sql = "SELECT p.id, p.name,p.description, i.costPrice, p.sellingPrice, i.quantity - i.soldOut AS quantityRemaining, i.soldOut, i.createDate AS lastModified , p.discountId,p.categoryId,  p.isSale " +
                     "from product p JOIN inventory i ON p.id = i.productId WHERE p.id =:id";
 
         InventoryProduct p = JDBIConnector.me().withHandle(

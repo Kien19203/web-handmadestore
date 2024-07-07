@@ -67,6 +67,7 @@ public class InventoryProductMappers {
             return new InventoryProduct(
                     rs.getInt("id"),
                     rs.getString("name"),
+                    rs.getString("description"),
                     rs.getInt("costPrice"),
                     rs.getInt("sellingPrice"),
                     rs.getInt("quantityRemaining"),

@@ -230,6 +230,16 @@ public class ProductService {
         return ProductDAO.discountProduct(idProduct);
     }
 
+    //update cho sản phẩm.
+    /// EDIT PRODUCT.
+    public void editProduct(String id, String name, String description, int sellingPrice, String categoryId, String discountId, int isSale) {
+        ProductDAO.updateProduct(id, name, description ,sellingPrice, categoryId, discountId, isSale);
+    }
+
+    public void editProduct(String id, String name, String description, int costPrice, String categoryId, int isSale) {
+        ProductDAO.updateProduct(id, name, description, costPrice, categoryId, isSale);
+    }
+
     public static void main(String[] args) {
 
     }

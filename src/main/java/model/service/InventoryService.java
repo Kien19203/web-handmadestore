@@ -38,14 +38,6 @@ public class InventoryService {
         InventoryDAO.insertNewProduct(name, description, costPrice, sellingPrice, quantity, categoryId, discountId, imagesPath);
     }
 
-    /// EDIT PRODUCT.
-        public void editProduct(String id, String name, String description, double sellingPrice, String categoryId, String discountId, int isSale) {
-        InventoryDAO.updateProduct(id, name, description ,sellingPrice, categoryId, discountId, isSale);
-    }
-
-    public void editProduct(String id, String name, String description, double costPrice, String categoryId, int isSale) {
-        InventoryDAO.updateProduct(id, name, description, costPrice, categoryId, isSale);
-    }
 //    Lấy mọi thông tin product + inventory .
     public InventoryProduct getIdProduct(int id) {
         return InventoryDAO.getIdProduct(id);
