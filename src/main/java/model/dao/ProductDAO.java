@@ -573,6 +573,12 @@ public class ProductDAO {
 //    chỉnh sửa thông tin sản phẩm.
     //    --------------------UPDATE SẢN PHẨM.
 
+    public static Integer getCostPriceProduct(int id) {
+        String sql = "select costPrice from inventory where productId=?";
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).bind(0, id).mapTo(Integer.class).one());
+    }
+
     public static void updateProduct(String id, String name, String description, int sellingPrice, String categoryId, String discountId, int isSale) {
 
         String updateProduct = "UPDATE product SET name=:name, description=:description, sellingPrice=:sellingPrice, categoryId=:categoryId, discountId=:discountId, isSale=:isSale where id=:id";
@@ -614,7 +620,7 @@ public class ProductDAO {
 
 
     public static void main(String[] args) {
-
+        System.out.println(getCostPriceProduct(2));
     }
 }
 

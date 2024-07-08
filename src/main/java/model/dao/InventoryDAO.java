@@ -18,7 +18,7 @@ public class InventoryDAO {
      * + Lần nhập gần nhất (cập nhật khi phiếu nhập import có product đó) - xử lý sau, hiện tại để mặc định ngày tạo.
      */
     public static List<InventoryProduct> showInventoryView() {
-        String sql = "SELECT p.id, p.name, i.costPrice, p.sellingPrice, i.quantity - i.soldOut AS quantityRemaining , i.soldOut, i.costPriceUpdate - i.costPrice AS priceDifference, i.createDate AS lastModified, p.isSale" +
+        String sql = "SELECT p.id, p.name, i.costPrice, p.sellingPrice, i.quantity - i.soldOut AS quantityRemaining , i.soldOut, i.costPriceUpdate - i.costPrice AS priceDifference, i.createDate AS lastModified, p.isSale, p.discountId" +
                 "                  FROM product p JOIN inventory i on p.id = i.productId " ;
         List<InventoryProduct> inventoryProductList = JDBIConnector.me().withHandle(
                 handle -> handle.createQuery(sql).map(new InventoryProductMappers.ViewInventoryMapper()).stream().toList()
@@ -143,6 +143,7 @@ public class InventoryDAO {
         );
         return p;
     }
+
 
 
 

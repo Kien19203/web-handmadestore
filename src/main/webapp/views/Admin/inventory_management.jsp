@@ -6,6 +6,7 @@
 <%@ page import="model.bean.Discount" %>
 <%@ page import="model.bean.Image" %>
 <%@ page import="model.service.*" %>
+<%@ page import="static model.service.DiscountService.getPercentageByDiscount" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%
     /**
@@ -181,7 +182,6 @@
             <h2>Kho hàng HandmadeStore</h2>
         </div>
 
-<%--        <form action="<%=request.getContextPath()%>/admin//admin/inventory" method="post" id="orderForm">--%>
             <div class="col-12">
                 <div class="data_table  mt-2 ">
                     <table id="table-inventory" class="display table table-striped table-hover table-bordered">
@@ -192,6 +192,7 @@
                             <th>Tên</th>
                             <th>Giá nhập</th>
                             <th>Giá bán</th>
+                            <th>Khuyến mãi</th>
                             <th>Lượng tồn</th>
                             <th>Lượng bán</th>
                             <th>Biến động giá</th>
@@ -235,6 +236,7 @@
     let objectInventory;
     <%
         for(InventoryProduct o : ipList) {
+             int discountPrice = (int)  (InventoryService.getInstance().productPriceIncludeDiscount(o.getId()));
      %>
     /* NOte về data-orderId : đây là dữ liệu tùy chỉnh, được lưu trữ trong phần tử button.
     - Lấy nó bằng cách .data(orderId).
@@ -245,7 +247,27 @@
         'productId': '<%=o.getId()%>',
         'productName': '<%=o.getName()%>',
         'costPrice': '<%=numberFormat.format(o.getCostPrice())%>',
-        'sellingPrice': '<%=numberFormat.format(o.getSellingPrice())%>',
+
+        <%if((discountPrice != o.getSellingPrice()) ) {%>
+
+
+        'sellingPrice': '<%= numberFormat.format(
+                discountPrice) + " (" + numberFormat.format(
+                o.getSellingPrice())  + ")"
+                 %> ',
+        'discount': '<%=DiscountService.getPercentageByDiscount(o.getDiscountId())%>',
+
+
+        <%} else {%>
+        'sellingPrice': '<%=  numberFormat.format(
+                o.getSellingPrice())
+                 %> ',
+        'discount': '0',
+        <%}%>
+
+
+
+
         'quantityRemaining': '<%=o.getQuantityRemaining()%>',
         'soldOut': '<%=o.getSoldOut()%>',
         'priceDifference': <%=o.getPriceDifference()%>,
@@ -274,13 +296,41 @@
                     scrollCollapse: true,
                     scrollY: '50vh',
                     order: [[5, 'desc']],
+                    language: {
+                        search: "Tìm kiếm:",
+                    },
 
                     data: dataInventory, columns: [
                         {data: 'detailButton'},
                         {data: 'productId'},
                         {data: 'productName'},
                         {data: 'costPrice'},
-                        {data: 'sellingPrice'},
+                        {data: 'sellingPrice'
+                        },
+                        {data: 'discount',
+                        render: function (data, type) {
+                            if(type=='display') {
+                                var value = parseInt(data);
+                                var colour = '';
+                                if(value >= 50) {
+                                    colour = '#d00000';
+                                }else if(value >= 30) {
+                                    colour = '#e85d04';
+                                } else if(value > 0) {
+                                    colour = '#ffba08';
+                                }
+                            if(value ===0) {
+                                return '';
+                            }
+
+                            return '<span style="background-color: ' + colour + '; color: #FFFFFF">' + value + '%' + '</div>';
+                            }
+                            return data;
+
+
+                        }
+
+                        },
                         {data: 'quantityRemaining'},
                         {data: 'soldOut'},
                         {data: 'priceDifference',
@@ -303,6 +353,7 @@
                                 else {
                                     colour = 'gray';
                                     icon = '<i class="fas fa-minus-circle" style=`color:${colour}`></i>'
+                                    return `<span style="color:${colour}">${icon}</span>`;
                                 }
                                 return `<span style="color:${colour}">${icon} ${number}</span>`;
 

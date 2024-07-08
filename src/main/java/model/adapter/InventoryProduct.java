@@ -39,7 +39,7 @@ public class InventoryProduct implements Serializable {
 
         // use to inventory management.
 
-        public InventoryProduct(int id, String name, int costPrice, int sellingPrice, int quantityRemaining, int soldOut,int priceDifference, Date lastModified, int isSale) {
+        public InventoryProduct(int id, String name, int costPrice, int sellingPrice, int quantityRemaining, int soldOut,int priceDifference, Date lastModified, int isSale, int discountId) {
                 this.id = id;
                 this.name = name;
                 this.costPrice = costPrice;
@@ -49,6 +49,7 @@ public class InventoryProduct implements Serializable {
                 this.priceDifference = priceDifference;
                 this.lastModified = lastModified;
                 this.isSale = isSale;
+                this.discountId = discountId;
         }
 
         // use to discount management.

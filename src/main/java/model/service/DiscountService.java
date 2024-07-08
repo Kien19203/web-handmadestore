@@ -30,8 +30,19 @@ public class DiscountService {
         DiscountDAO.updateDiscount(editDiscountId, name, startDate, endDate, percentageOff);
     }
 
+    public static Integer getPercentageByDiscount(int id) {
+        int percent = (int) (DiscountDAO.getPercentageDiscount(id) * 100);
+        return  percent;
+
+
+    }
+
     public void deleteDiscountById(String id) {
         DiscountDAO.deleteDiscountById(id);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(getPercentageByDiscount(1));
     }
 
 }

@@ -31,14 +31,18 @@
 %>
 <html>
 <head>
+    <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
     <%InventoryProduct ipd = (InventoryProduct) request.getAttribute("product_detail");
 %>
-<div class="detail-info w-80 mx-5 my-2">
-    <form id="productForm" action="<%=request.getContextPath()%>/admin/inventory"  method="post" enctype="multipart/form-data" onsubmit="return false;">
+<div class="detail-info w-80 mx-2 my-2">
+    <form id="productForm" action="<%=request.getContextPath()%>/admin/inventory"  method="post" enctype="multipart/form-data"
+
+          accept-charset="UTF-8"
+          onsubmit="return false;">
         <div id="edit_product" class="w-100 p-3 rounded"
              style="display: block">
             <h3 class="text-center fw-bold p-3">Thông tin chi tiết sản phẩm #<%=ipd.getId()%>
@@ -193,8 +197,7 @@
                              style="display: block"
                                 <%}%>
                              id="showInputToNewCategory">
-                            <input type="text" class="form-control" id="newCategory" name="newCategory" oninput="validateCharacter()">
-                            <span id="categoryError" style="color: #FF5733; font-size: 11px; font-weight: bold"></span>
+                            <input type="text" class="form-control" id="newCategory" name="newCategory">
                             <label for="newCategory">Nhập tên danh mục mới</label>
                         </div>
                         <div class="form-floating  mx-5 my-2 p-2">
@@ -265,19 +268,36 @@
             contentType: false,
             success: function(response) {
                 // Handle success logic here
-                console.log('Form submitted successfully:', response);
-                Swal.fire({
+                if (response.status === "error") {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Vui lòng nhập đúng định dạng yêu cầu!",
+                        showConfirmButton: true,
+                    });
+
+
+                } else {
+                    Swal.fire({
                     position: "center",
                     icon: "success",
                     title: "Chỉnh sửa sản phẩm thành công!",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
-            },
-            error: function(xhr, status, error) {
+                    showConfirmButton: true
+                }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Chuyển hướng đến trang khác khi người dùng nhấn "OK"
+                            window.location.href = '<%=request.getContextPath()%>/views/Admin/inventory_management.jsp';
+                        }
+                    });;
+            }},
+            error: function() {
                 // Handle error logic here
-                console.error('Form submission failed:', status, error);
-
+                Swal.fire({
+                    position: "center",
+                    icon: "error",
+                    title: "Vui lòng nhập đúng định dạng yêu cầu!",
+                    showConfirmButton: true,
+                });
             }
         });
 
@@ -296,10 +316,10 @@
         if (sellingPrice < <%=ipd.getCostPrice()%>) {
             console.log(sellingPrice + "gia tri");
             errorMessageElement.innerHTML = "Tiền bán không được phép nhỏ hơn tiền nhập!";
-            updateButton.disabled = true; // Vô hiệu hóa nút "Đăng ký"
+            updateButton.disabled = false; // Vô hiệu hóa nút "Đăng ký"
         } else {
             errorMessageElement.innerHTML = "";
-            updateButton.disabled = false; // Cho phép nút "Đăng ký" được click
+            updateButton.disabled = true; // Cho phép nút "Đăng ký" được click
         }
     }
 // Xử lý 2 trường ten & description
@@ -307,23 +327,19 @@
     function validateCharacter() {
         var name = document.getElementById("productName").value.trim();
         var description = document.getElementById("description").value.trim();
-        var newcategory = document.getElementById("newCategory").value.trim();
         var productNameError = document.getElementById("productNameError");
         var descriptionError = document.getElementById("descriptionError");
-        var categoryError = document.getElementById("categoryError");
         var updateButton = document.getElementById("updateButton");
 
         if(name === ""|| description===""|| newcategory==="") {
             productNameError.innerHTML = name === "" ? "Không được bỏ trống trường này" : "";
             descriptionError.innerHTML = description === "" ? "Không được bỏ trống trường này" : "";
-            categoryError.innerHTML = description === "" ? "Không được bỏ trống trường này" : "";
-            updateButton.disabled = true;
+            updateButton.disabled = false;
         }
         else {
             productNameError.innerHTML = "";
             descriptionError.innerHTML = "";
-            categoryError.innerHTML = "";
-            updateButton.disabled = false;
+            updateButton.disabled = true;
         }
 
     }

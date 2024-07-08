@@ -229,6 +229,10 @@ public class ProductService {
     public static Integer discountProduct(int idProduct) {
         return ProductDAO.discountProduct(idProduct);
     }
+    public static Integer getProductCostPrice(int productId) {
+        return ProductDAO.getCostPriceProduct(productId);
+
+    }
 
     //update cho sản phẩm.
     /// EDIT PRODUCT.
