@@ -49,95 +49,84 @@ public class login extends HttpServlet {
         } else if (checkEmail == null) {
             req.setAttribute("errEmail", "Email không tồn tại!");
             req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
-        }
+        } else {
+            HttpSession session = req.getSession();
+            Map<String, Integer> wrongPassCounterMap = (Map<String, Integer>) session.getAttribute("wrongPassCounterMap");
+            Map<String, Long> firstFailedTimeMap = (Map<String, Long>) session.getAttribute("firstFailedTimeMap");
 
-        HttpSession session = req.getSession();
-        Map<String, Integer> wrongPassCounterMap = (Map<String, Integer>) session.getAttribute("wrongPassCounterMap");
-        Map<String, Long> firstFailedTimeMap = (Map<String, Long>) session.getAttribute("firstFailedTimeMap");
+            if (wrongPassCounterMap == null) {
+                wrongPassCounterMap = new HashMap<>();
+                session.setAttribute("wrongPassCounterMap", wrongPassCounterMap);
+            }
 
-        if (wrongPassCounterMap == null) {
-            wrongPassCounterMap = new HashMap<>();
-            session.setAttribute("wrongPassCounterMap", wrongPassCounterMap);
-        }
+            if (firstFailedTimeMap == null) {
+                firstFailedTimeMap = new HashMap<>();
+                session.setAttribute("firstFailedTimeMap", firstFailedTimeMap);
+            }
 
-        if (firstFailedTimeMap == null) {
-            firstFailedTimeMap = new HashMap<>();
-            session.setAttribute("firstFailedTimeMap", firstFailedTimeMap);
-        }
+            int wrongPassCounter = wrongPassCounterMap.getOrDefault(email, 0);
+            long firstFailedTime = firstFailedTimeMap.getOrDefault(email, System.currentTimeMillis());
 
-        int wrongPassCounter = wrongPassCounterMap.getOrDefault(email, 0);
-        long firstFailedTime = firstFailedTimeMap.getOrDefault(email, System.currentTimeMillis());
+            long currentTime = System.currentTimeMillis();
 
-        long currentTime = System.currentTimeMillis();
-
-        if (currentTime - firstFailedTime > LOCK_TIME) {
-            // Reset counter and time after 10 minutes
-            wrongPassCounter = 0;
-            firstFailedTime = currentTime;
-        }
-
-        if (wrongPassCounter >= WRONG_PASS_MAX) {
-            if (currentTime - firstFailedTime <= LOCK_TIME) {
-                String clientIP = req.getRemoteAddr();
-                String[] clientLocation = getLocation(clientIP);
-                if (wrongPassCounter == 5)
-                    LoggingService.getInstance().log(ELevel.ALERT, EAction.LOGIN, clientIP, clientLocation[0], clientLocation[1], clientLocation[2], email + ": Nhập sai mật khẩu quá 5 lần");
-                req.setAttribute("result", "Bạn đã nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 10 phút.");
-                req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
-                return;
-            } else {
-                // Reset after lock time passed
+            if (currentTime - firstFailedTime > LOCK_TIME) {
+                // Reset counter and time after 10 minutes
                 wrongPassCounter = 0;
                 firstFailedTime = currentTime;
             }
-        }
 
-        if (user != null) {
-            if (user.isLock()) {
-                req.setAttribute("result", "Tài khoản đã bị vô hiệu hóa!");
-                req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
-            } else {
-                session.setAttribute("auth", user);
-                wrongPassCounterMap.remove(email);
-                firstFailedTimeMap.remove(email);
-                session.removeAttribute("wrongPassCounterMap");
-                session.removeAttribute("firstFailedTimeMap");
-
-                String clientIP = req.getRemoteAddr();
-                String[] clientLocation = getLocation(clientIP);
-                if (!clientLocation[2].equals("Không tìm thấy") && clientLocation[2].equals("VN"))
-                    LoggingService.getInstance().log(ELevel.ALERT, EAction.LOGIN, clientIP, clientLocation[0], clientLocation[1], clientLocation[2], email + ": Đăng nhập từ nước ngoài");
-
-                if (user.isOwn() || user.isAdmin()) {
-                    session.setAttribute("isAdmin", true);
-                    resp.sendRedirect(req.getContextPath() + "/views/Admin/admin.jsp");
+            if (wrongPassCounter >= WRONG_PASS_MAX) {
+                if (currentTime - firstFailedTime <= LOCK_TIME) {
+                    String clientIP = req.getRemoteAddr();
+                    String[] clientLocation = LoggingService.getLocation(clientIP);
+                    if (wrongPassCounter == 5)
+                        LoggingService.getInstance().log(ELevel.ALERT, EAction.LOGIN, clientIP, clientLocation[0], clientLocation[1], clientLocation[2], email + ": Nhập sai mật khẩu quá 5 lần");
+                    req.setAttribute("result", "Bạn đã nhập sai mật khẩu quá 5 lần. Vui lòng thử lại sau 10 phút.");
+                    req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
+                    return;
                 } else {
-                    session.setAttribute("isAdmin", false);
-                    resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
+                    // Reset after lock time passed
+                    wrongPassCounter = 0;
+                    firstFailedTime = currentTime;
                 }
             }
-        } else {
-            wrongPassCounter++;
-            wrongPassCounterMap.put(email, wrongPassCounter);
-            firstFailedTimeMap.put(email, firstFailedTime);
-            session.setAttribute("wrongPassCounterMap", wrongPassCounterMap);
-            session.setAttribute("firstFailedTimeMap", firstFailedTimeMap);
 
-            req.setAttribute("result", "Mật khẩu không chính xác!");
-            req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
-        }
-    }
+            if (user != null) {
+                if (user.isLock()) {
+                    req.setAttribute("result", "Tài khoản đã bị vô hiệu hóa!");
+                    req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
+                } else {
+                    session.setAttribute("auth", user);
+                    wrongPassCounterMap.remove(email);
+                    firstFailedTimeMap.remove(email);
+                    session.removeAttribute("wrongPassCounterMap");
+                    session.removeAttribute("firstFailedTimeMap");
 
-    private String[] getLocation(String ipAddress) {
-        IPinfo ipInfo = new IPinfo.Builder().setToken("c354a4c7f892c2").build();
-        try {
-            IPResponse response = ipInfo.lookupIP(ipAddress);
-            return new String[]{response.getCity() == null ? "Không tìm thấy" : response.getCity(),
-                    response.getRegion() == null ? "Không tìm thấy" : response.getRegion(),
-                    response.getCountryName() == null ? "Không tìm thấy" : response.getCountryName()};
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return new String[]{"Không tìm thấy", "Không tìm thấy", "Không tìm thấy"};
+                    String clientIP = req.getRemoteAddr();
+                    System.out.println(req.getLocalAddr() + " - " + clientIP);
+                    String[] clientLocation = LoggingService.getLocation(clientIP);
+
+                    if (!clientLocation[2].equals("Không tìm thấy") && !clientLocation[2].equals("Vietnam"))
+                        LoggingService.getInstance().log(ELevel.ALERT, EAction.LOGIN, clientIP, clientLocation[0], clientLocation[1], clientLocation[2], email + ": Đăng nhập từ nước ngoài");
+
+                    if (user.isOwn() || user.isAdmin()) {
+                        session.setAttribute("isAdmin", true);
+                        resp.sendRedirect(req.getContextPath() + "/views/Admin/admin.jsp");
+                    } else {
+                        session.setAttribute("isAdmin", false);
+                        resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
+                    }
+                }
+            } else {
+                wrongPassCounter++;
+                wrongPassCounterMap.put(email, wrongPassCounter);
+                firstFailedTimeMap.put(email, firstFailedTime);
+                session.setAttribute("wrongPassCounterMap", wrongPassCounterMap);
+                session.setAttribute("firstFailedTimeMap", firstFailedTimeMap);
+
+                req.setAttribute("result", "Mật khẩu không chính xác!");
+                req.getRequestDispatcher("./views/Login/view_login/login.jsp").forward(req, resp);
+            }
         }
     }
 }
