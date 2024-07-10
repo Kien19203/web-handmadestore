@@ -120,7 +120,7 @@
                     </select>
                 </div>
                 <div class="text-warning" id="validateResult"></div>
-                <button type="button" class="btn btn-primary" onclick="addUser()">Thêm User</button>
+                <button type="button" class="btn btn-primary" onclick="addUser()">Thêm tài khoản</button>
                 <button
                         class="btn btn-dark" type="button" onclick="hideAddUserBox()">Thoát
                 </button>
@@ -228,7 +228,6 @@
             element.classList.add('fa-lock');
             element.classList.add('text-danger');
             element.parentElement.setAttribute('title', 'Bỏ khóa tải khoản');
-
         } else {
             // Nếu hiện tại là khóa, đổi sang mở khóa
             element.classList.remove('fa-lock');
@@ -247,7 +246,8 @@
                 userId: userId
             },
             success: function (response) {
-
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("error")
@@ -287,9 +287,10 @@
             success: function (response) {
                 alert(response)
                 document.getElementById("validateResult").innerHTML = response;
+                // window.location.reload();
             },
             error: function () {
-                alert("error"+ this.error)
+                alert("error" + this.error)
             }
         })
     }
@@ -347,6 +348,7 @@
         }
     }
 </script>
+<script src="<%=request.getContextPath()%>/views/Admin/js/logging.reload.js"></script>
 </body>
 <%
     } else {

@@ -755,7 +755,6 @@
     function cancelOrder(orderId, rowIndex) {
         let cancelReason;
         if($('#cancelReason')){
-            cancelReason = $('#cancelReason').value;
         }
         if($('#loadingCancelBox')){
             $('#loadingCancelBox').css('display', 'block');

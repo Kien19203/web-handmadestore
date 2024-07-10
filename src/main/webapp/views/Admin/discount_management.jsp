@@ -181,7 +181,7 @@
                 <div class="input-group-prepend me-3">
                     <span class="input-group-text fw-bold">Giảm giá(%)</span>
                 </div>
-                <input name="percentageOff" type="number" class="form-control w-25" placeholder="15">
+                <input name="percentageOff" type="number" class="form-control w-25 percentageOff" placeholder="15" min="0" max="100">
             </div>
             <div class="input-group">
                 <div class="input-group-prepend me-3">
@@ -190,6 +190,7 @@
                 <input name="startDate" type="date" class="form-control">
                 <input name="endDate" type="date" class="form-control">
             </div>
+            <div class="error-message" style="color: red;"></div>
             <div class="d-flex justify-content-end m-0">
                 <button type="button" onclick="hideAddDiscount()" class="btn btn-outline-warning m-3 fs-5 fw-bold"
                         style="color: #eeeeee">Hủy bỏ
@@ -230,7 +231,7 @@
                 <div class="input-group-prepend me-3">
                     <span class="input-group-text fw-bold">Giảm giá(%)</span>
                 </div>
-                <input name="edit_percentageOff" type="number" class="form-control w-25"
+                <input name="edit_percentageOff" type="number" class="form-control w-25 percentageOff" min="0" max="100"
                        value="<%=editDiscount.getPercentageOff()*100%>">
             </div>
             <div class="input-group">
@@ -246,6 +247,7 @@
                 <input name="edit_endDate" type="date" class="form-control"
                        value=<%=dateFormat.format(editDiscount.getEndDate())%>>
             </div>
+            <div class="error-message" style="color: red;"></div>
             <div class="d-flex justify-content-end m-0">
                 <button type="button" onclick="hideEditDiscount()" class="btn btn-outline-warning m-3 fs-5 fw-bold"
                         style="color: #eeeeee">Hủy bỏ
@@ -820,6 +822,22 @@
         }).format(value);
         return formattedPrice;
     }
+
+    document.querySelector('.percentageOff').addEventListener('submit', function(event) {
+        const numberInput = document.querySelector('.number-input');
+        const errorMessage = document.querySelector('.error-message');
+
+        // Clear previous error message
+        errorMessage.textContent = '';
+
+        const value = parseFloat(numberInput.value);
+
+        if (value < 0 || value > 100) {
+            event.preventDefault();
+            errorMessage.textContent = 'Giá trị phải nằm trong khoảng từ 0 đến 100.';
+        }
+    });
+
 </script>
 <script
         type="text/javascript"

@@ -1350,9 +1350,9 @@ CREATE TABLE `role` (
 --
 
 INSERT INTO `role` (`id`, `name`) VALUES
-                                      (1, 'admin'),
+                                      (0, 'admin'),
                                       (2, 'user'),
-                                      (3, 'owner');
+                                      (-1, 'owner');
 
 -- --------------------------------------------------------
 
