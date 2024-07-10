@@ -80,14 +80,6 @@
                 <a href="<%=request.getContextPath()%>/admin/customer?func=customer_management&filter=lockUsers"
                    class="btn btn-outline-secondary" type="button">Người dùng đã khóa</a>
             </div>
-            <input type="text" class="form-control col-lg-6 col-12 col-sm-12"
-                   placeholder="Tìm kiếm theo Tên hoặc Số điện thoại, Email khách hàng"
-                   name="findCustomer"
-                <%String kw =(String) request.getAttribute("kw");%>
-                   value="<%=(kw==null)?"":kw%>">
-            <button
-                    class="btn btn-outline-secondary col-lg-2" type="submit">Tìm kiếm khách hàng
-            </button>
             <%if (user.isOwn()) {%>
             <button
                     class="btn btn-outline-secondary col-lg-2" type="button" onclick="showAddUserBox()">Thêm tài khoản
@@ -123,8 +115,8 @@
                 <div class="form-group">
                     <label for="roleId">Quyền hạn</label>
                     <select class="form-control" id="roleId" name="roleId">
-                        <option value="1">Quản lý</option>
-                        <option value="3">Chủ hệ thống</option>
+                        <option value="0">Quản lý</option>
+                        <option value="-1">Chủ hệ thống</option>
                     </select>
                 </div>
                 <div class="text-warning" id="validateResult"></div>
@@ -150,9 +142,6 @@
                 <th class="text-nowrap">Địa chỉ email</th>
                 <th class="text-nowrap">
                     Ngày đăng ký
-                </th>
-                <th class="text-nowrap">
-                    Trạng thái
                 </th>
                 <th scope="col"><i class="fa-solid fa-user-pen fs-4"></i></th>
             </tr>
@@ -180,8 +169,6 @@
                 <td class="text-center"><%=u.getEmail()%>
                 </td>
                 <td class="text-center"><%=u.getCreateDate()%>
-                </td>
-                <td class="text-center"><%=u.getStatus()%>
                 </td>
                 <td class="text-center">
                     <%if (user.isOwn() && !u.isOwn()) {%>
@@ -215,10 +202,13 @@
 <script>
     $(document).ready(function () {
         var table = $('#data').DataTable({
-            "searching": false, // Không có tính năng tìm kiếm
+            "searching": true, // Không có tính năng tìm kiếm
             "lengthChange": false, // Không cho phép thay đổi số lượng bản ghi trên mỗi trang
             "pageLength": 10,
-            "displayStart": document.getElementById("currentPageNumber").value
+            "displayStart": document.getElementById("currentPageNumber").value,
+            language: {
+                search: "Nhập từ khóa tìm kiếm"
+            }
         });
 
         function getCurrentPage() {

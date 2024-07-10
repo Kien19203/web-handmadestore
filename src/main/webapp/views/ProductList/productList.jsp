@@ -42,7 +42,7 @@
            <div class="title fw-bold fs-6 py-2" id="categoryMenu" style="cursor: pointer">
                <p class="my-0"><i class="fa-solid fa-list"></i> Danh Mục Sản Phẩm</p>
            </div>
-           <ul class="category_list m-0" id="categoryList">
+           <ul class="category_list m-0" id="categoryList" >
                <%--            Sản phẩm khuyến mãi sẽ hiện nếu có sản phẩm--%>
                <%List<Product> productDiscount = ProductService.getInstance().listProductDiscount();%>
                <%if(!productDiscount.isEmpty()){%>
@@ -94,7 +94,7 @@
         </div>
     </div>
     <%-- Phần chính trong danh sách sản phẩm (Sắp xếp, hiêển thị, số trang, chuyển tiếp ,...v..v)   --%>
-    <div class="productList">
+    <div class="productList" style="width: 98%">
         <%-- Hiển thị sản phẩm theo category.   --%>
         <ul id="allProduct" class="products m-2 me-5 ms-3 d-flex flex-wrap">
             <%  List<Product> allProduct = (List<Product>) request.getAttribute("productInPage");%>

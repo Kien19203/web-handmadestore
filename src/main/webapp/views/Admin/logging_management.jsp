@@ -124,9 +124,11 @@
                         <% } %>">
                     <%= logs.get(i).getLevel() %>
                     <%if (logs.get(i).isINFORMLevel() || logs.get(i).isALERTLevel()) {%>
-                    <i class="fa-solid fa-trash-can fs-4" style="cursor: pointer ; color: #5c7093;"
-                       onclick="removeLog(<%=logs.get(i).getId()%>, this)"
-                    ></i>
+                    <div>
+                        <i class="fa-solid fa-trash-can fs-4" style="cursor: pointer ; color: #5c7093;"
+                           onclick="removeLog(<%=logs.get(i).getId()%>, this)"
+                        ></i>
+                    </div>
                     <%}%>
                 </td>
                 <td><%= logs.get(i).getAction() %>
@@ -225,7 +227,7 @@
     function clearInformLogs() {
         $.ajax({
             method: "POST",
-            url: "/HandMadeStore/log-ajax-handle",
+            url: "/HandMadeStore/log",
             data: {
                 action: "clearInformLogs"
             },
@@ -247,7 +249,7 @@
     function clearAlertLogs() {
         $.ajax({
             method: "POST",
-            url: "/HandMadeStore/log-ajax-handle",
+            url: "/HandMadeStore/log",
             data: {
                 action: "clearAlertLogs"
             },
@@ -266,16 +268,18 @@
     }
 
     function removeLog(id, e) {
-        const rowIndex = e.closest('tr').rowIndex - 1;
+        // const rowIndex = e.closest('tr').rowIndex - 1;
+        const row = $(e).closest('tr');
         $.ajax({
             method: "POST",
-            url: "/HandMadeStore/log-ajax-handle",
+            url: "/HandMadeStore/log",
             data: {
                 action: "removeLog",
                 id: id
             },
             success: function (response) {
-                $('#data tbody tr').eq(rowIndex).remove();
+                // $('#data tbody tr').eq(rowIndex).remove();
+                table.row(row).remove().draw();
                 removeClearBox();
             },
             error: function () {

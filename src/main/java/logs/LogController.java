@@ -1,15 +1,5 @@
 package logs;
 
-import com.google.gson.Gson;
-import controller.Validation;
-import model.bean.Discount;
-import model.bean.Product;
-import model.bean.User;
-import model.service.DiscountService;
-import model.service.ProductService;
-import model.service.UserService;
-import utils.HashPassword;
-
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -17,8 +7,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/log-ajax-handle")
-public class LogAjaxHandle extends HttpServlet {
+@WebServlet("/log")
+public class LogController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
@@ -30,11 +20,11 @@ public class LogAjaxHandle extends HttpServlet {
         if (action != null) {
             if (action.equals("removeLog")) {
                 String id = req.getParameter("id");
-//             xóa log
+                LoggingService.getInstance().deleteAlertInformLogById(Integer.parseInt(id));
             } else if (action.equals("clearInformLogs")) {
-
+                LoggingService.getInstance().deleteInformLogs();
             } else if (action.equals("clearAlertLogs")) {
-
+                LoggingService.getInstance().deleteAlertLogs();
             }
         }
     }
