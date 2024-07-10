@@ -137,7 +137,7 @@
                 <li class="product_list">
                     <div class="item_product  me-4">
                         <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
-                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"><p class="pt-2 px-3 fw-bold"><%=pr.getName() %>
+                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"><p class="pt-2 px-3 fw-bold" style="font-style: italic"><%=pr.getName() %>
                         </p></a>
                         <%!double giaBanSauCung;%>
                         <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(pr);%>
@@ -150,7 +150,7 @@
                         <%}else{%>
                         <p class="fw-bold mt-2"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
                         <%}%>
-                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
+                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold" git  >Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                     </div>
                 </li>
                 <%}%>
