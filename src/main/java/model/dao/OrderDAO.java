@@ -190,6 +190,7 @@ public class OrderDAO {
                         .execute()
         );
     }
+
     public static void deliveredOrder(String orderId) {
         JDBIConnector.me().useHandle(handle ->
                 handle.createUpdate("UPDATE `order` SET status = 3 WHERE id=?")
@@ -215,6 +216,13 @@ public class OrderDAO {
                         .bind(0, year)
                         .mapTo(Double.class).one());
         return re != null ? re : 0;
+    }
+
+    public static int getCancelOrderNumber(int userId) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select count(id) from `order` where userId=? and status=4")
+                        .bind(0, userId)
+                        .mapTo(Integer.class).one());
     }
 
     /**

@@ -107,6 +107,9 @@ public class OrderService {
     public double getExactlyTotalPriceNoShippingFee(String orderId) {
         return OrderDAO.getExactlyTotalPriceNoShippingFee(orderId);
     }
+    public int getCancelOrderNumber(int userId) {
+        return OrderDAO.getCancelOrderNumber(userId);
+    }
 
     public static void main(String[] args) {
         System.out.println(getInstance().getOrderById("4444"));

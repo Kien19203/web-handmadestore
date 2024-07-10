@@ -3,6 +3,8 @@ package logs;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import io.ipinfo.api.IPinfo;
+import io.ipinfo.api.model.IPResponse;
 import model.service.JavaMail.MailService;
 
 import java.io.*;
@@ -44,6 +46,11 @@ public class LoggingService {
             if (newLog.isDANGERLevel())
                 MailService.sendAdminDANGERLog("lungbaphe772003@gmail.com", newLog);
         }
+    }
+
+    public synchronized void log(ELevel level, EAction action, String ipAddress, String message) {
+        String[] location = LoggingService.getLocation(ipAddress);
+        log(level, action, ipAddress, location[0], location[1], location[2], message);
     }
 
     private boolean writeLogsToFile() {
@@ -131,5 +138,18 @@ public class LoggingService {
     public synchronized void deleteInformLogs() {
         logs.removeIf(log -> log.getLevel() == ELevel.INFORM);
         writeLogsToFile();
+    }
+
+    public static String[] getLocation(String ipAddress) {
+        IPinfo ipInfo = new IPinfo.Builder().setToken("c354a4c7f892c2").build();
+        try {
+            IPResponse response = ipInfo.lookupIP(ipAddress);
+            return new String[]{response.getCity() == null ? "Không tìm thấy" : response.getCity(),
+                    response.getRegion() == null ? "Không tìm thấy" : response.getRegion(),
+                    response.getCountryName() == null ? "Không tìm thấy" : response.getCountryName()};
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return new String[]{"Không tìm thấy", "Không tìm thấy", "Không tìm thấy"};
+        }
     }
 }
