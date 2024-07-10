@@ -340,7 +340,7 @@
             url: "/HandMadeStore/changeUserInfo",
             data: {
                 action: "changePhone",
-                newName: newPhone
+                newPhone: newPhone
             },
             success: function (response) {
                 document.getElementById("notifyChanged").innerHTML = response;
