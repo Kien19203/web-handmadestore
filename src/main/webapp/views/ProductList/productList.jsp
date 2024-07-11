@@ -122,7 +122,7 @@
                     <del ><p class="mt-2" style=" margin-bottom: 0"><%=numberFormat.format(p.getSellingPrice())%></p></del>
                     <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
                     <%}else{%>
-                    <p class="fw-bold mt-2"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
+                    <p class="fw-bold mt-2 text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(p))%></p>
                     <%}%>
                     <div class="add-to-cart" ><button onclick="addcart(this,<%=p.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                 </div>

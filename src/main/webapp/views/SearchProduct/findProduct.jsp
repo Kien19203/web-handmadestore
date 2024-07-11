@@ -74,7 +74,7 @@
                 <del ><p class="mt-2" style="margin-bottom: 0"><%=numberFormat.format(pfp.getSellingPrice())%></p></del>
                 <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
                 <%}else{%>
-                <p class="fw-bold mt-2" style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
+                <p class="fw-bold mt-2 text-danger" style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
                 <%}%>
                 <div class="add-to-cart">
                     <button onclick="addcart(this,<%=pfp.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span></button>

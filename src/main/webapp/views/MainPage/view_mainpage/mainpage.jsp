@@ -148,7 +148,7 @@
                         <del><p class="mt-2"><%=numberFormat.format(pr.getSellingPrice())%></p></del>
                         <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
                         <%}else{%>
-                        <p class="fw-bold mt-2"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
+                        <p class="fw-bold mt-2 text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
                         <%}%>
                         <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold" git  >Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
                     </div>
