@@ -5,6 +5,7 @@ import model.adapter.InventoryProductMappers;
 import model.bean.*;
 import model.db.JDBIConnector;
 
+import java.text.DecimalFormat;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class ProductDAO {
         );
         return product;
     }
+
     public static List<Product> getAllProducts() {
         List<Product> product = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from product")
@@ -423,12 +425,6 @@ public class ProductDAO {
     }
 
 
-
-
-
-
-
-
     //Trang chính xuất 15 sản phẩm trong từng category và phải còn hàng
     public static List<Product> list4product(int idCategory) {
         List<Product> productList = JDBIConnector.me().withHandle(handle ->
@@ -463,7 +459,7 @@ public class ProductDAO {
                         .map(new InventoryProductMappers.SoldOutMapper())
                         .stream()
                         .toList());
-                return inventoryProducts;
+        return inventoryProducts;
     }
 
 
@@ -570,10 +566,25 @@ public class ProductDAO {
         return result;
     }
 
-
+    public static double getAverageRateStars(int productId) {
+        try {
+            double averageStars = JDBIConnector.me().withHandle(handle ->
+                    handle.createQuery(
+                                    "SELECT AVG(starRatings) AS averageStars " +
+                                            "FROM rate WHERE productId = ? " +
+                                            "GROUP BY productId"
+                            )
+                            .bind(0, productId)
+                            .mapTo(Double.class)
+                            .one());
+            return averageStars;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
 
     public static void main(String[] args) {
-
+        System.out.println(getAverageRateStars(118));
     }
 }
 
