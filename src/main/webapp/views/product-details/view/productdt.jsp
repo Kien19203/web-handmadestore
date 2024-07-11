@@ -543,18 +543,28 @@
                         num: quantityInput.value
                     },
                     success:function(response){
-                        if(!idProductList.includes(<%=product.getId()%>)) {
-                            idProductList.push(<%=product.getId()%>);
-                            handleAddToCart(response);
-
-                        }
+                        if(response != null && response == 'false') {
                             Swal.fire({
                                 position: "center",
-                                icon: "success",
-                                title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                                icon: "error",
+                                title: "Vui lòng đăng nhập",
                                 showConfirmButton: false,
                                 timer: 1500
                             });
+                       }else{
+                           if(!idProductList.includes(<%=product.getId()%>)) {
+                               idProductList.push(<%=product.getId()%>);
+                               handleAddToCart(response);
+
+                           }
+                           Swal.fire({
+                               position: "center",
+                               icon: "success",
+                               title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                               showConfirmButton: false,
+                               timer: 1500
+                           });
+                       }
 
                     },
                     error:function () {

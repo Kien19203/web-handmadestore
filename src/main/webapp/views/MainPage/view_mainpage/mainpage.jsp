@@ -236,19 +236,28 @@
                 num: num
             },
             success: function (response){
-                if(!idProduct.includes(id)){
-                    idProduct.push(id);
-                    console.log(idProduct);
+                if(response != null && response == 'false'){
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Vui lòng đăng nhập",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }else{
+                    if(!idProduct.includes(id)){
+                        idProduct.push(id);
                     handleAddToCart(response);
+                    }
+                    console.log("Hoàn Thành Thêm vào giỏ hàng! ");
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 }
-                console.log("Hoàn Thành Thêm vào giỏ hàng! ");
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
             }
         })
     }

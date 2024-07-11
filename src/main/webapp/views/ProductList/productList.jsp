@@ -306,17 +306,27 @@ let amd = document.getElementById("asort_md");
                 num: num
             },
             success:function(response){
-                if(!idProductList.includes(idProduct)){
-                    idProductList.push(idProduct);
-                    handleAddToCart(response);
+                if(response != null && response == 'false') {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Vui lòng đăng nhập",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }else {
+                    if(!idProductList.includes(idProduct)){
+                        idProductList.push(idProduct);
+                        handleAddToCart(response);
+                    }
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 }
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
             }
         })
     }

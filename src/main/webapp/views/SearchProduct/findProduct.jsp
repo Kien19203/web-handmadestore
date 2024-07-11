@@ -131,15 +131,24 @@
                     num: num
                 },
                 success:function(response){
-                    console.log("thanh cong");
-                    handleAddToCart(response);
-                    Swal.fire({
-                        position: "center",
-                        icon: "success",
-                        title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
+                    if(response != null && response == 'false') {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Vui lòng đăng nhập",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }else{
+                        handleAddToCart(response);
+                        Swal.fire({
+                            position: "center",
+                            icon: "success",
+                            title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });}
+
                 }
             })
     }
