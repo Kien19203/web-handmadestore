@@ -182,7 +182,9 @@
                                    value="<%=user.getEmail()%>">
                         </div>
                         <div class="my-1 text-end">
-                            <a class="text-decoration-none" href="<%=request.getContextPath()%>/forgotpassword">Đặt lại
+                            <a class="text-decoration-none"
+                               href="<%=request.getContextPath()%>/forgotpassword">Đặt
+                                lại
                                 mật
                                 khẩu?</a>
                         </div>
@@ -315,7 +317,7 @@
 <input type="hidden" id="showCouter" value="<%=showCouter%>">
 <input type="hidden" id="statusNumber" value="-1">
 <script>
-    function changeName(){
+    function changeName() {
         const newName = document.getElementById("input_name").value;
         $.ajax({
             method: "POST",
@@ -333,7 +335,8 @@
             }
         })
     }
-    function changePhone(){
+
+    function changePhone() {
         const newPhone = document.getElementById("input_phone").value;
         $.ajax({
             method: "POST",
@@ -351,6 +354,7 @@
             }
         })
     }
+
     function editName() {
         document.getElementById("input_name").disabled = false;
         document.getElementById('save_name').style.display = 'inline';
@@ -388,8 +392,14 @@
     <%--});--%>
 
     function goBack() {
-        window.history.back();
+        const previousPage = document.referrer;
+        if (previousPage) {
+            window.location.href = previousPage;
+        } else {
+            window.history.href = "/";
+        }
     }
+
 
     function toggleInfor() {
         const toggleInforBox = document.getElementById("toggleInforBox");
@@ -727,7 +737,7 @@
         return backgroundColor;
     }
 
-    function showCancelOrder(orderId,rowIndex) {
+    function showCancelOrder(orderId, rowIndex) {
         let cancelOrderBox = `
                         <p class="fst-italic text-body text-decoration-none fw-normal">Quý khách KHOAN hãy hủy đơn hàng.Nếu quý khách hàng có bất cứ vấn đề với đơn hàng của mình xin vui lòng liên hệ tổng đài HandMadeStore qua đường dây nóng 0336677141.Cám ơn quý khách!</p>
                         <div class="mb-3">
@@ -746,7 +756,7 @@
 
             if ($('#cancelOrderBox').css('display') === 'none') {
                 $('#cancelOrderBox').css('display', 'block');
-            }else {
+            } else {
                 $('#cancelOrderBox').css('display', 'none');
             }
         }
@@ -754,9 +764,9 @@
 
     function cancelOrder(orderId, rowIndex) {
         let cancelReason;
-        if($('#cancelReason')){
+        if ($('#cancelReason')) {
         }
-        if($('#loadingCancelBox')){
+        if ($('#loadingCancelBox')) {
             $('#loadingCancelBox').css('display', 'block');
         }
         $.ajax({
@@ -768,17 +778,17 @@
                 cancelReason: cancelReason
             },
             success: function (response) {
-                if($('#status')){
+                if ($('#status')) {
                     console.log(response)
                     $('#status').html(asNameStatus(response));
                 }
-                if($('#cancelOrderBox')){
+                if ($('#cancelOrderBox')) {
                     $('#cancelOrderBox').remove()
                 }
-                if($('#btnShowCancelOrder')){
+                if ($('#btnShowCancelOrder')) {
                     $('#btnShowCancelOrder').remove()
                 }
-                console.log("rowIndex "+ rowIndex)
+                console.log("rowIndex " + rowIndex)
                 $('#data tbody tr').eq(rowIndex).remove();
             },
             error: function () {

@@ -287,7 +287,7 @@
             success: function (response) {
                 alert(response)
                 document.getElementById("validateResult").innerHTML = response;
-                // window.location.reload();
+                window.location.reload();
             },
             error: function () {
                 alert("error" + this.error)
