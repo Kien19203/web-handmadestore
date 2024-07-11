@@ -87,7 +87,7 @@
     <%List<Product> listProductDiscount = ProductService.getInstance().productDiscountMainPage();%>
     <%if(!listProductDiscount.isEmpty()){%>
     <div class="title_t" id="khuyenmai" style="width: 17%; margin: auto;"  >
-        <a style="text-decoration: none;" href="<%=request.getContextPath()%>/product?category=khuyenmai"><p class="text-center fs-5 fw-bold">Sản Phẩm Khuyến Mãi
+        <a style="text-decoration: none;" href="<%=request.getContextPath()%>/product?category=khuyenmai"><p class="text-center fs-5 fw-bold text-danger">Sản Phẩm Khuyến Mãi
         </p></a>
     </div>
     <div class="sp overflow-auto" id="sp_khuyenmai" style="width: 92%;margin: auto;margin-bottom: 50px;background: #d7f0eb;">
@@ -169,15 +169,15 @@
     </div>
     <div class="solid_bk mb-5 m-auto"></div>
     <div class="content_bk">
-        <ul class="d-flex ">
+        <ul class="d-flex justify-content-center">
             <%
                 List<Tip> tipsList = TipDAO.getAllTips();
                 for (Tip t : tipsList) {
             %>
 
             <li class="item text-center">
-                <a href="<%=t.getVideoLink()%>"><img src="<%=request.getContextPath()%>/<%=t.getImgPath()%>" width="90%"></a>
-                <a href="<%=t.getVideoLink()%>"><h6 class="fw-bold text-center mt-3 px-3"><%=t.getTitle()%>
+                <a href="<%=t.getVideoLink()%>" target="_blank"><img src="<%=request.getContextPath()%>/<%=t.getImgPath()%>" width="90%"></a>
+                <a href="<%=t.getVideoLink()%>" target="_blank"><h6 class="fw-bold text-center mt-3 px-3"><%=t.getTitle()%>
                 </h6></a>
                 <p class="px-5"><%=t.getDescription()%>
                 </p>
