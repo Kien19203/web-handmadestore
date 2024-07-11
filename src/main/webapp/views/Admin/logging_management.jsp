@@ -236,7 +236,8 @@
                 $('#data tbody tr').filter(function () {
                     return $(this).find('td:eq(1)').text().trim() === 'INFORM';
                 }).remove();
-                removeClearBox();
+                // reload log gui
+                reloadGUI();
                 location.reload();
             },
             error: function () {
@@ -258,7 +259,8 @@
                 $('#data tbody tr').filter(function () {
                     return $(this).find('td:eq(1)').text().trim() === 'ALERT';
                 }).remove();
-                removeClearBox();
+                // reload log gui
+                reloadGUI();
                 location.reload();
             },
             error: function () {
@@ -281,6 +283,8 @@
                 // $('#data tbody tr').eq(rowIndex).remove();
                 table.row(row).remove().draw();
                 removeClearBox();
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Không thành công")
@@ -288,6 +292,7 @@
         })
     }
 </script>
+<script src="<%=request.getContextPath()%>/views/Admin/js/logging.reload.js"></script>
 </body>
 <%
     } else {

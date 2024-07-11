@@ -293,6 +293,9 @@
                 }
                 // delete row in table
                 $('#data tbody tr').eq(rowIndex).remove();
+
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Error deleting user!");
@@ -320,6 +323,9 @@
                 }
                 // delete row in table
                 $('#data tbody tr').eq(rowIndex).remove();
+
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Error deleting user!");
@@ -357,6 +363,8 @@
                 if ($('#loadingConfirmBox')) {
                     $('#loadingConfirmBox').remove();
                 }
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Error deleting user!");
@@ -396,6 +404,8 @@
                 waitConfirmOrdersNumber.innerHTML = response;
 
                 $('#data tbody tr').eq(rowIndex).remove();
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Hủy đơn hàng thất bại!");
@@ -655,6 +665,7 @@
         return backgroundColor;
     }
 </script>
+<script src="<%=request.getContextPath()%>/views/Admin/js/logging.reload.js"></script>
 </body>
 <%
     } else {
