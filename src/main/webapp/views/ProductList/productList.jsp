@@ -43,7 +43,8 @@
                <p class="my-0"><i class="fa-solid fa-list"></i> Danh Mục Sản Phẩm</p>
            </div>
            <ul class="category_list m-0" id="categoryList" >
-               <%--            Sản phẩm khuyến mãi sẽ hiện nếu có sản phẩm--%>
+               <li class="fw-bold py-2" id="all"><a id="aAll" href="<%=request.getContextPath()%>/product?category=All">Tất Cả Sản Phẩm</a></li>
+           <%--            Sản phẩm khuyến mãi sẽ hiện nếu có sản phẩm--%>
                <%List<Product> productDiscount = ProductService.getInstance().listProductDiscount();%>
                <%if(!productDiscount.isEmpty()){%>
                <li class="fw-bold py-2" id="khuyenmai" >
@@ -132,7 +133,7 @@
             <%}%>
         </ul>
         <%--    Số Trang--%>
-        <div class="pagination mx-5" style="padding: 0 40%;">
+        <div class="pagination " style="display: flex;justify-content: center;">
             <%int currentPage = (int) request.getAttribute("currentPage");%>
             <%int totalPage = (int) request.getAttribute("totalPage");%>
             <%
@@ -222,9 +223,14 @@
     let categoryParam = urlParagram.get('category');
     let categorykm = document.getElementById("khuyenmai");
     let acategorykm = document.getElementById("akhuyenmai");
+    let allProduct = document.getElementById("all");
+    let aAllProduct = document.getElementById("aAll");
     if (categoryParam == "khuyenmai") {
         categorykm.style.background = 'red';
         acategorykm.style.color = 'white';
+    }else if(categoryParam == "All") {
+        allProduct.style.background = 'red';
+        aAllProduct.style.color = 'white';
     }
     <%for (Category category1 : nameCategory){%>
     let category<%=category1.getId()%> = document.getElementById("<%=category1.getId()%>");
@@ -330,32 +336,6 @@ let amd = document.getElementById("asort_md");
             }
         })
     }
-
-    // $(document).ready(function () {
-    //     console.log(categoryParam);
-    //     $("$categorySort").change(function () {
-    //         let option = $(this).val();
-    //         let loadfile = "true";
-    //         $.ajax({
-    //             url: "/HandMadeStore/productList",
-    //             type: "POST",
-    //             data: {
-    //                 filter: option,
-    //                 category: categoryParam,
-    //                 loadfile : loadfile,
-    //             },
-    //             success: function (response) {
-    //                 console.log(response);
-    //                 for(var Product of response ){
-    //                     renderProduct(Product);
-    //                 }
-    //             }
-    //         })
-    //     })
-    // });
-    // function renderProduct(products) {
-    //     let template = $("#allProduct").html();
-    // }
 
 
 
