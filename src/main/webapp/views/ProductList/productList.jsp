@@ -96,7 +96,7 @@
     <%-- Phần chính trong danh sách sản phẩm (Sắp xếp, hiêển thị, số trang, chuyển tiếp ,...v..v)   --%>
     <div class="productList" style="width: 98%">
         <%-- Hiển thị sản phẩm theo category.   --%>
-        <ul id="allProduct" class="products m-2 me-5 ms-3 d-flex flex-wrap">
+        <ul id="allProduct" class="products m-2 ms-3 d-flex flex-wrap">
             <%  List<Product> allProduct = (List<Product>) request.getAttribute("productInPage");%>
             <%
                 if (allProduct == null) allProduct = new ArrayList<>();

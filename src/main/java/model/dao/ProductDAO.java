@@ -49,6 +49,8 @@ public class ProductDAO {
         return product.isEmpty() ? null : product.get();
     }
 
+
+
     public static void deleteProduct(String product_id) {
         //delete products image
         ImageService.deleteProductImage(product_id);
@@ -570,6 +572,8 @@ public class ProductDAO {
         return result;
     }
 
+
+
 //    chỉnh sửa thông tin sản phẩm.
     //    --------------------UPDATE SẢN PHẨM.
 
@@ -578,6 +582,22 @@ public class ProductDAO {
         return JDBIConnector.me().withHandle(handle ->
                 handle.createQuery(sql).bind(0, id).mapTo(Integer.class).one());
     }
+
+    public static Integer getStockProduct(int id) {
+        String sql = "select stock from product where id=?";
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).bind(0, id).mapTo(Integer.class).one());
+    }
+
+    public static Integer getIsSale(int id) {
+        String sql = "select isSale from product where id=?";
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).bind(0, id).mapTo(Integer.class).one());
+
+    }
+
+
+
 
     public static void updateProduct(String id, String name, String description, int sellingPrice, String categoryId, String discountId, int isSale) {
 
@@ -620,7 +640,6 @@ public class ProductDAO {
 
 
     public static void main(String[] args) {
-        System.out.println(getCostPriceProduct(2));
     }
 }
 

@@ -1,6 +1,7 @@
 package controller;
 
 import model.bean.Cart;
+import model.bean.Item;
 import model.bean.Product;
 import model.service.ProductService;
 
@@ -11,6 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "CartController", value = "/add-cart")
 public class AddCartController extends HttpServlet {
@@ -21,7 +25,15 @@ public class AddCartController extends HttpServlet {
         if(cart == null) {
             cart= new Cart();
         }
+
+
+
+
+
+
+
         sessions.setAttribute("cart", cart);
+
         doPost(req, resp);
 
     }

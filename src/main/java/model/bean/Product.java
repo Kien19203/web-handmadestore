@@ -16,4 +16,7 @@ public class Product {
     private int categoryId;
     private int discountId;
     private int isSale;
+
+
 }
+

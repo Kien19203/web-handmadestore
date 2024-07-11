@@ -234,6 +234,19 @@ public class ProductService {
 
     }
 
+    public static Integer getStockProduct(int productId){
+
+        return ProductDAO.getStockProduct(productId);
+
+    }
+
+    public static Integer getIsSale(int productId){
+
+        return ProductDAO.getIsSale(productId);
+
+    }
+
+
     //update cho sản phẩm.
     /// EDIT PRODUCT.
     public void editProduct(String id, String name, String description, int sellingPrice, String categoryId, String discountId, int isSale) {
