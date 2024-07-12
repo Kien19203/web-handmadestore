@@ -399,20 +399,19 @@
                 Danh Mục
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="margin-top: 33px">
-                <a id="submenuNav" class="dropdown-item" href="<%=request.getContextPath()%>/product?category=All">Tất Cả Sản Phẩm</a>
                 <%for(Category categoryProduct : categoryP){%>
-                <a id="submenuNav" class="dropdown-item" href="<%=request.getContextPath()%>/product?category=<%=categoryProduct.getId()%>"><%=categoryProduct.getName()%></a>
+                <a id="submenuNav" class="dropdown-item" href="<%=request.getContextPath()%>/productsPage?categoryFilter=<%=categoryProduct.getId()%>"><%=categoryProduct.getName()%></a>
                 <%}%>
             </div>
         </li>
         <li class="itemNav my-auto">
-            <a class="titleNav" href="#sp">Sản Phẩm</a>
+            <a id="titleNav" href="<%=request.getContextPath()%>/productsPage?categoryFilter=all">Tất Cả Sản Phẩm</a>
         </li>
         <li class="itemNav my-auto">
             <a class="titleNav" href="#bikip">Bí Kíp HandMade</a>
         </li>
         <li class="itemNav my-auto">
-            <a class="titleNav" href="#footer">Về Chúng Tôi</a>
+            <a class="titleNav" href="#footer">Liên hệ</a>
         </li>
 <%--        --%>
         <li class="search d-flex py-4 my-auto">
