@@ -99,7 +99,7 @@
             <li class="productkm">
                 <div class="item_product  me-4">
                     <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
-                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p class="pt-2 px-4"><%=prd.getName() %>
+                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p class="pt-2 px-3 fst-italic"><%=prd.getName() %>
                     </p></a>
                     <%!double giaKhuyenMai;%>
                     <% giaKhuyenMai = ProductService.getInstance().productPriceIncludeDiscount(prd);%>
@@ -113,6 +113,19 @@
                     <p class="fw-bold"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
                     <%}%>
                     <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
+                    <div style="position: absolute; bottom: 0; width: 100%">
+                        <%if(ProductDAO.avarageStar(prd.getId()) != 0.0){%>
+                        <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
+                            <span>Đánh Giá:</span>
+                            <span><%=ProductDAO.avarageStar(prd.getId())%><i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></span>
+                        </div>
+                        <%}%>
+                        <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                            <span>Đã Bán:</span>
+                            <span><%=ProductDAO.sellProduct(prd.getId())%></span>
+                        </div>
+
+                    </div>
                 </div>
             </li>
             <%}%>
@@ -151,6 +164,19 @@
                         <p class="fw-bold mt-2 text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
                         <%}%>
                         <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold" git  >Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
+                        <div style="position: absolute; bottom: 0; width: 100%">
+                            <%if(ProductDAO.avarageStar(pr.getId()) != 0.0){%>
+                            <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đánh Giá:</span>
+                                <span><%=ProductDAO.avarageStar(pr.getId())%><i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></span>
+                            </div>
+                            <%}%>
+                            <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span><%=ProductDAO.sellProduct(pr.getId())%></span>
+                            </div>
+
+                        </div>
                     </div>
                 </li>
                 <%}%>

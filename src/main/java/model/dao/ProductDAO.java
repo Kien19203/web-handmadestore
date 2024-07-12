@@ -570,10 +570,35 @@ public class ProductDAO {
         return result;
     }
 
+//Tính số sao trung bình của sản phẩm theo id
 
-
+    public static double avarageStar(int idProduct){
+         List<Rate> rateList = JDBIConnector.me().withHandle(
+                handle -> handle.createQuery("SELECT * FROM `rate` WHERE productId = :productId")
+                        .bind("productId", idProduct)
+                        .mapToBean(Rate.class)
+                        .stream().toList());
+         double result = 0;
+       if(!rateList.isEmpty()){
+           int count = 0;
+           double starAll = 0;
+           for (Rate rate :rateList){
+               count++;
+               starAll += rate.getStarRatings();
+           }
+           result = starAll/count;
+       }
+        return result;
+    }
+    //Sản Phẩm đã bán số lượng
+    public static int sellProduct(int idProduct){
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select soldOut from inventory where productId=?")
+                        .bind(0, idProduct)
+                        .mapTo(Integer.class).one());
+    }
     public static void main(String[] args) {
-
+        System.out.println(sellProduct(1));
     }
 }
 
