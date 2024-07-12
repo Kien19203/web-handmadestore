@@ -88,7 +88,7 @@
             <li class="breadcrumb-item"><a
                     href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
             <li class="breadcrumb-item"><a
-                    href="product?category=<%=categoryByProduct.getId()%>"><%=categoryByProduct.getName()%>
+                    href="productsPage?categoryFilter=<%=categoryByProduct.getId()%>"><%=categoryByProduct.getName()%>
             </a></li>
             <li class="breadcrumb-item active" aria-current="page" style="color: #e32124"><%=product.getName()%>
             </li>
