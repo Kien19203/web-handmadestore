@@ -1,6 +1,7 @@
 package controller;
 
 import model.bean.Product;
+import model.dao.SortOption;
 import model.dao.ProductDAO;
 import model.service.ProductService;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class FindProduct extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPost(req,resp);
+        doPost(req, resp);
     }
 
     @Override
@@ -25,28 +26,20 @@ public class FindProduct extends HttpServlet {
         resp.setCharacterEncoding("UTF-8");
         resp.setContentType("html/text; charset= UTF-8");
         String query = req.getParameter("findProducts");
-        req.setAttribute("resultFind",query);
-        List<Product> productList1 = ProductDAO.findProduct(query);
-        int numberProduct = productList1.size();
-        req.setAttribute("numberProduct",numberProduct);
+        if (query != null) {
+            List<Product> productList1 = ProductService.getInstance().getProductBySearchFilter(query, SortOption.SORT_DEFAULT, null, null, 15, 0);
+            int numberProduct = ProductDAO.getFindProductNumber(query);
 
-        int itemPerPage1 = 15; // số lượng sp trên mỗi trang
-        //lấy số trang hiện tại từ tham số yêu cầu
-        int currentPage1 = 1;
-        String paraParam1 = req.getParameter("page");
-        if (paraParam1 != null && !paraParam1.isEmpty()) {
-            currentPage1 = Integer.parseInt(paraParam1);
+            req.setAttribute("searchResultNumber", numberProduct);
+            req.setAttribute("textSearch", query);
+            req.setAttribute("products", productList1);
+
+            String path = "./views/products/productsPage.jsp";
+            req.getRequestDispatcher(path).forward(req, resp);
+        }else{
+            List<Product> productList1 = ProductService.getInstance().getAllProducts(15, 0);
+            req.setAttribute("products", productList1);
+            req.getRequestDispatcher("./views/products/productsPage.jsp").forward(req, resp);
         }
-        //Tính số sản phẩm bắt đầu và kết thúc
-        int startIndex1 = (currentPage1 - 1) * itemPerPage1;
-        int endIndex1 = Math.min(startIndex1 + itemPerPage1, numberProduct);
-        //lấy danh sách sản phẩm cho trang hiện tại
-        List<Product> currentPageItems1 = productList1.subList(startIndex1, endIndex1);
-
-        req.setAttribute("currentPage1", currentPage1);
-        req.setAttribute("totalPage1", (int) Math.ceil((double) productList1.size() / itemPerPage1));
-        req.setAttribute("productInPage1", currentPageItems1);
-        String path = "./views/SearchProduct/findProduct.jsp";
-        req.getRequestDispatcher(path).forward(req, resp);
     }
 }
