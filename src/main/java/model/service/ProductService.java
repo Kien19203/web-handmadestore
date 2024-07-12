@@ -25,6 +25,10 @@ public class ProductService {
         return ProductDAO.getAll();
     }
 
+    public List<Product> getAllProducts(int limit, int offset) {
+        return ProductDAO.getAllProducts(limit, offset);
+    }
+
     public List<Product> getAllProducts() {
         return ProductDAO.getAllProducts();
     }
@@ -240,7 +244,11 @@ public class ProductService {
         return ProductDAO.discountProduct(idProduct);
     }
 
-    public static void main(String[] args) {
+    public List<Product> getProductByFilter(String categoryFilter, int sort, Double startPrice, Double endPrice, int limit, int offset) {
+        return ProductDAO.getProductByFilter(categoryFilter, sort, startPrice, endPrice, limit, offset);
+    }
 
+    public List<Product> getProductBySearchFilter(String keyword, int sort, Double startPrice, Double endPrice, int limit, int offset) {
+        return ProductDAO.getProductBySearchFilter(keyword, sort, startPrice, endPrice, limit, offset);
     }
 }
