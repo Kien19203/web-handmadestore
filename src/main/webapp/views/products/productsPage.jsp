@@ -160,6 +160,21 @@
                             <button onclick="addcart(this,<%=pfp.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i
                                     class="fa-solid fa-cart-shopping"></i></span></button>
                         </div>
+                        <div style="position: absolute; bottom: 0; width: 100%">
+                            <%
+                                double averageRateStars = ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(pfp.getId()));%>
+                            <%if (averageRateStars > 0) {%>
+                            <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đánh Giá:</span>
+                                <span><%=averageRateStars%><i class="fa-solid fa-star"
+                                                              style="color: #FFD43B;font-size: 13px"></i></span>
+                            </div>
+                            <%}%>
+                            <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span><%=pfp.getStock()%></span>
+                            </div>
+                        </div>
                     </div>
                 </li>
                 <%}%>
@@ -227,6 +242,16 @@
             console.log(response)
             response.forEach(function (r) {
                 let priceHtml = '';
+                let averageRateStars = '';
+                if (r.averageRateStars > 0) {
+                    averageRateStars = `
+                    <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
+                            <span>Đánh Giá:</span>
+                            <span>${r.averageRateStars}<i class="fa-solid fa-star"
+                                                          style="color: #FFD43B;font-size: 13px"></i></span>
+                    </div>
+                    `
+                }
                 if (r.sellingPrice != r.finalPrice) {
                     priceHtml = `
                     <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
@@ -251,6 +276,14 @@
                             <button onclick="addcart(this,${r.id})"><span class="fw-bold">Thêm vào giỏ <i
                                     class="fa-solid fa-cart-shopping"></i></span></button>
                         </div>
+
+                        <div style="position: absolute; bottom: 0; width: 100%">
+                            ` + averageRateStars + `
+                          <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span>${r.stock}</span>
+                          </div>
+                        </div>
                     </div>
                 </li>
                     `;
@@ -273,6 +306,16 @@
         let p = '';
         response.forEach(function (r) {
             let priceHtml = '';
+            let averageRateStars = '';
+            if (r.averageRateStars > 0) {
+                averageRateStars = `
+                    <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
+                            <span>Đánh Giá:</span>
+                            <span>${r.averageRateStars}<i class="fa-solid fa-star"
+                                                          style="color: #FFD43B;font-size: 13px"></i></span>
+                    </div>
+                    `
+            }
             if (r.sellingPrice != r.finalPrice) {
                 priceHtml = `
                     <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
@@ -296,6 +339,14 @@
                         <div class="add-to-cart">
                             <button onclick="addcart(this,${r.id})"><span class="fw-bold">Thêm vào giỏ <i
                                     class="fa-solid fa-cart-shopping"></i></span></button>
+                        </div>
+
+                        <div style="position: absolute; bottom: 0; width: 100%">
+                            ` + averageRateStars + `
+                          <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span>${r.stock}</span>
+                          </div>
                         </div>
                     </div>
                 </li>
