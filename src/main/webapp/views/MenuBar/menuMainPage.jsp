@@ -399,6 +399,7 @@
                 Danh Mục
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="margin-top: 33px">
+                <a id="submenuNav" class="dropdown-item" href="<%=request.getContextPath()%>/product?category=All">Tất Cả Sản Phẩm</a>
                 <%for(Category categoryProduct : categoryP){%>
                 <a id="submenuNav" class="dropdown-item" href="<%=request.getContextPath()%>/product?category=<%=categoryProduct.getId()%>"><%=categoryProduct.getName()%></a>
                 <%}%>

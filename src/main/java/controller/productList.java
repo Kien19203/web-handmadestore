@@ -32,12 +32,15 @@ public class productList extends HttpServlet {
         List<Product> productList = null;/**/
         String filter = req.getParameter("filter");
         String category = req.getParameter("category");
+
         if (filter != null && category != null) {
             if (filter.equals("ascPrice")) {
                 List<Category> categoryList = CategoryDAO.getAll();
                 if (category.equals("khuyenmai")) {
                     productList = ProductService.getInstance().sortListProductDiscountAZ();
-                } else {
+                } else if(category.equals("All")) {
+                    productList = ProductService.getInstance().sortProductsAZ();
+                }else {
                     for (Category value : categoryList) {
                         String values = String.valueOf(value.getId());
                         if (category.equals(values)) {
@@ -50,7 +53,10 @@ public class productList extends HttpServlet {
                 List<Category> categoryList = CategoryDAO.getAll();
                 if (category.equals("khuyenmai")) {
                     productList = ProductService.getInstance().sortListProductDiscountZA();
-                } else {
+                } else if(category.equals("All")) {
+                    productList = ProductService.getInstance().sortProductsZA();
+                }
+                else {
                     for (Category value : categoryList) {
                         String values = String.valueOf(value.getId());
                         if (category.equals(values)) {
@@ -64,6 +70,8 @@ public class productList extends HttpServlet {
             List<Category> categoryList = CategoryDAO.getAll();
             if (category.equals("khuyenmai")) {
                 productList = ProductService.getInstance().listProductDiscount();
+            } else if(category.equals("All")) {
+                productList = ProductDAO.getAll();
             } else {
                 for (Category value : categoryList) {
                     String values = String.valueOf(value.getId());
@@ -73,14 +81,6 @@ public class productList extends HttpServlet {
                     }
                 }
             }
-        } else if (filter != null) {
-            if (filter.equals("ascPrice")) {
-                productList = ProductService.getInstance().sortProductsAZ();
-            } else if (filter.equals("descPrice")) {
-                productList = ProductService.getInstance().sortProductsZA();
-            }
-        } else {
-            productList = ProductService.getInstance().getAll();
         }
         req.setAttribute("filter", filter);
         int itemPerPage = 15; // số lượng sp trên mỗi trang

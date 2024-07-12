@@ -87,7 +87,7 @@
     <%List<Product> listProductDiscount = ProductService.getInstance().productDiscountMainPage();%>
     <%if(!listProductDiscount.isEmpty()){%>
     <div class="title_t" id="khuyenmai" style="width: 17%; margin: auto;"  >
-        <a style="text-decoration: none;" href="<%=request.getContextPath()%>/product?category=khuyenmai"><p class="text-center fs-5 fw-bold">Sản Phẩm Khuyến Mãi
+        <a style="text-decoration: none;" href="<%=request.getContextPath()%>/product?category=khuyenmai"><p class="text-center fs-5 fw-bold text-danger">Sản Phẩm Khuyến Mãi
         </p></a>
     </div>
     <div class="sp overflow-auto" id="sp_khuyenmai" style="width: 92%;margin: auto;margin-bottom: 50px;background: #d7f0eb;">
@@ -99,7 +99,7 @@
             <li class="productkm">
                 <div class="item_product  me-4">
                     <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
-                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p class="pt-2 px-4"><%=prd.getName() %>
+                    <a href="<%=request.getContextPath()%>/product-detail?id=<%=prd.getId()%>"><p class="pt-2 px-3 fst-italic"><%=prd.getName() %>
                     </p></a>
                     <%!double giaKhuyenMai;%>
                     <% giaKhuyenMai = ProductService.getInstance().productPriceIncludeDiscount(prd);%>
@@ -113,6 +113,19 @@
                     <p class="fw-bold"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%></p>
                     <%}%>
                     <div class="add-to-cart"><button onclick="addCart(this,<%=prd.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
+                    <div style="position: absolute; bottom: 0; width: 100%">
+                        <%if(ProductDAO.avarageStar(prd.getId()) != 0.0){%>
+                        <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
+                            <span>Đánh Giá:</span>
+                            <span><%=ProductDAO.avarageStar(prd.getId())%><i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></span>
+                        </div>
+                        <%}%>
+                        <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                            <span>Đã Bán:</span>
+                            <span><%=ProductDAO.sellProduct(prd.getId())%></span>
+                        </div>
+
+                    </div>
                 </div>
             </li>
             <%}%>
@@ -137,7 +150,7 @@
                 <li class="product_list">
                     <div class="item_product  me-4">
                         <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"> <img  src="<%=request.getContextPath()%>/<%=pathImage%>"> </a>
-                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"><p class="pt-2 px-3 fw-bold"><%=pr.getName() %>
+                        <a href="<%=request.getContextPath()%>/product-detail?id=<%=pr.getId()%>"><p class="pt-2 px-3 fw-bold" style="font-style: italic"><%=pr.getName() %>
                         </p></a>
                         <%!double giaBanSauCung;%>
                         <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(pr);%>
@@ -148,9 +161,22 @@
                         <del><p class="mt-2"><%=numberFormat.format(pr.getSellingPrice())%></p></del>
                         <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
                         <%}else{%>
-                        <p class="fw-bold mt-2"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
+                        <p class="fw-bold mt-2 text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%></p>
                         <%}%>
-                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
+                        <div class="add-to-cart"><button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold" git  >Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span> </button></div>
+                        <div style="position: absolute; bottom: 0; width: 100%">
+                            <%if(ProductDAO.avarageStar(pr.getId()) != 0.0){%>
+                            <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đánh Giá:</span>
+                                <span><%=ProductDAO.avarageStar(pr.getId())%><i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></span>
+                            </div>
+                            <%}%>
+                            <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span><%=ProductDAO.sellProduct(pr.getId())%></span>
+                            </div>
+
+                        </div>
                     </div>
                 </li>
                 <%}%>
@@ -169,15 +195,15 @@
     </div>
     <div class="solid_bk mb-5 m-auto"></div>
     <div class="content_bk">
-        <ul class="d-flex ">
+        <ul class="d-flex justify-content-center">
             <%
                 List<Tip> tipsList = TipDAO.getAllTips();
                 for (Tip t : tipsList) {
             %>
 
             <li class="item text-center">
-                <a href="<%=t.getVideoLink()%>"><img src="<%=request.getContextPath()%>/<%=t.getImgPath()%>" width="90%"></a>
-                <a href="<%=t.getVideoLink()%>"><h6 class="fw-bold text-center mt-3 px-3"><%=t.getTitle()%>
+                <a href="<%=t.getVideoLink()%>" target="_blank"><img src="<%=request.getContextPath()%>/<%=t.getImgPath()%>" width="90%"></a>
+                <a href="<%=t.getVideoLink()%>" target="_blank"><h6 class="fw-bold text-center mt-3 px-3"><%=t.getTitle()%>
                 </h6></a>
                 <p class="px-5"><%=t.getDescription()%>
                 </p>
@@ -236,19 +262,28 @@
                 num: num
             },
             success: function (response){
-                if(!idProduct.includes(id)){
-                    idProduct.push(id);
-                    console.log(idProduct);
+                if(response != null && response == 'false'){
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Vui lòng đăng nhập",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }else{
+                    if(!idProduct.includes(id)){
+                        idProduct.push(id);
                     handleAddToCart(response);
+                    }
+                    console.log("Hoàn Thành Thêm vào giỏ hàng! ");
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 }
-                console.log("Hoàn Thành Thêm vào giỏ hàng! ");
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
             }
         })
     }

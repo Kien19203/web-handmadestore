@@ -1,8 +1,9 @@
 package model.bean;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
-public class Rate {
+public class Rate implements Serializable {
     private int productId;
     private int userId;
     private int starRatings;

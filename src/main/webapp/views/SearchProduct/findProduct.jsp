@@ -1,7 +1,8 @@
 <%@ page import="model.bean.Product" %>
 <%@ page import="model.service.ImageService" %>
 <%@ page import="model.service.ProductService" %>
-<%@ page import="java.util.List" %><%--
+<%@ page import="java.util.List" %>
+<%@ page import="model.dao.ProductDAO" %><%--
   Created by IntelliJ IDEA.
   User: ASUS
   Date: 1/3/2024
@@ -63,7 +64,7 @@
         <li class="product_li">
             <div class="item_product  me-4">
                 <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=pfp.getId()%>"> <img src="<%=request.getContextPath()%>/<%=pathImagefp%>"> </a>
-                <a href="<%=request.getContextPath()%>/product-detail?id=<%=pfp.getId()%>"><p class="pt-2 px-4 fw-bold"><%=pfp.getName() %>
+                <a href="<%=request.getContextPath()%>/product-detail?id=<%=pfp.getId()%>"><p class="pt-3 px-3 fw-bold m-0 fst-italic"><%=pfp.getName() %>
                 </p></a>
                 <%!double giaBanSauCung;%>
                 <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(pfp);%>
@@ -74,10 +75,22 @@
                 <del ><p class="mt-2" style="margin-bottom: 0"><%=numberFormat.format(pfp.getSellingPrice())%></p></del>
                 <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
                 <%}else{%>
-                <p class="fw-bold mt-2" style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
+                <p class="fw-bold mt-3 text-danger" style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%></p>
                 <%}%>
                 <div class="add-to-cart">
                     <button onclick="addcart(this,<%=pfp.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i class="fa-solid fa-cart-shopping"></i></span></button>
+                </div>
+                <div style="position: absolute; bottom: 0; width: 100%">
+                    <%if(ProductDAO.avarageStar(pfp.getId()) != 0.0){%>
+                    <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
+                        <span>Đánh Giá:</span>
+                        <span><%=ProductDAO.avarageStar(pfp.getId())%><i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></span>
+                    </div>
+                    <%}%>
+                    <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                        <span>Đã Bán:</span>
+                        <span><%=ProductDAO.sellProduct(pfp.getId())%></span>
+                    </div>
                 </div>
             </div>
         </li>
@@ -131,15 +144,24 @@
                     num: num
                 },
                 success:function(response){
-                    console.log("thanh cong");
-                    handleAddToCart(response);
-                    Swal.fire({
-                        position: "center",
-                        icon: "success",
-                        title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                        showConfirmButton: false,
-                        timer: 1500
-                    });
+                    if(response != null && response == 'false') {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Vui lòng đăng nhập",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }else{
+                        handleAddToCart(response);
+                        Swal.fire({
+                            position: "center",
+                            icon: "success",
+                            title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });}
+
                 }
             })
     }

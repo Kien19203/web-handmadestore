@@ -1,6 +1,7 @@
 package controller;
 
 import model.bean.Cart;
+import model.bean.User;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,44 +21,49 @@ public class AddCartController2 extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-       HttpSession sessions = req.getSession();
-        Cart cart = (Cart) sessions.getAttribute("cart");
-        if(cart == null) {
-            cart= new Cart();
-        }
-        sessions.setAttribute("cart", cart);
-        String action = req.getParameter("actionCart");
-        String referer = req.getHeader("Referer");//Hàm lấy url của trang hiện tại để reload
+        User user = (User) (req.getSession().getAttribute("auth"));
+        if(user == null){
+            resp.getWriter().write("false");
+        }else {
+            HttpSession sessions = req.getSession();
+            Cart cart = (Cart) sessions.getAttribute("cart");
+            if(cart == null) {
+                cart= new Cart();
+            }
+            sessions.setAttribute("cart", cart);
+            String action = req.getParameter("actionCart");
+            String referer = req.getHeader("Referer");//Hàm lấy url của trang hiện tại để reload
 
-        switch (action) {
-            case "get":
+            switch (action) {
+                case "get":
 
 //                req.getRequestDispatcher(req.getContextPath()+"/views/CartPage/cart.jsp").forward(req, resp);
-                resp.sendRedirect(referer);
+                    resp.sendRedirect(referer);
 //                resp.sendRedirect(req.getContextPath()+"/views/CartPage/cart.jsp" );
-                break;
+                    break;
 
-            case "delete":
-                DeleteP(req,resp);
+                case "delete":
+                    DeleteP(req,resp);
 //                resp.sendRedirect(referer);
-                break;
-            case "put":
-                putP(req,resp);
+                    break;
+                case "put":
+                    putP(req,resp);
 //                resp.sendRedirect(referer);
 //                req.getRequestDispatcher(req.getContextPath() +"/add-cart?actionCart=get").forward(req,resp);
-                break;
+                    break;
 
-            case "post":
-                int id = Integer.parseInt(req.getParameter("id")); // lay id product
-                int num = Integer.parseInt(req.getParameter("num"));
-                cart.add(id, num);
-                sessions.setAttribute("cart", cart);
-                break;
-            default:
+                case "post":
+                    int id = Integer.parseInt(req.getParameter("id")); // lay id product
+                    int num = Integer.parseInt(req.getParameter("num"));
+                    cart.add(id, num);
+                    sessions.setAttribute("cart", cart);
+                    break;
+                default:
 
-                break;
+                    break;
+            }
+
         }
-
     }
 
     protected void putP(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
