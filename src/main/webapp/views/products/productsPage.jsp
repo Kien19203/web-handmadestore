@@ -7,6 +7,8 @@
 <%String textSearch = (String) request.getAttribute("textSearch");%>
 <%Integer searchResultNumber = (Integer) request.getAttribute("searchResultNumber");%>
 <%List<Product> productList = request.getAttribute("products") != null ? (List<Product>) request.getAttribute("products") : ProductService.getInstance().getAllProducts(15, 0);%>
+<%String filterFromHome = (String) request.getAttribute("filterFromHome");%>
+<%String isDiscount = request.getAttribute("isDiscount") != null ? (String) request.getAttribute("isDiscount") : "false";%>
 <html>
 <head>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -69,7 +71,11 @@
             <select id="categoryFilter" class="form-select" aria-label="Default select example" onchange="filter()">
                 <option selected value="all">Tất cả sản phẩm</option>
                 <%for (Category c : CategoryService.getInstance().getALl()) {%>
-                <option value="<%=c.getId()%>"><%=c.getName()%>
+                <option value="<%=c.getId()%>"
+                        <%if (filterFromHome != null && filterFromHome.equals(c.getId() + "")) {%>
+                        selected
+                        <%}%>
+                ><%=c.getName()%>
                 </option>
                 <%}%>
             </select>
@@ -79,7 +85,12 @@
             <label>Sắp xếp theo</label>
             <select id="sort" class="form-select" aria-label="Default select example" onchange="filter()">
                 <option value="<%=SortOption.SORT_DEFAULT%>" selected>Liên quan nhất</option>
-                <option value="<%=SortOption.SORT_DISCOUNT%>">Đang khuyến mãi</option>
+                <option value="<%=SortOption.SORT_DISCOUNT%>"
+                        <%if (isDiscount.equals("true")) {%>
+                        selected
+                        <%}%>
+                >Đang khuyến mãi
+                </option>
                 <option value="<%=SortOption.SORT_MOST_RATES%>">Có nhiều đánh giá nhất</option>
                 <option value="<%=SortOption.SORT_HIGHEST_RATING%>">Xếp hạng cao nhất</option>
                 <option value="<%=SortOption.SORT_PRICE_ASC%>">Giá tăng dần</option>
@@ -156,10 +167,12 @@
         </div>
         <%--    Số Trang--%>
         <div class="d-flex justify-content-center" id="morebox">
-                <span id="moreButton" class="fst-italic fw-bold" style="cursor: pointer"
-                      onclick="more(15,15)"
-                >Xem thêm...
+            <%if (productList.size() >= 15) {%>
+            <span id="moreButton" class="fst-italic fw-bold" style="cursor: pointer"
+                  onclick="more(15,15)"
+            >Xem thêm...
                 </span>
+            <%}%>
         </div>
     </div>
     <input type="hidden" id="textSearch" value="<%=(textSearch!=null?textSearch:"")%>">
@@ -204,7 +217,7 @@
 
     function reloadProduct(response) {
         const products = $('#products');
-        if(response.length !=0){
+        if (response.length != 0) {
             let productsHtml = '';
             let p = '';
             productsHtml +=
@@ -247,7 +260,7 @@
             </ul>
         `
             products.html(productsHtml)
-        }else{
+        } else {
             products.html(
                 `<div class="d-flex justify-content-center align-items-center fs-4">Hix, không có sản phẩm nào!</div>`
             )

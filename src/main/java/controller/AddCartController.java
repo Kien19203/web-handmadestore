@@ -2,6 +2,7 @@ package controller;
 
 import model.bean.Cart;
 import model.bean.Product;
+import model.bean.User;
 import model.service.ProductService;
 
 import javax.servlet.ServletException;
@@ -16,14 +17,18 @@ import java.io.IOException;
 public class AddCartController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession sessions = req.getSession();
-        Cart cart = (Cart) sessions.getAttribute("cart");
-        if(cart == null) {
-            cart= new Cart();
+        User user = (User) (req.getSession().getAttribute("auth"));
+        if(user == null){
+            resp.getWriter().write("false");
+        }else {
+            HttpSession sessions = req.getSession();
+            Cart cart = (Cart) sessions.getAttribute("cart");
+            if (cart == null) {
+                cart = new Cart();
+            }
+            sessions.setAttribute("cart", cart);
+            doPost(req, resp);
         }
-        sessions.setAttribute("cart", cart);
-        doPost(req, resp);
-
     }
 
     @Override

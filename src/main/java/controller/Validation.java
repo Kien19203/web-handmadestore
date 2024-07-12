@@ -36,13 +36,6 @@ public class Validation {
     }
 
     public static void main(String[] args) {
-        System.out.println("Pblues " + checkPassword("Pblues"));
-        System.out.println("Pblues@32 " + checkPassword("Pblues@32"));
-        System.out.println(checkEmail("Pblues@32"));
-        System.out.println(checkEmail("Pblues@gmai.com"));
-        System.out.println(checkPhoneNumber("3222345454"));
-        System.out.println(checkPhoneNumber("0336677145"));
-        System.out.println(checkPhoneNumber("0336677148"));
-
+        System.out.println(checkPhoneNumber("0336677141"));
     }
 }

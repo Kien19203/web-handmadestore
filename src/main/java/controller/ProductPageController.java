@@ -21,7 +21,17 @@ import java.util.List;
 public class ProductPageController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPost(req, resp);
+        String categoryFilter = req.getParameter("categoryFilter");
+        String isDiscount = req.getParameter("isDiscount");
+        List<Product> products = (isDiscount == null || isDiscount.equals("false")) ?
+                ProductService.getInstance()
+                        .getProductByFilter(categoryFilter, SortOption.SORT_DEFAULT, null, null, 15, 0)
+                : ProductService.getInstance()
+                .getProductByFilter(categoryFilter, SortOption.SORT_DISCOUNT, null, null, 15, 0);
+        req.setAttribute("products", products);
+        req.setAttribute("filterFromHome", categoryFilter);
+        req.setAttribute("isDiscount", isDiscount);
+        req.getRequestDispatcher("views/products/productsPage.jsp?").forward(req, resp);
     }
 
     @Override
