@@ -509,6 +509,7 @@
                             <div class="bg-secondary p-3 rounded">
                                 <h2>Thông tin chi tiết đơn hàng</h2>
                                 <p><strong>Mã đơn hàng:</strong> ${orderDetailsResponse.order.id}</p>
+                                <p><strong>Email tài khoản:</strong> ${orderDetailsResponse.user.email}</p>
                                 <p><strong>Ngày đặt hàng:</strong> ${formattedDate(orderDetailsResponse.order.orderDate)}</p>
                                 <p><strong>Trạng thái:</strong> <p id="status" class="text-center fw-bold fs-5">${asNameStatus(orderDetailsResponse.order.status)}</p></p>
                                 <p><strong>Tên người nhận:</strong> ${orderDetailsResponse.order.consigneeName}</p>

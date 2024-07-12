@@ -20,7 +20,7 @@ import java.util.List;
 public class LoggingService {
     private List<Log> logs;
     private int logIdCounter;
-    private static final String LOG_FILE_PATH = "/logs.json";
+    private static final String LOG_FILE_PATH = "logs.json";
     private final Gson gson;
     private static LoggingService instance;
 
