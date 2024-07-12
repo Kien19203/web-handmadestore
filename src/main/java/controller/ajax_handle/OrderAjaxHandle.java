@@ -72,6 +72,7 @@ public class OrderAjaxHandle extends HttpServlet {
 //            showOrder, cancel Order from customer,
             if (action.equals("showOrder")) {
                 Order o = OrderService.getInstance().getOrderById(orderId);
+                User u = UserService.getInstance().getUserById(o.getUserId() + "");
                 List<OrderDetailMapping> orderDetailMappings = new ArrayList<>();
                 Product product;
                 String image;
@@ -80,7 +81,7 @@ public class OrderAjaxHandle extends HttpServlet {
                     image = ImageService.pathImageOnly(product.getId());
                     orderDetailMappings.add(new OrderDetailMapping(od, product.getName(), image));
                 }
-                OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse(o, orderDetailMappings);
+                OrderDetailsResponse orderDetailsResponse = new OrderDetailsResponse(o, u, orderDetailMappings);
                 Gson gson = new Gson();
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
@@ -97,7 +98,7 @@ public class OrderAjaxHandle extends HttpServlet {
 
                     int cancelOrderNumber = OrderService.getInstance().getCancelOrderNumber(sessionUser.getId());
                     if (cancelOrderNumber >= 3) {
-                        LoggingService.getInstance().log(ELevel.WARNING, EAction.UPDATE, req.getRemoteAddr(), "Tài khoản " + sessionUser.getEmail() + " có dấu hiệu hủy bỏ quá nhiều đơn hàng: Tổng số đơn đã hủy là" + cancelOrderNumber);
+                        LoggingService.getInstance().log(ELevel.WARNING, EAction.UPDATE, req.getRemoteAddr(), "Tài khoản " + sessionUser.getEmail() + " có dấu hiệu hủy bỏ quá nhiều đơn hàng: Tổng số đơn đã hủy là " + cancelOrderNumber);
                     }
 
                     MailService.sendNotifyCanceledOrder(UserService.getInstance().getUserById(order.getUserId() + "").getEmail(), order, cancelReason == null ? "" : cancelReason);
