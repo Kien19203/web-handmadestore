@@ -17,7 +17,7 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <title>Danh sách sản phẩm</title>
-    <link href="<%=request.getContextPath()%>/views/SearchProduct/findProduct.css" rel="stylesheet" type="text/css">
+    <link href="<%=request.getContextPath()%>/views/products/findProduct.css" rel="stylesheet" type="text/css">
     <style>
         .price-range-filter {
             align-items: center;
