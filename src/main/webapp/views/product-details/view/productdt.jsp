@@ -77,12 +77,9 @@
 <body>
 <%--Thanh điều hướng - header--%>
 <%@include file="/views/MenuBar/menu.jsp" %>
-
-
 <!-- Nội dung Product-details-->
 <!-- Thẻ navigation : thanh chuyển hướng -->
 <section class="product-details container">
-
     <nav aria-label="breadcrumb ">
         <ol class="breadcrumb m-0 ">
             <li class="breadcrumb-item"><a
