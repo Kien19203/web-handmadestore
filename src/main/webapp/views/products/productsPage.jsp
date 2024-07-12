@@ -3,6 +3,7 @@
 <%@ page import="model.service.ProductService" %>
 <%@ page import="java.util.List" %>
 <%@ page import="model.dao.SortOption" %>
+<%@ page import="model.dao.ProductDAO" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%String textSearch = (String) request.getAttribute("textSearch");%>
 <%Integer searchResultNumber = (Integer) request.getAttribute("searchResultNumber");%>
@@ -95,6 +96,7 @@
                 <option value="<%=SortOption.SORT_HIGHEST_RATING%>">Xếp hạng cao nhất</option>
                 <option value="<%=SortOption.SORT_PRICE_ASC%>">Giá tăng dần</option>
                 <option value="<%=SortOption.SORT_PRICE_DESC%>">Giá giảm dần</option>
+                <option value="<%=SortOption.SORT_STOCK%>">Bán chạy</option>
             </select>
         </div>
         <div class="row price-filter-group bg-light">
@@ -127,9 +129,9 @@
             </div>
         </div>
     </div>
-    <div class="product_find col-9">
+    <div class="product_find" style="width: 80%">
         <div id="products">
-            <ul id="allProduct" class="products m-2 me-5 ms-3 d-flex flex-wrap">
+            <ul id="allProduct" class="products mt-2 d-flex flex-wrap">
                 <%for (Product pfp : productList) {%>
                 <%String pathImagefp = ImageService.getInstance().pathImageOnly(pfp.getId());%>
                 <li class="product_li">
@@ -137,24 +139,29 @@
                         <a class="image" href="<%=request.getContextPath()%>/product-detail?id=<%=pfp.getId()%>"> <img
                                 src="<%=request.getContextPath()%>/<%=pathImagefp%>"> </a>
                         <a href="<%=request.getContextPath()%>/product-detail?id=<%=pfp.getId()%>"><p
-                                class="pt-2 px-4 fw-bold"><%=pfp.getName() %>
+                                class="pt-2 px-2 fw-bold fst-italic"><%=pfp.getName() %>
                         </p></a>
                         <%!double giaBanSauCung;%>
                         <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(pfp);%>
+
                         <%if (pfp.getCategoryId() >= 0 && giaBanSauCung != pfp.getSellingPrice()) {%>
                         <%! int discountProduct;%>
                         <% discountProduct = ProductService.getInstance().discountProduct(pfp.getId());%>
                         <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>
                             %
                         </div>
-                        <del><p class="mt-2" style="margin-bottom: 0"><%=numberFormat.format(pfp.getSellingPrice())%>
-                        </p></del>
-                        <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%>
-                        </p>
+                        <div>
+                            <del><p style="margin-bottom: 0"><%=numberFormat.format(pfp.getSellingPrice())%>
+                            </p></del>
+                            <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%>
+                            </p>
+                        </div>
                         <%} else {%>
-                        <p class="fw-bold mt-2"
-                           style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%>
-                        </p>
+                        <div>
+                            <p class="fw-bold my-0 text-danger"
+                               style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%>
+                            </p>
+                        </div>
                         <%}%>
                         <div class="add-to-cart">
                             <button onclick="addcart(this,<%=pfp.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i
@@ -163,17 +170,17 @@
                         <div style="position: absolute; bottom: 0; width: 100%">
                             <%
                                 double averageRateStars = ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(pfp.getId()));%>
-                            <%if (averageRateStars > 0) {%>
-                            <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
-                                <span>Đánh Giá:</span>
-                                <span><%=averageRateStars%><i class="fa-solid fa-star"
-                                                              style="color: #FFD43B;font-size: 13px"></i></span>
-                            </div>
-                            <%}%>
-                            <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                            <div style="float: left;width: 50%; padding-bottom: 3%;font-size: 15px">
                                 <span>Đã Bán:</span>
                                 <span><%=pfp.getStock()%></span>
                             </div>
+                            <%if (averageRateStars > 0) {%>
+                            <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
+                                <div><%=averageRateStars%><i class="fa-solid fa-star"
+                                                             style="color: #FFD43B;font-size: 13px"></i></div>
+                            </div>
+                            <%}%>
+
                         </div>
                     </div>
                 </li>
@@ -217,15 +224,25 @@
                 num: num
             },
             success: function (response) {
-                console.log("thanh cong");
-                handleAddToCart(response);
-                Swal.fire({
-                    position: "center",
-                    icon: "success",
-                    title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                if (response != null && response == 'false') {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Vui lòng đăng nhập",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                } else {
+                    handleAddToCart(response);
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
+                }
+
             }
         })
     }
@@ -237,7 +254,7 @@
             let p = '';
             productsHtml +=
                 `
-             <ul id="allProduct" class="products m-2 me-5 ms-3 d-flex flex-wrap">
+             <ul id="allProduct" class="products mt-2 d-flex flex-wrap">
             `
             console.log(response)
             response.forEach(function (r) {
@@ -245,22 +262,25 @@
                 let averageRateStars = '';
                 if (r.averageRateStars > 0) {
                     averageRateStars = `
-                    <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
-                            <span>Đánh Giá:</span>
-                            <span>${r.averageRateStars}<i class="fa-solid fa-star"
-                                                          style="color: #FFD43B;font-size: 13px"></i></span>
+                    <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
+                            <div>${r.averageRateStars}<i class="fa-solid fa-star"
+                                                          style="color: #FFD43B;font-size: 13px"></i></div>
                     </div>
                     `
                 }
                 if (r.sellingPrice != r.finalPrice) {
                     priceHtml = `
-                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
-                        <del ><p class="mt-2" style="margin-bottom: 0">${formattedPrice(r.sellingPrice)}</p></del>
+                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;">${r.percentageOff * 100}%</div>
+                    <div>
+                        <del><p class="" style="margin-bottom: 0">${formattedPrice(r.sellingPrice)}</p></del>
                         <p class="fw-bold text-danger">${formattedPrice(r.finalPrice)}</p>
+                    </div>
                 `
                 } else {
                     priceHtml = `
-                <p class="fw-bold mt-2" style="margin-bottom: 0">${formattedPrice(r.finalPrice)}</p>
+                    <div>
+                        <p class="fw-bold text-danger" style="margin-bottom: 0">${formattedPrice(r.finalPrice)}</p>
+                    </div>
                 `
                 }
                 p += `
@@ -269,7 +289,7 @@
                         <a class="image" href="<%=request.getContextPath()%>/product-detail?id=${r.id}"> <img
                                 src="<%=request.getContextPath()%>/${r.imagePath}"> </a>
                         <a href="<%=request.getContextPath()%>/product-detail?id=${r.id}"><p
-                                class="pt-2 px-4 fw-bold">${r.name}
+                                class="pt-2 px-2 fw-bold fst-italic">${r.name}
                         </p></a>
                         ` + priceHtml + `
                         <div class="add-to-cart">
@@ -278,11 +298,11 @@
                         </div>
 
                         <div style="position: absolute; bottom: 0; width: 100%">
-                            ` + averageRateStars + `
-                          <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                          <div style="float: left;width: 50%; padding-bottom: 3%;font-size: 15px">
                                 <span>Đã Bán:</span>
                                 <span>${r.stock}</span>
                           </div>
+                          ` + averageRateStars + `
                         </div>
                     </div>
                 </li>
@@ -309,22 +329,25 @@
             let averageRateStars = '';
             if (r.averageRateStars > 0) {
                 averageRateStars = `
-                    <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
-                            <span>Đánh Giá:</span>
-                            <span>${r.averageRateStars}<i class="fa-solid fa-star"
-                                                          style="color: #FFD43B;font-size: 13px"></i></span>
+                    <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
+                            <div>${r.averageRateStars}<i class="fa-solid fa-star"
+                                                          style="color: #FFD43B;font-size: 13px"></i></div>
                     </div>
                     `
             }
             if (r.sellingPrice != r.finalPrice) {
                 priceHtml = `
-                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
-                        <del ><p class="mt-2" style="margin-bottom: 0">${formattedPrice(r.sellingPrice)}</p></del>
-                        <p class="fw-bold text-danger">${formattedPrice(r.finalPrice)}</p>
+                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;">${r.percentageOff * 100}%</div>
+                        <div>
+                            <del><p class="" style="margin-bottom: 0">${formattedPrice(r.sellingPrice)}</p></del>
+                            <p class="fw-bold text-danger">${formattedPrice(r.finalPrice)}</p>
+                        </div>
                 `
             } else {
                 priceHtml = `
-                <p class="fw-bold mt-2" style="margin-bottom: 0">${formattedPrice(r.finalPrice)}</p>
+                <div>
+                    <p class="fw-bold text-danger" style="margin-bottom: 0">${formattedPrice(r.finalPrice)}</p>
+                </div>
                 `
             }
             p += `
@@ -333,7 +356,7 @@
                         <a class="image" href="<%=request.getContextPath()%>/product-detail?id=${r.id}"> <img
                                 src="<%=request.getContextPath()%>/${r.imagePath}"> </a>
                         <a href="<%=request.getContextPath()%>/product-detail?id=${r.id}"><p
-                                class="pt-2 px-4 fw-bold">${r.name}
+                                class="pt-2 px-2 fw-bold fst-italic">${r.name}
                         </p></a>
                         ` + priceHtml + `
                         <div class="add-to-cart">
@@ -342,11 +365,11 @@
                         </div>
 
                         <div style="position: absolute; bottom: 0; width: 100%">
-                            ` + averageRateStars + `
-                          <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
+                          <div style="float: left;width: 50%; padding-bottom: 3%;font-size: 15px">
                                 <span>Đã Bán:</span>
                                 <span>${r.stock}</span>
                           </div>
+                           ` + averageRateStars + `
                         </div>
                     </div>
                 </li>

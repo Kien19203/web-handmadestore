@@ -5,6 +5,7 @@ import controller.ajax_handle.ProductResponseForProductsPage;
 import model.bean.Image;
 import model.bean.Product;
 import model.dao.SortOption;
+import model.service.DiscountService;
 import model.service.ImageService;
 import model.service.ProductService;
 
@@ -80,7 +81,8 @@ public class ProductPageController extends HttpServlet {
                         for (Product p : products) {
                             res.add(new ProductResponseForProductsPage(p.getId(), p.getName(), p.getSellingPrice(),
                                     p.getStock(), ProductService.getInstance().productPriceIncludeDiscount(p),
-                                    ImageService.pathImageOnly(p.getId()), ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(p.getId()))));
+                                    ImageService.pathImageOnly(p.getId()), ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(p.getId())),
+                                    DiscountService.getInstance().getPercentageOff(p.getDiscountId())));
                         }
                         Gson gson = new Gson();
                         resp.setContentType("application/json");
@@ -96,7 +98,8 @@ public class ProductPageController extends HttpServlet {
                         for (Product p : products) {
                             res.add(new ProductResponseForProductsPage(p.getId(), p.getName(), p.getSellingPrice(), p.getStock(),
                                     ProductService.getInstance().productPriceIncludeDiscount(p), ImageService.pathImageOnly(p.getId()),
-                                    ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(p.getId()))));
+                                    ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(p.getId())),
+                                    DiscountService.getInstance().getPercentageOff(p.getDiscountId())));
                         }
                         Gson gson = new Gson();
                         resp.setContentType("application/json");

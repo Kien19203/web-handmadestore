@@ -119,30 +119,36 @@
                     <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProductKM%>
                         %
                     </div>
-                    <del><p style="margin-top: 10px"><%=numberFormat.format(prd.getSellingPrice())%>
-                    </p></del>
-                    <p class="text-danger fw-bold"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%>
-                    </p>
+                    <div>
+                        <del><p style="margin-bottom: 0"><%=numberFormat.format(prd.getSellingPrice())%>
+                        </p></del>
+                        <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%>
+                        </p>
+                    </div>
                     <%} else {%>
-                    <p class="fw-bold"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%>
-                    </p>
+                    <div>
+                        <p class="fw-bold my-0 text-danger"
+                           style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%>
+                        </p>
+                    </div>
                     <%}%>
                     <div class="add-to-cart">
                         <button onclick="addCart(this,<%=prd.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i
                                 class="fa-solid fa-cart-shopping"></i></span></button>
                     </div>
                     <div style="position: absolute; bottom: 0; width: 100%">
-                        <%if (ProductDAO.avarageStar(prd.getId()) != 0.0) {%>
-                        <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
-                            <span>Đánh Giá:</span>
-                            <span><%=ProductDAO.avarageStar(prd.getId())%><i class="fa-solid fa-star"
-                                                                             style="color: #FFD43B;font-size: 13px"></i></span>
+                        <%
+                            double averageRateStars = ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(prd.getId()));%>
+                        <div style="float: left;width: 50%; padding-bottom: 3%;font-size: 15px">
+                            <span>Đã Bán:</span>
+                            <span><%=prd.getStock()%></span>
+                        </div>
+                        <%if (averageRateStars > 0) {%>
+                        <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
+                            <div><%=averageRateStars%><i class="fa-solid fa-star"
+                                                         style="color: #FFD43B;font-size: 13px"></i></div>
                         </div>
                         <%}%>
-                        <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
-                            <span>Đã Bán:</span>
-                            <span><%=ProductDAO.sellProduct(prd.getId())%></span>
-                        </div>
 
                     </div>
                 </div>
@@ -185,30 +191,38 @@
                         <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>
                             %
                         </div>
-                        <del><p class="mt-2"><%=numberFormat.format(pr.getSellingPrice())%>
-                        </p></del>
-                        <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%>
-                        </p>
+                        <div>
+                            <div>
+                                <del><p style="margin-bottom: 0"><%=numberFormat.format(pr.getSellingPrice())%>
+                                </p></del>
+                                <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%>
+                                </p>
+                            </div>
+                        </div>
                         <%} else {%>
-                        <p class="fw-bold mt-2 text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%>
-                        </p>
+                        <div>
+                            <p class="fw-bold my-0 text-danger"
+                               style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pr))%>
+                            </p>
+                        </div>
                         <%}%>
                         <div class="add-to-cart">
                             <button onclick="addCart(this,<%=pr.getId()%>)"><span class="fw-bold" git>Thêm vào giỏ <i
                                     class="fa-solid fa-cart-shopping"></i></span></button>
                         </div>
                         <div style="position: absolute; bottom: 0; width: 100%">
-                            <%if (ProductDAO.avarageStar(pr.getId()) != 0.0) {%>
-                            <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 15px">
-                                <span>Đánh Giá:</span>
-                                <span><%=ProductDAO.avarageStar(pr.getId())%><i class="fa-solid fa-star"
-                                                                                style="color: #FFD43B;font-size: 13px"></i></span>
+                            <%
+                                double averageRateStars = ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(pr.getId()));%>
+                            <div style="float: left;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span><%=pr.getStock()%></span>
+                            </div>
+                            <%if (averageRateStars > 0) {%>
+                            <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
+                                <div><%=averageRateStars%><i class="fa-solid fa-star"
+                                                             style="color: #FFD43B;font-size: 13px"></i></div>
                             </div>
                             <%}%>
-                            <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 15px">
-                                <span>Đã Bán:</span>
-                                <span><%=ProductDAO.sellProduct(pr.getId())%></span>
-                            </div>
 
                         </div>
                     </div>

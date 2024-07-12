@@ -11,7 +11,9 @@ public class ProductResponseForProductsPage {
     private String imagePath;
     private double averageRateStars;
 
-    public ProductResponseForProductsPage(int id, String name, int sellingPrice, int stock, double finalPrice, String imagePath, double averageRateStars) {
+    private double percentageOff;
+
+    public ProductResponseForProductsPage(int id, String name, int sellingPrice, int stock, double finalPrice, String imagePath, double averageRateStars, double percentageOff) {
         this.id = id;
         this.name = name;
         this.sellingPrice = sellingPrice;
@@ -19,5 +21,6 @@ public class ProductResponseForProductsPage {
         this.finalPrice = finalPrice;
         this.imagePath = imagePath;
         this.averageRateStars = averageRateStars;
+        this.percentageOff = percentageOff;
     }
 }
