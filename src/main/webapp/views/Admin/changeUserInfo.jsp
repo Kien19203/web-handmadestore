@@ -78,7 +78,7 @@
             transform: translate(-50%, -50%);
             overflow: auto;
             z-index: 9999;
-            background-color: #2c3e50; /* Adjust the background color as needed */
+            background-color: #e0eaf4; /* Adjust the background color as needed */
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
@@ -221,7 +221,7 @@
             </button>
         </div>
         <div>
-            <table id="data" class="table table-light table-hover gfg">
+            <table id="data" class="table table-light gfg">
                 <thead>
                 <tr class="text-center sticky-top">
                     <th class="text-nowrap">Sản phẩm</th>
@@ -239,11 +239,11 @@
                             showCouter += 1;
                             User customer = UserService.getInstance().getUserById(o.getUserId() + "");
                 %>
-                <tr class="text-center" style=" cursor: pointer;"
+                <tr class="text-center" style=" cursor: pointer"
                     onclick="showOrderDetails(event,this)"
                     id="<%=o.getId()%>"
                 >
-                    <td class="geeks">
+                    <td class="geeks" style="border: 1px solid #c9c9c9;">
                         <%!Product p;%>
                         <%
                             for (OrderDetail orderDetail : OrderService.getInstance().getOrderDetailsByOrderId(o.getId()
@@ -261,11 +261,11 @@
                         </div>
                         <%}%>
                     </td>
-                    <td class="geeks text-start"><%=o.getAddress()%>
+                    <td class="geeks " style="border-top: 1px solid #c9c9c9;border-bottom: 1px solid #c9c9c9; vertical-align: middle"><%=o.getAddress()%>
                     </td>
-                    <td class="geeks"><%=o.getOrderDate()%>
+                    <td class="geeks" style="border-top: 1px solid #c9c9c9;border-bottom: 1px solid #c9c9c9; vertical-align: middle;"><%=o.getOrderDate()%>
                     </td>
-                    <td class="geeks"><%=numberFormat.format(o.getTotalPrice())%>
+                    <td class="geeks" style="border-top: 1px solid #c9c9c9;border-bottom: 1px solid #c9c9c9; vertical-align: middle;"><%=numberFormat.format(o.getTotalPrice())%>
                     </td>
                     <td class="geeks"
                             <%!
@@ -289,7 +289,7 @@
                                     backgroundColor = "#4d8a54";
                                     sttvalue = "Thành công";
                                 }%>
-                        style="background-color: <%=backgroundColor%>; color: #ffffff"
+                        style="background-color: <%=backgroundColor%>; color: #ffffff;vertical-align: middle;"
                     ><%=sttvalue%>
                     </td>
                 </tr>
@@ -443,7 +443,7 @@
                 if (orderDetailsResponse.order.status == 0 || orderDetailsResponse.order.status == 1) {
                     showCancelBox = `
                         <div>
-                            <span class="text-decoration-underline text-warning" style="cursor: pointer"
+                            <span class="text-decoration-underline text-danger" style="cursor: pointer"
                              id = "btnShowCancelOrder"
                              onclick="showCancelOrder(${orderDetailsResponse.order.id}, ${rowIndex})">Hủy đơn hàng</button>
                         </div>
@@ -457,11 +457,11 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h3>Chi tiết sản phẩm</h3>
-                            <div class="row" id="product-details">
+                            <div class="row" id="product-details" style="height: 400px;overflow-y: scroll;">
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="bg-secondary p-3 rounded">
+                            <div class="p-3 rounded">
                                 <h2>Thông tin chi tiết đơn hàng</h2>
                                 <p><strong>Mã đơn hàng:</strong> ${orderDetailsResponse.order.id}</p>
                                 <p><strong>Ngày đặt hàng:</strong> ${formattedDate(orderDetailsResponse.order.orderDate)}</p>
@@ -489,10 +489,10 @@
                                     <img src="<%=request.getContextPath()+"/"%>${orderDetailMapping.imagePath}" class="col-4" width="100px" alt="Product Image">
                                     <div class="col">
                                         <h5 class="card-title">${orderDetailMapping.productName}</h5>
-                                        <p class="card-text">Đơn giá: ${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice)}</p>
-                                        <p class="card-text">X ${orderDetailMapping.orderDetail.quantity}</p>
-                                        <p class="card-text fw-bold">${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice * orderDetailMapping.orderDetail.quantity)}</p>
-                                        <a href="<%=request.getContextPath()%>/product-detail?id=${orderDetailMapping.orderDetail.productId}">Xem, Đánh giá trực tiếp sản phẩm</a>
+                                        <p class="card-text" style="margin-bottom:0;">Đơn giá: ${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice)}</p>
+                                        <p class="card-text" style="margin-bottom:0;">X ${orderDetailMapping.orderDetail.quantity}</p>
+                                        <p class="card-text fw-bold text-danger" style="margin-bottom:0;">${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice * orderDetailMapping.orderDetail.quantity)}</p>
+                                        <a href="<%=request.getContextPath()%>/product-detail?id=${orderDetailMapping.orderDetail.productId}" style="text-decoration: none;">Xem, Đánh giá trực tiếp sản phẩm</a>
                                     </div>
                                 </div>
                             </div>
@@ -501,7 +501,7 @@
                 });
 
                 // Hiển thị thông tin chi tiết đơn hàng
-                $('#detailOrder').addClass('row w-75 h-75 bg-secondary p-3 rounded');
+                $('#detailOrder').addClass('row w-75 h-75 p-3 rounded');
                 $('#detailOrder').css('display', 'block');
                 $('#detailOrder').html(htmlContent);
                 // Hiển thị danh sách sản phẩm
@@ -648,11 +648,11 @@
             }
             const orderHtml = `
         <tr class="text-center" style="cursor: pointer;" onclick="showOrderDetails(event, this)" id="${order.id}">
-            <td class="geeks">${firstCol}</td>
-            <td class="geeks text-start">${order.address}</td>
-            <td class="geeks">${formattedDate(order.orderDate)}</td>
-            <td class="geeks">${formattedPrice(order.totalPrice)}</td>
-            <td class="geeks" style="background-color: ${backgroundColor}; color: #ffffff">${statusText}</td>
+            <td class="geeks" style="border-top: 1px solid #c9c9c9;border-bottom: 1px solid #c9c9c9; vertical-align: middle">${firstCol}</td>
+            <td class="geeks " style="border-top: 1px solid #c9c9c9;border-bottom: 1px solid #c9c9c9; vertical-align: middle" >${order.address}</td>
+            <td class="geeks" style="border-top: 1px solid #c9c9c9;border-bottom: 1px solid #c9c9c9; vertical-align: middle">${formattedDate(order.orderDate)}</td>
+            <td class="geeks" style="border-top: 1px solid #c9c9c9;border-bottom: 1px solid #c9c9c9; vertical-align: middle">${formattedPrice(order.totalPrice)}</td>
+            <td class="geeks" style="background-color: ${backgroundColor}; color: #ffffff;vertical-align: middle">${statusText}</td>
         </tr>
         `;
 
