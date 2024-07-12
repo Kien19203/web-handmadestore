@@ -27,21 +27,6 @@
 
 
 }
-
-/*Hình ảnh trang web */
-.menu .logo img {
-    width: 30px;
-    height: 30px;
-    object-fit: cover;
-
-
-}
-
-
-
-
-
-
 .menu .branch-name .branch-title {
 font-family: 'Alumni Sans Inline One', sans-serif;
     font-size: 30px;

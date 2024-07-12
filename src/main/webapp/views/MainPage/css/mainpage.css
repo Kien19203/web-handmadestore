@@ -218,7 +218,7 @@ li {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 3em;
+    height: 4em;
 }
 
 .products .product_list .item_product a.image {
@@ -270,7 +270,7 @@ li {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 50px;
+    bottom: 32px;
 }
 .product_list {
     width: 25%;
