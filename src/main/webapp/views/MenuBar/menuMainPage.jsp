@@ -391,7 +391,7 @@
     <ul class="d-flex m-0 justify-content-around">
         <li class="logo my-auto">
             <a class="item_a" href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp"> <img
-                    src="<%=request.getContextPath()%>/images/logo.png" style="width: 18vh"></a>
+                    src="<%=request.getContextPath()%>/images/logo.png" style="width: 15vh"></a>
         </li>
 <%--        --%>
         <li class="nav-item dropdown itemNav my-auto" id="ProductList">
