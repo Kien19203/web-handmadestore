@@ -137,12 +137,20 @@
 
                                     </div>
 
-                                        <div class="form-floating  mb-3 my-2 p-2 align-content-start">
-                                            <select  id="provinceDropdown"
+                                        <div class="form-floating ">
+                                            <select  id="provinceDropdown" class="form-select"
                                                     aria-label="Chọn tỉnh thành">
                                                 <option value="">Chọn tỉnh thành</option>
                                             </select>
                                             <label for="provinceDropdown">Tỉnh thành</label>
+                                        </div>
+
+                                        <div class="form-floating ">
+                                            <select  id="districtDropdown" class="form-select"
+                                                     aria-label="Chọn huyện">
+                                                <option value="">Chọn quận, huyện</option>
+                                            </select>
+                                            <label for="districtDropdown">Quận, Huyện</label>
                                         </div>
 
                                     <div class="form-floating mb-3">
@@ -346,6 +354,44 @@
 
 //      LẤY TỈNH THÀNH.
     $(document).ready(function (){
+        function fetchDistricts(provinceId) {
+            $.ajax({
+                type: "GET",
+                url: "/HandMadeStore/district-api",
+                data: {
+                    provinceId : provinceId
+                },
+                dataType : "json",
+                success: function (response) {
+                    console.log(response);
+                    $("#districtDropdown").empty();
+
+                    var districtDropdown = $("#districtDropdown");
+                    response.forEach(function (district){
+                        var option = $("<option>").val(district.districtId).text(district.districtName);
+                        districtDropdown.append(option);
+                        }
+                    );
+
+                }, error: function (xhr, status, error) {
+                    alert("Không lấy đươợc danh sách quận, huyện.");
+                }
+            })
+
+        }
+
+        // Sự kiện select province cho district
+        $("#provinceDropdown").change(function () {
+            var selectedProvinceId = $(this).val(); // lay id province duoc chon
+            if(selectedProvinceId) {
+                fetchDistricts(selectedProvinceId);
+            }else {
+                $("#districtDropdown").empty();
+            }
+        })
+
+
+
         $.ajax({
             type: "GET",
             url : "/HandMadeStore/province-api",
@@ -357,13 +403,7 @@
                 });
             },
             error: function (xhr, status, error) {
-                console.log("Lỗi gửi yêu cầu AJAX: " + error);
-                Swal.fire({
-                    title: 'Thông báo',
-                    text: 'Đã xảy ra lỗi khi tải danh sách tỉnh thành. Vui lòng thử lại sau.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+                alert("Lỗi tải dữ liệu tỉnh, thành " + error)
             }
 
 
