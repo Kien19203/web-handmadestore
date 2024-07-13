@@ -664,10 +664,7 @@ public class ProductDAO {
                         .mapTo(Integer.class).one());
     }
 
-    public static void main(String[] args) {
-        List<Product> products = getProductBySearchFilter("Thiệp", SortOption.SORT_PRICE_ASC, null, 1620000.0, 15, 0);
-        products.forEach((p) -> System.out.println(p.getName()));
-    }
+
 
 
     public static long getNumberAvailProduct() {
@@ -850,8 +847,15 @@ public class ProductDAO {
         );
         return orders;
     }
-
      */
+    //Lấy stock
+    public static int StockProduct(int idProduct){
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("SELECT stock FROM product WHERE id= :idProduct")
+                        .bind("idProduct",idProduct)
+                        .mapTo(Integer.class)
+                        .one());
+    }
     public static List<Product> getAllProducts(int limit, int offset) {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from `product` where isSale=1 LIMIT ? OFFSET ?")
@@ -860,6 +864,12 @@ public class ProductDAO {
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
+    }
+
+    public static void main(String[] args) {
+//        List<Product> products = getProductBySearchFilter("Thiệp", SortOption.SORT_PRICE_ASC, null, 1620000.0, 15, 0);
+//        products.forEach((p) -> System.out.println(p.getName()));
+        System.out.println(StockProduct(1));
     }
 }
 

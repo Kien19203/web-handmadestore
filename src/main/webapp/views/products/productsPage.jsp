@@ -232,6 +232,14 @@
                         showConfirmButton: false,
                         timer: 1500
                     });
+                }else if(response != null && response == 'NoPost'){
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Sản Phẩm Không Đủ Số Lượng!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 } else {
                     handleAddToCart(response);
                     Swal.fire({
