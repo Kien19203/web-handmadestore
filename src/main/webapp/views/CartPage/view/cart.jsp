@@ -146,7 +146,6 @@
 </nav>
 <div>
     <%if (!messages.isEmpty()) { %>
-            <div id="overlay"> </div>
     <div id="inform" class="d-flex justify-content-center flex-column align-items-center p-3">
         <h2>Kính gửi quý khách hàng,</h2>
     <span>Chúng tôi xin trân trọng thông báo rằng sau khi kiểm tra, có một số sản phẩm trong giỏ hàng của Quý khách hiện không đủ số lượng trong kho. Cụ thể là:

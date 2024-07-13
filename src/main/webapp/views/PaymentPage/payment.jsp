@@ -21,6 +21,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Inline+One&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.2/axios.min.js" integrity="sha512-JSCFHhKDilTRRXe9ak/FJ28dcpOJxzQaCd3Xg8MyF6XFjODhy/YMCM8HW0TFDckNHWUewW+kfvhin43hKtJxAw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <style>
+
+        <%@include file="../PaymentPage/css/paymentpage.css"%>
+
+    </style>
 </head>
 
 <body>
@@ -51,14 +58,20 @@
     <form action="<%=request.getContextPath()%>/payment" method="get">
         <div class="row">
             <div class="col-lg-8 col-sm-12 p-0">
-                <div class="h1 border-bottom alert ps-0" style="height: 12%">
+                <div class="h1 border-bottom alert ps-0 m-0 " style="height: 12%">
                     <a href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp"
                        class="text-decoration-none mx-3" style="color: #f4c994"><img
                             src="<%=request.getContextPath()+"/"+ImageService.getLogoImagePath()%>" width="8%">HEADQUARTERS</a>
                 </div>
 
-                <div class="d-flex mx-5 pb-5">
-                    <div class="col-lg-7 col-sm-6 me-3">
+
+                <div id="inform" class="p-3 d-flex justify-content-center align-items-center flex-column">
+                    <h3>Thời gian đặt hàng của quý khách còn : </h3>
+                    <p id="count-down"></p>
+                </div>
+
+                <div class="d-flex mx-5 py-3">
+                    <div class="col-lg-7 col-sm-6 me-5">
                         <div class="h6 text-black fw-bold text-center">
                             Thông tin nhận hàng
                         </div>
@@ -123,6 +136,14 @@
                                         <% } %>
 
                                     </div>
+
+                                        <div class="form-floating  mb-3 my-2 p-2 align-content-start">
+                                            <select  id="provinceDropdown"
+                                                    aria-label="Chọn tỉnh thành">
+                                                <option value="">Chọn tỉnh thành</option>
+                                            </select>
+                                            <label for="provinceDropdown">Tỉnh thành</label>
+                                        </div>
 
                                     <div class="form-floating mb-3">
                                     <textarea id="note" name="notePay" class="form-control"
@@ -298,15 +319,75 @@
             </div>
         </div>
     </form>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+
+
+    const startingMinutes = 5;
+    let time = startingMinutes * 60;
+    console.log('hello');
+    const countDownEl = document.getElementById('count-down');
+
+    setInterval(updateCountDown, 1000);
+    function updateCountDown() {
+        const minutes = Math.floor(time/60);
+        let seconds = time%60;
+        seconds = seconds <  10 ? '0' + seconds : seconds;
+        console.log(seconds);
+
+        countDownEl.innerHTML = ` ${minutes} : ${seconds}`
+
+
+        time--;
+
+
+    }
+
+//      LẤY TỈNH THÀNH.
+    $(document).ready(function (){
+        $.ajax({
+            type: "GET",
+            url : "/HandMadeStore/province-api",
+            success: function (response) {
+                var provinceDropDown = $("#provinceDropdown");
+                response.forEach(function (province) {
+                    var option = $("<option>").val(province.provinceId).text(province.provinceName);
+                    provinceDropDown.append(option);
+                });
+            },
+            error: function (xhr, status, error) {
+                console.log("Lỗi gửi yêu cầu AJAX: " + error);
+                Swal.fire({
+                    title: 'Thông báo',
+                    text: 'Đã xảy ra lỗi khi tải danh sách tỉnh thành. Vui lòng thử lại sau.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                });
+            }
+
+
+
+        })
+
+
+
+
+    })
+
+
+
+
+
+</script>
+
     <script src="../PaymentPage/js/paymentpage.js"></script>
     <!--Bộ select tỉnh thành-->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"
             integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.26.1/axios.min.js"
-            integrity="sha512-bPh3uwgU5qEMipS/VOmRqynnMXGGSRv+72H/N260MQeXZIK4PG48401Bsby9Nq5P5fz7hy5UGNmC/W1Z51h2GQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="../PaymentPage/js/provinces-api.js"></script>
+
+
     </body>
     </html>
 

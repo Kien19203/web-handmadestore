@@ -87,7 +87,7 @@ public class PayMentController extends HttpServlet {
 
         }
 
-//        NEW SESSION
+//        NEW SESSION cho viec thanhtoan.
         HttpSession paymentSession = req.getSession(true);
         paymentSession.setAttribute("paymentStartTime", System.currentTimeMillis());
 
