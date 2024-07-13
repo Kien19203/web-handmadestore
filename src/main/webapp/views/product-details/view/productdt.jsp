@@ -518,10 +518,28 @@
                     num: quantityInput.value
                 },
                 success: function (response) {
-                    if (!idProductList.includes(<%=product.getId()%>)) {
+                    console.log(response);
+                    if (response != null && response == 'false') {
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Vui lòng đăng nhập",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        return;
+                    }else if(response != null && response == 'NoPost'){
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Sản Phẩm Đã Hết Sau Khi Bạn Thêm Vào Giỏ Hàng!",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        return;
+                    } else if (!idProductList.includes(<%=product.getId()%>)) {
                         idProductList.push(<%=product.getId()%>);
                         handleAddToCart(response);
-
                     }
                     Swal.fire({
                         position: "center",

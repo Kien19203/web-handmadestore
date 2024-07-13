@@ -321,6 +321,14 @@
                         showConfirmButton: false,
                         timer: 1500
                     });
+                }else if(response != null && response == 'NoPost'){
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Sản Phẩm Đã Hết Sau Khi Bạn Thêm Vào Giỏ Hàng!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
                 } else {
                     if (!idProduct.includes(id)) {
                         idProduct.push(id);

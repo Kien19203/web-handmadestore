@@ -1,7 +1,9 @@
 package controller;
 
 import model.bean.Cart;
+import model.bean.Item;
 import model.bean.User;
+import model.dao.ProductDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -55,6 +57,14 @@ public class AddCartController2 extends HttpServlet {
                 case "post":
                     int id = Integer.parseInt(req.getParameter("id")); // lay id product
                     int num = Integer.parseInt(req.getParameter("num"));
+                    for (Item item: cart.getItems().values()){
+                        if(item.getProduct().getId() == id){
+                            if(ProductDAO.StockProduct(id) - item.getQuantity() <= 0){
+                                resp.getWriter().write("NoPost");
+                                return;
+                            }
+                        }
+                    }
                     cart.add(id, num);
                     sessions.setAttribute("cart", cart);
                     break;
