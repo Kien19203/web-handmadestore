@@ -54,7 +54,7 @@
                         >Lưu thay đổi
                         </button>
                         <%--                        delete--%>
-                        <%if (!CategoryService.getInstance().checkNoUsedCategoryById(category.getId() + "")) {%>
+                        <%if (CategoryService.getInstance().checkNoUsedCategoryById(category.getId())) {%>
                         <a href="<%=request.getContextPath()%>/admin/category?deleteCategoryId=<%=category.getId()%>">
                             <div class="btn btn-outline-danger ms-2" type="button">Xóa
                             </div>

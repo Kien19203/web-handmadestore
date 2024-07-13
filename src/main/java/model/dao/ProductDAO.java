@@ -16,7 +16,12 @@ public class ProductDAO {
     //Tất cả các sản phẩm
     public static List<Product> getAll() {
         List<Product> product = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product WHERE isSale = 1")
+                handle.createQuery("SELECT p.* " +
+                                "FROM product p " +
+                                "LEFT JOIN inventory i ON p.id = i.productId " +
+                                "LEFT JOIN discount d ON p.discountId = d.id " +
+                                "WHERE p.isSale = 1 " +
+                                "ORDER BY i.createDate DESC, d.percentageOff DESC")
                         .mapToBean(Product.class)
                         .stream()
                         .toList()
@@ -26,7 +31,11 @@ public class ProductDAO {
 
     public static List<Product> getAllProducts() {
         List<Product> product = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product")
+                handle.createQuery("SELECT p.* " +
+                                "FROM product p " +
+                                "LEFT JOIN inventory i ON p.id = i.productId " +
+                                "LEFT JOIN discount d ON p.discountId = d.id " +
+                                "ORDER BY i.createDate DESC, d.percentageOff DESC")
                         .mapToBean(Product.class)
                         .stream()
                         .toList()
@@ -88,7 +97,7 @@ public class ProductDAO {
 
     public static List<Product> findByCategory(int categoryID) {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product where categoryId = :id AND isSale = 1")
+                handle.createQuery("select * from product where categoryId = :id")
                         .bind("id", categoryID)
                         .mapToBean(Product.class)
                         .stream()
@@ -281,7 +290,11 @@ public class ProductDAO {
 
     public static List<Product> discountProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT  product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP AND  isSale = 1 LIMIT 5")
+                handle.createQuery("SELECT  product.* FROM product " +
+                                "INNER JOIN discount ON product.discountId = discount.id " +
+                                "WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP AND  isSale = 1 " +
+                                "ORDER BY discount.percentageOff DESC " +
+                                "LIMIT 5 ")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -525,10 +538,13 @@ public class ProductDAO {
                         " LIMIT ? OFFSET ?";
                 break;
             default:
-                sql = "SELECT * FROM product p WHERE "
-                        + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
-                        " isSale = 1 "
+                sql = "SELECT p.* FROM product p " +
+                        "LEFT JOIN inventory i ON p.id = i.productId " +
+                        " WHERE "
+                        + (categoryQuery.isEmpty() ? "" : "p." + categoryQuery + " AND ") +
+                        " p.isSale = 1 "
                         + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        " ORDER BY i.createDate DESC " +
                         " LIMIT ? OFFSET ?";
                 break;
         }
@@ -622,10 +638,12 @@ public class ProductDAO {
                         " LIMIT ? OFFSET ?";
                 break;
             default:
-                sql = "SELECT * FROM product p WHERE "
+                sql = "SELECT p.* FROM product p " +
+                        "LEFT JOIN inventory i ON p.id = i.productId WHERE "
                         + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
-                        " isSale = 1 "
+                        " p.isSale = 1 "
                         + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        " ORDER BY i.createDate DESC " +
                         " LIMIT ? OFFSET ?";
                 break;
         }

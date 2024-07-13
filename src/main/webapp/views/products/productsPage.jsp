@@ -71,7 +71,7 @@
         <div class="row">
             <select id="categoryFilter" class="form-select" aria-label="Default select example" onchange="filter()">
                 <option selected value="all">Tất cả sản phẩm</option>
-                <%for (Category c : CategoryService.getInstance().getALl()) {%>
+                <%for (Category c : CategoryService.getInstance().getAllCategoriesWithNoProductsOnSale()) {%>
                 <option value="<%=c.getId()%>"
                         <%if (filterFromHome != null && filterFromHome.equals(c.getId() + "")) {%>
                         selected
