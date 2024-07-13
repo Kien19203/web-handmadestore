@@ -137,7 +137,7 @@
 
                                     </div>
 
-                                        <div class="form-floating ">
+                                        <div class="form-floating mb-3">
                                             <select  id="provinceDropdown" class="form-select"
                                                     aria-label="Chọn tỉnh thành">
                                                 <option value="">Chọn tỉnh thành</option>
@@ -145,12 +145,28 @@
                                             <label for="provinceDropdown">Tỉnh thành</label>
                                         </div>
 
-                                        <div class="form-floating ">
+                                        <div class="form-floating mb-3">
                                             <select  id="districtDropdown" class="form-select"
                                                      aria-label="Chọn huyện">
                                                 <option value="">Chọn quận, huyện</option>
                                             </select>
                                             <label for="districtDropdown">Quận, Huyện</label>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <select  id="wardDropdown" class="form-select"
+                                                     aria-label="Chọn xã, thị trấn">
+                                                <option value="">Chọn xã, thị trấn</option>
+                                            </select>
+                                            <label for="wardDropdown">Xã, Thị Trấn</label>
+                                        </div>
+
+                                        <div class="form-floating mb-3">
+                                            <select  id="serviceDropdown" class="form-select"
+                                                     aria-label="Chọn dịch vụ vận chuyển">
+                                                <option value="">Chọn dịch vụ</option>
+                                            </select>
+                                            <label for="serviceDropdown">Dịch vụ vận chuyên</label>
                                         </div>
 
                                     <div class="form-floating mb-3">
@@ -354,6 +370,65 @@
 
 //      LẤY TỈNH THÀNH.
     $(document).ready(function (){
+
+        // dich vu van chuyen
+
+        function fetchService(districtId) {
+            $.ajax({
+                type: "GET",
+                url: "/HandMadeStore/service-api",
+                data: {
+                    districtId : districtId
+                },
+                dataType : "json",
+                success: function (response) {
+                    console.log(response);
+                    $("#serviceDropdown").empty();
+
+                    var serviceDropdown = $("#serviceDropdown");
+                    response.forEach(function (service){
+                            var option = $("<option>").val(service.serviceId).text(service.serviceName);
+                        serviceDropdown.append(option);
+                        }
+                    );
+
+                }, error: function (xhr, status, error) {
+                    alert("Không lấy đươợc dịch vụ vận chuyển.");
+                }
+            })
+
+        }
+
+
+        //lấy xã, thị trấn.
+        function fetchWards(districtId) {
+            $.ajax({
+                type: "GET",
+                url: "/HandMadeStore/ward-api",
+                data: {
+                    districtId : districtId
+                },
+                dataType : "json",
+                success: function (response) {
+                    console.log(response);
+                    $("#wardDropdown").empty();
+
+                    var wardDropdown = $("#wardDropdown");
+                    response.forEach(function (ward){
+                            var option = $("<option>").val(ward.wardId).text(ward.wardName);
+                            wardDropdown.append(option);
+                        }
+                    );
+
+                }, error: function (xhr, status, error) {
+                    alert("Không lấy đươợc danh sách xã, thị trấn.");
+                }
+            })
+
+        }
+
+
+        // Lấy quận huyện.
         function fetchDistricts(provinceId) {
             $.ajax({
                 type: "GET",
@@ -365,6 +440,7 @@
                 success: function (response) {
                     console.log(response);
                     $("#districtDropdown").empty();
+                    $("#wardDropdown").empty();
 
                     var districtDropdown = $("#districtDropdown");
                     response.forEach(function (district){
@@ -387,6 +463,26 @@
                 fetchDistricts(selectedProvinceId);
             }else {
                 $("#districtDropdown").empty();
+            }
+        })
+
+        // Sự kiện select district cho ward
+        $("#districtDropdown").change(function () {
+            var selectedDistrictId = $(this).val(); // lay id district duoc chon
+            if(selectedDistrictId) {
+                fetchWards(selectedDistrictId);
+            }else {
+                $("#wardDropdown").empty();
+            }
+        })
+
+        // Sự kiện select district cho service
+        $("#districtDropdown").change(function () {
+            var selectedDistrictId = $(this).val(); // lay id district duoc chon
+            if(selectedDistrictId) {
+                fetchService(selectedDistrictId);
+            }else {
+                $("#serviceDropdown").empty();
             }
         })
 
