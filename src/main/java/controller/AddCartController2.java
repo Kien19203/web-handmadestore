@@ -59,7 +59,7 @@ public class AddCartController2 extends HttpServlet {
                     int num = Integer.parseInt(req.getParameter("num"));
                     for (Item item: cart.getItems().values()){
                         if(item.getProduct().getId() == id){
-                            if(ProductDAO.StockProduct(id) - item.getQuantity() <= 0){
+                            if(ProductDAO.StockProduct(id) - item.getQuantity() - num < 0){
                                 resp.getWriter().write("NoPost");
                                 return;
                             }

@@ -236,7 +236,7 @@
                     Swal.fire({
                         position: "center",
                         icon: "error",
-                        title: "Sản Phẩm Đã Hết Sau Khi Bạn Thêm Vào Giỏ Hàng!",
+                        title: "Sản Phẩm Không Đủ Số Lượng!",
                         showConfirmButton: false,
                         timer: 1500
                     });
