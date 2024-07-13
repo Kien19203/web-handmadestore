@@ -29,7 +29,6 @@
 <%User user = (User) session.getAttribute("auth");%>
 
 <%
-
     Cart cart = (Cart) session.getAttribute("cart");
     if (cart == null) cart = new Cart();
     Locale locale = new Locale("vi", "VN");

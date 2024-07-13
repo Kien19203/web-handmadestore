@@ -26,12 +26,6 @@ public class AddCartController extends HttpServlet {
             cart= new Cart();
         }
 
-
-
-
-
-
-
         sessions.setAttribute("cart", cart);
 
         doPost(req, resp);

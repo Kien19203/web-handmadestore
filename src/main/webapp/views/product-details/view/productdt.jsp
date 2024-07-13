@@ -546,7 +546,6 @@
                         if(!idProductList.includes(<%=product.getId()%>)) {
                             idProductList.push(<%=product.getId()%>);
                             handleAddToCart(response);
-
                         }
                             Swal.fire({
                                 position: "center",

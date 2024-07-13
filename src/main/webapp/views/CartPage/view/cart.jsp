@@ -160,18 +160,7 @@
         <span>Chúng tôi rất xin lỗi về sự bất tiện này và cam kết sẽ nhanh chóng khắc phục tình trạng hàng hoá để mang đến dịch vụ tốt nhất cho Quý khách. </span>
     </div>
 
-
-
-
-
-
-
-
-
-
     <%}%>
-
-
 </div>
 
 
@@ -285,8 +274,8 @@
                         <%if(total > 0) {%>
 
                      <%if(u != null){%>
-                        <button type="button" class="complete_bt me-5"
-                                onclick="window.location = '../../PaymentPage/payment.jsp'">Thanh Toán
+                        <button type="button" id="btn-payment" class="complete_bt me-5"
+                                >Thanh Toán
                         </button>
                         <%}else{%>
                         <button type="button" class="complete_bt me-5"
@@ -472,6 +461,54 @@ function tangSL(btn,idProduct,priceProduct,stockProduct){
     }
 }
 
+
+// Validate trước khi vào trang thanh toán.
+$(document).ready(function () {
+    $("#btn-payment").click(function () {
+        $.ajax({
+            type:"GET",
+            url: "/HandMadeStore/payment",
+            success: function (response) {
+
+
+                if(response.isValid) {
+
+                    window.location.href = "../../PaymentPage/payment.jsp"
+
+                }
+                else {
+                    var errorMessageHtml = '<ul>';
+                    response.forEach(function(message) {
+                        errorMessageHtml += '<li>' + message + '</li>';
+                    });
+                    errorMessageHtml += '</ul>';
+
+                    Swal.fire({
+                        title: 'Thông báo',
+                        html:  errorMessageHtml,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Chấp nhận',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Xử lý khi người dùng ấn "Xác nhận"
+                            location.reload()
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            // Xử lý khi người dùng ấn "Quay lại" hoặc click bên ngoài hộp thoại
+                            console.log('Người dùng đã quay lại');
+                        }
+                    });
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.log("Loi khi gui yeu cau ajax"+ error);
+            }
+        })
+    })
+    }
+
+)
 
 </script>
 </body>
