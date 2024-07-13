@@ -516,6 +516,14 @@ public class ProductDAO {
                         "ORDER BY d.percentageOff DESC " +
                         "LIMIT ? OFFSET ?";
                 break;
+            case SortOption.SORT_STOCK:
+                sql = "SELECT * FROM product p WHERE "
+                        + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
+                        " isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY p.stock DESC " +
+                        " LIMIT ? OFFSET ?";
+                break;
             default:
                 sql = "SELECT * FROM product p WHERE "
                         + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
@@ -604,6 +612,14 @@ public class ProductDAO {
                         + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
                         "ORDER BY d.percentageOff DESC " +
                         "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_STOCK:
+                sql = "SELECT * FROM product p WHERE "
+                        + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
+                        " isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY p.stock DESC " +
+                        " LIMIT ? OFFSET ?";
                 break;
             default:
                 sql = "SELECT * FROM product p WHERE "

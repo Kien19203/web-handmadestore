@@ -34,4 +34,7 @@ public class DiscountService {
         DiscountDAO.deleteDiscountById(id);
     }
 
+    public double getPercentageOff(int id) {
+        return DiscountDAO.getPercentageOff(id);
+    }
 }

@@ -405,7 +405,7 @@
             </div>
         </li>
         <li class="itemNav my-auto">
-            <a class="titleNav" href="<%=request.getContextPath()%>/productsPage?categoryFilter=all">Tất Cả Sản Phẩm</a>
+            <a class="titleNav" href="<%=request.getContextPath()%>/productsPage?categoryFilter=all">Danh sách sản Phẩm</a>
         </li>
         <li class="itemNav my-auto">
             <a class="titleNav" href="#bikip">Bí Kíp HandMade</a>

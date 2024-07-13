@@ -70,4 +70,21 @@ public class DiscountDAO {
                         .execute()
         );
     }
+
+    public static double getPercentageOff(int id) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(
+                                "SELECT percentageOff " +
+                                        "FROM discount WHERE id = ? "
+                        )
+                        .bind(0, id)
+                        .mapTo(Double.class)
+                        .findOne()
+                        .orElse(0.0));
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(getPercentageOff(118));
+    }
 }

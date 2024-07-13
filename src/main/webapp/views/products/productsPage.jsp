@@ -96,6 +96,7 @@
                 <option value="<%=SortOption.SORT_HIGHEST_RATING%>">Xếp hạng cao nhất</option>
                 <option value="<%=SortOption.SORT_PRICE_ASC%>">Giá tăng dần</option>
                 <option value="<%=SortOption.SORT_PRICE_DESC%>">Giá giảm dần</option>
+                <option value="<%=SortOption.SORT_STOCK%>">Bán chạy</option>
             </select>
         </div>
         <div class="row price-filter-group bg-light">
@@ -142,36 +143,43 @@
                         </p></a>
                         <%!double giaBanSauCung;%>
                         <% giaBanSauCung = ProductService.getInstance().productPriceIncludeDiscount(pfp);%>
+
                         <%if (pfp.getCategoryId() >= 0 && giaBanSauCung != pfp.getSellingPrice()) {%>
                         <%! int discountProduct;%>
                         <% discountProduct = ProductService.getInstance().discountProduct(pfp.getId());%>
                         <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>
                             %
                         </div>
-                        <del><p style="margin-bottom: 0"><%=numberFormat.format(pfp.getSellingPrice())%>
-                        </p></del>
-                        <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%>
-                        </p>
+                        <div>
+                            <del><p style="margin-bottom: 0"><%=numberFormat.format(pfp.getSellingPrice())%>
+                            </p></del>
+                            <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%>
+                            </p>
+                        </div>
                         <%} else {%>
-                        <p class="fw-bold my-0 text-danger"
-                           style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%>
-                        </p>
+                        <div>
+                            <p class="fw-bold my-0 text-danger"
+                               style="margin-bottom: 0"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(pfp))%>
+                            </p>
+                        </div>
                         <%}%>
                         <div class="add-to-cart">
                             <button onclick="addcart(this,<%=pfp.getId()%>)"><span class="fw-bold">Thêm vào giỏ <i
                                     class="fa-solid fa-cart-shopping"></i></span></button>
                         </div>
                         <div style="position: absolute; bottom: 0; width: 100%">
-                            <%if(ProductDAO.avarageStar(pfp.getId()) != 0.0){%>
-                            <div style="float: left; width: 50%; padding-bottom: 3%;font-size: 12px">
-                                <span>Đánh Giá:</span>
-                                <span><%=ProductDAO.avarageStar(pfp.getId())%><i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></span>
+                            <%
+                                double averageRateStars = ProductService.getInstance().roundNumber(ProductService.getInstance().getAverageRateStars(pfp.getId()));%>
+                            <div style="float: left;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span><%=pfp.getStock()%></span>
+                            </div>
+                            <%if (averageRateStars > 0) {%>
+                            <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
+                                <div><%=averageRateStars%><i class="fa-solid fa-star"
+                                                             style="color: #FFD43B;font-size: 13px"></i></div>
                             </div>
                             <%}%>
-                            <div style="float: right;width: 50%; padding-bottom: 3%;font-size: 12px">
-                                <span>Đã Bán:</span>
-                                <span><%=ProductDAO.sellProduct(pfp.getId())%></span>
-                            </div>
 
                         </div>
                     </div>
@@ -215,8 +223,8 @@
                 actionCart: "post",
                 num: num
             },
-            success:function(response){
-                if(response != null && response == 'false') {
+            success: function (response) {
+                if (response != null && response == 'false') {
                     Swal.fire({
                         position: "center",
                         icon: "error",
@@ -224,7 +232,7 @@
                         showConfirmButton: false,
                         timer: 1500
                     });
-                }else{
+                } else {
                     handleAddToCart(response);
                     Swal.fire({
                         position: "center",
@@ -232,7 +240,8 @@
                         title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
                         showConfirmButton: false,
                         timer: 1500
-                    });}
+                    });
+                }
 
             }
         })
@@ -250,15 +259,28 @@
             console.log(response)
             response.forEach(function (r) {
                 let priceHtml = '';
+                let averageRateStars = '';
+                if (r.averageRateStars > 0) {
+                    averageRateStars = `
+                    <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
+                            <div>${r.averageRateStars}<i class="fa-solid fa-star"
+                                                          style="color: #FFD43B;font-size: 13px"></i></div>
+                    </div>
+                    `
+                }
                 if (r.sellingPrice != r.finalPrice) {
                     priceHtml = `
-                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
-                        <del ><p class="mt-2" style="margin-bottom: 0">${formattedPrice(r.sellingPrice)}</p></del>
+                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;">${r.percentageOff * 100}%</div>
+                    <div>
+                        <del><p class="" style="margin-bottom: 0">${formattedPrice(r.sellingPrice)}</p></del>
                         <p class="fw-bold text-danger">${formattedPrice(r.finalPrice)}</p>
+                    </div>
                 `
                 } else {
                     priceHtml = `
-                <p class="fw-bold text-danger" style="margin-bottom: 0">${formattedPrice(r.finalPrice)}</p>
+                    <div>
+                        <p class="fw-bold text-danger" style="margin-bottom: 0">${formattedPrice(r.finalPrice)}</p>
+                    </div>
                 `
                 }
                 p += `
@@ -273,6 +295,14 @@
                         <div class="add-to-cart">
                             <button onclick="addcart(this,${r.id})"><span class="fw-bold">Thêm vào giỏ <i
                                     class="fa-solid fa-cart-shopping"></i></span></button>
+                        </div>
+
+                        <div style="position: absolute; bottom: 0; width: 100%">
+                          <div style="float: left;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span>${r.stock}</span>
+                          </div>
+                          ` + averageRateStars + `
                         </div>
                     </div>
                 </li>
@@ -296,15 +326,28 @@
         let p = '';
         response.forEach(function (r) {
             let priceHtml = '';
+            let averageRateStars = '';
+            if (r.averageRateStars > 0) {
+                averageRateStars = `
+                    <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
+                            <div>${r.averageRateStars}<i class="fa-solid fa-star"
+                                                          style="color: #FFD43B;font-size: 13px"></i></div>
+                    </div>
+                    `
+            }
             if (r.sellingPrice != r.finalPrice) {
                 priceHtml = `
-                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProduct%>%</div>
-                        <del ><p class="mt-2" style="margin-bottom: 0">${formattedPrice(r.sellingPrice)}</p></del>
-                        <p class="fw-bold text-danger">${formattedPrice(r.finalPrice)}</p>
+                    <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;">${r.percentageOff * 100}%</div>
+                        <div>
+                            <del><p class="" style="margin-bottom: 0">${formattedPrice(r.sellingPrice)}</p></del>
+                            <p class="fw-bold text-danger">${formattedPrice(r.finalPrice)}</p>
+                        </div>
                 `
             } else {
                 priceHtml = `
-                <p class="fw-bold mt-2 text-danger" style="margin-bottom: 0">${formattedPrice(r.finalPrice)}</p>
+                <div>
+                    <p class="fw-bold text-danger" style="margin-bottom: 0">${formattedPrice(r.finalPrice)}</p>
+                </div>
                 `
             }
             p += `
@@ -319,6 +362,14 @@
                         <div class="add-to-cart">
                             <button onclick="addcart(this,${r.id})"><span class="fw-bold">Thêm vào giỏ <i
                                     class="fa-solid fa-cart-shopping"></i></span></button>
+                        </div>
+
+                        <div style="position: absolute; bottom: 0; width: 100%">
+                          <div style="float: left;width: 50%; padding-bottom: 3%;font-size: 15px">
+                                <span>Đã Bán:</span>
+                                <span>${r.stock}</span>
+                          </div>
+                           ` + averageRateStars + `
                         </div>
                     </div>
                 </li>

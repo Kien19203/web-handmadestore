@@ -11,4 +11,6 @@ public class SortOption {
     public static final int SORT_PRICE_DESC = 4;
 
     public static final int SORT_DISCOUNT = 5;
+
+    public static final int SORT_STOCK = 6;
 }
