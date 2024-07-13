@@ -94,22 +94,23 @@ public class ImageService {
     public static void deleteImageInServer(ServletContext servletContext, String imagePath) {
         //vì path image bắt đầu: images/.....
         String absolutePath = servletContext.getRealPath(new File(servletContext.getContextPath()).getParent());
-        System.out.println("tiến hành xóa");
-        try {
-            Path filePath = Path.of(absolutePath, imagePath);
-            System.out.println(filePath.toString());
+        System.out.println("tiến hành xóa " + imagePath);
+        if (imagePath != null)
             try {
-                // Kiểm tra xem tệp tin tồn tại trước khi xóa
-                if (Files.exists(filePath)) {
-                    Files.delete(filePath);
-                    System.out.println("deleted file: " + filePath.toString());
+                Path filePath = Path.of(absolutePath, imagePath);
+                System.out.println(filePath.toString());
+                try {
+                    // Kiểm tra xem tệp tin tồn tại trước khi xóa
+                    if (Files.exists(filePath)) {
+                        Files.delete(filePath);
+                        System.out.println("deleted file: " + filePath.toString());
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-        } catch (
-                InvalidPathException e) {
-        }
     }
 
     //reference: ChatGPT - vì muốn lưu xuống  file multiple xuống local thui ... nên... write được thì ok :)))
@@ -149,21 +150,21 @@ public class ImageService {
                 String newFileName = count + "_" + cleanedProductName + getFileExtension(fileName);
                 String filePath = Path.of(absolutePath, newFileName).toString();
                 System.out.println("filePath: " + filePath);
-
-                // Lưu tạm file vào thư mục tạm thời trước khi nén và thay đổi kích thước
-                File tempFile = File.createTempFile("temp_", getFileExtension(fileName));
-                part.write(tempFile.getAbsolutePath());
-
-                // Sử dụng Thumbnailator để nén và thay đổi kích thước
-                Thumbnails.of(tempFile)
-                        .size(1000, 700) // Kích thước tối đa (thay đổi theo nhu cầu)
-                        .outputQuality(0.75) // Chất lượng nén (0.75 = 75%)
-                        .toFile(new File(filePath));
-
-                // Xóa file tạm
-                tempFile.delete();
-
-                uploadedFiles.add("images/products/" + newFileName);
+                try{
+                    // Lưu tạm file vào thư mục tạm thời trước khi nén và thay đổi kích thước
+                    File tempFile = File.createTempFile("temp_", getFileExtension(fileName));
+                    part.write(tempFile.getAbsolutePath());
+                    // Sử dụng Thumbnailator để nén và thay đổi kích thước
+                    Thumbnails.of(tempFile)
+                            .size(1000, 700) // Kích thước tối đa (thay đổi theo nhu cầu)
+                            .outputQuality(0.75) // Chất lượng nén (0.75 = 75%)
+                            .toFile(new File(filePath));
+                    // Xóa file tạm
+                    tempFile.delete();
+                    uploadedFiles.add("images/products/" + newFileName);
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         }
         return uploadedFiles;
