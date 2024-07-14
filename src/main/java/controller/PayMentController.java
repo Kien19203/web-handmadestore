@@ -13,22 +13,35 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.text.NumberFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 
 
 @WebServlet(name= "PaymentController", value = "/payment" )
 public class PayMentController extends HttpServlet {
+
+    private static final int TIMEOUT_MINUTES = 1;
+    private static final int TIMEOUT_SECONDS = TIMEOUT_MINUTES * 60;
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         HttpSession sessions = req.getSession();
         User user = (User) sessions.getAttribute("auth");
         Cart cart = (Cart) sessions.getAttribute("cart");
+        //Format gia tien
         Locale locale = new Locale("vi", "VN");
         Currency currency = Currency.getInstance(locale);
         NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
         numberFormat.setCurrency(currency);
 
 
+        String backToCart = req.getParameter("backToCart");
+        if(backToCart != null && backToCart.equals("true")){
+            increaseStockCheckout(cart);
+            resp.sendRedirect(req.getContextPath() + "/views/CartPage/view/cart.jsp");
+            return;
+        }
 
 
 
@@ -61,19 +74,13 @@ public class PayMentController extends HttpServlet {
             if(item.getPrice() != price) {
                 isValidCart = false;
                 errorMessage.add("Giá của sản phẩm \"" + p.getName() + "\" đã được cập nhật thành " + numberFormat.format(price));
-
             }
 
         }
 
-
-        System.out.println(isValidCart + "  ----------");
-
         if (user == null) {
             resp.sendRedirect("views/Login/view_login/login.jsp");
         } else {
-
-
             if(isValidCart) {
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
@@ -82,30 +89,40 @@ public class PayMentController extends HttpServlet {
             }
             else {
                 sendErrorResponse(resp, errorMessage);
-
             }
 
         }
 
-//        NEW SESSION cho viec thanhtoan.
-        HttpSession paymentSession = req.getSession(true);
-        paymentSession.setAttribute("paymentStartTime", System.currentTimeMillis());
+        /// Khởi tạo thời gian cho việc get payment.
+        long paymentStartTime = System.currentTimeMillis();
+        Instant instant = Instant.ofEpochMilli(paymentStartTime);
 
+// Chuyển đổi từ Instant sang LocalDateTime
+         LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+            System.out.println("Thời gian bắt đầu : "  + LocalDateTime.ofInstant(instant, ZoneId.systemDefault()));
+
+//         giảm so luong stock + 5 phut bat dau
+        sessions.setAttribute("paymentStartTime", paymentStartTime);
+        reduceStockCheckout(cart);
     }
 
     //
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        System.out.println("Call me method post!");
         HttpSession sessions = req.getSession();
         User user = (User) sessions.getAttribute("auth");
         Cart cart = (Cart) sessions.getAttribute("cart");
-
         OrderDAO orderZ = new OrderDAO();
 
         req.setCharacterEncoding("UTF-8");
         String namePay = req.getParameter("namePay");
         String phonePay = req.getParameter("phonePay");
-        String address = req.getParameter("address");
+        String address = req.getParameter("formattedAddress");
+
+        System.out.println("Name : " + namePay);
+        System.out.println("Phone : " + phonePay);
+        System.out.println("address : " + address);
 
 
 //check validation
@@ -119,25 +136,59 @@ public class PayMentController extends HttpServlet {
         if (!errors.isEmpty()) {
             req.setAttribute("errors", errors);
             req.getRequestDispatcher("views/PaymentPage/payment.jsp").forward(req, resp);
-        } else {
+            return;
+        }
+//             KIEM TRA THOI GIAN GIAO DỊCH
 
-            Order order = new Order();
-            order.setConsigneeName(namePay);
-            order.setConsigneePhoneNumber(phonePay);
-            order.setAddress(address);
+            Long paymentStartTime = (Long) sessions.getAttribute("paymentStartTime");
+            Instant instant = Instant.ofEpochMilli(paymentStartTime);
+
+        // Chuyển đổi từ Instant sang LocalDateTime
+        LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+        System.out.println("Thời gian kết thúc: "  + LocalDateTime.ofInstant(instant, ZoneId.systemDefault()));
+
+            if(paymentStartTime != null && System.currentTimeMillis() - paymentStartTime <= TIMEOUT_SECONDS * 1000) {
+
+
+                Order order = new Order();
+                order.setConsigneeName(namePay);
+                order.setConsigneePhoneNumber(phonePay);
+                order.setAddress(address);
 
 //           Xoasa sesion gio hàng
-            orderZ.addOrder(order, cart, user);
-            cart.clear();
-            req.getSession().setAttribute("cart", cart);
-            resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
-
-        }
+                orderZ.addOrder(order, cart, user);
+                cart.clear();
+                req.getSession().setAttribute("cart", cart);
+                resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
+            }
+            else {
+                increaseStockCheckout(cart);
+                resp.sendRedirect(req.getContextPath() + "/views/CartPage/view/cart.jsp");
+            }
     }
 
     public static void validateRequireField(String fieldName, String value, String viewName, Map<String, String> errors) {
         if (value == null || value.trim().isEmpty()) {
             errors.put(fieldName, viewName + " không được bỏ trống");
+        }
+    }
+
+    // Xử lý tăng - giảm lại giỏ hàng.
+    private void reduceStockCheckout(Cart cart) {
+        for(Map.Entry<Integer, Item> entry : cart.getItems().entrySet()) {
+                int productId = entry.getKey();
+                Item item = entry.getValue();
+                int quantity = item.getQuantity();
+                ProductService.getInstance().reduceStock(productId, quantity);
+        }
+    }
+
+    private void increaseStockCheckout(Cart cart) {
+        for(Map.Entry<Integer, Item> entry : cart.getItems().entrySet()) {
+            int productId = entry.getKey();
+            Item item = entry.getValue();
+            int quantity = item.getQuantity();
+            ProductService.getInstance().increaseStock(productId, quantity);
         }
     }
 

@@ -55,11 +55,11 @@
 //    double totalMoney = Double.parseDouble(request.getParameter("pricePay") == null ? "" : request.getParameter("pricePay"));
 %>
 
-    <form action="<%=request.getContextPath()%>/payment" method="get">
+    <form action="<%=request.getContextPath()%>/payment" method="post">
         <div class="row">
             <div class="col-lg-8 col-sm-12 p-0">
                 <div class="h1 border-bottom alert ps-0 m-0 " style="height: 12%">
-                    <a href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp"
+                    <a href=""
                        class="text-decoration-none mx-3" style="color: #f4c994"><img
                             src="<%=request.getContextPath()+"/"+ImageService.getLogoImagePath()%>" width="8%">HEADQUARTERS</a>
                 </div>
@@ -67,24 +67,17 @@
 
                 <div id="inform" class="p-3 d-flex justify-content-center align-items-center flex-column">
                     <h3>Thời gian đặt hàng của quý khách còn : </h3>
-                    <p id="count-down"></p>
+                    <p id="count-down" class="p-2">00:00</p>
                 </div>
 
                 <div class="d-flex mx-5 py-3">
-                    <div class="col-lg-7 col-sm-6 me-5">
+                    <div class="col-lg-7 col-sm-6 me-3">
                         <div class="h6 text-black fw-bold text-center">
                             Thông tin nhận hàng
                         </div>
                         <div class="mt-4">
                             <div class="input-group mb-3 justify-content-center">
                                 <div class="input-group-prepend w-100">
-                                    <%--                            email--%>
-                                    <%--                            <div class="form-floating mb-3">--%>
-                                    <%--                                <input id="email" type="email" pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"--%>
-                                    <%--                                       class="form-control" placeholder="Email(tùy chọn)">--%>
-                                    <%--                                <label for="email" class="floatingInput">Email(Tùy Chọn)</label>--%>
-                                    <%--                            </div>--%>
-
                                     <div class="form-floating mb-3">
                                         <%if (user == null) {%>
                                         <input id="name" name="namePay" type="text" class="form-control"
@@ -120,22 +113,7 @@
 
 
                                     </div>
-                                    <div class="form-floating mb-3">
-                                        <%if (user == null) {%>
-                                        <input id="address" name="address" type="text" class="form-control"
-                                               placeholder="Địa chỉ" value="<%=address%>">
-                                        <label for="address" class="floatingInput">Địa Chỉ: Số Nhà, Tên Đường,...</label>
-                                        <%} else {%>
-                                        <input id="address" name="address" type="text" class="form-control"
-                                               placeholder="Địa chỉ" value="<%=address%>" >
-                                        <label for="address" class="floatingInput">Địa Chỉ: Số Nhà, Tên Đường,...</label>
-                                        <%}%>
 
-                                        <% if (listNull != null && listNull.containsKey("address")) { %>
-                                        <span class="error-message warning" style="font-size: 11px  ; color: red"><%= listNull.get("address") %></span>
-                                        <% } %>
-
-                                    </div>
 
                                         <div class="form-floating mb-3">
                                             <select  id="provinceDropdown" class="form-select"
@@ -160,6 +138,24 @@
                                             </select>
                                             <label for="wardDropdown">Xã, Thị Trấn</label>
                                         </div>
+                                    <div class="form-floating mb-3">
+                                        <%if (user == null) {%>
+                                        <input id="address" name="address" type="text" class="form-control"
+                                               placeholder="Địa chỉ" value="<%=address%>">
+                                        <label for="address" class="floatingInput">Số Nhà, Tên Đường,...</label>
+                                        <%} else {%>
+                                        <input id="address" name="address" type="text" class="form-control"
+                                               placeholder="Địa chỉ" value="<%=address%>" >
+                                        <label for="address" class="floatingInput">Số Nhà, Tên Đường,...</label>
+                                        <%}%>
+
+                                        <% if (listNull != null && listNull.containsKey("address")) { %>
+                                        <span class="error-message warning" style="font-size: 11px  ; color: red"><%= listNull.get("address") %></span>
+                                        <% } %>
+
+                                    </div>
+
+                                    <input type="hidden" id="formattedAddress" name="formattedAddress">
 
                                         <div class="form-floating mb-3">
                                             <select  id="serviceDropdown" class="form-select"
@@ -245,7 +241,7 @@
 
                     <div style="width: 90%;">
                         <table class="table table-striped table-borderless table-hover text-start">
-                <%double totalMoney = 0;%>
+                             <%double totalMoney = 0;%>
                          <%for(Item i : cart.getItems().values()) {%>
                            <tr>
                                 <td>
@@ -295,10 +291,10 @@
                                     <td class="text-end pe-3"><%=numberFormat.format(totalMoney)%></td>
                                 </tr>
                                 <tr>
-                                    <th class="text-start fw-medium">
+                                    <th  class="text-start fw-medium">
                                         Phí vận chuyển
                                     </th>
-                                    <td class="text-end pe-3">35.000₫</td>
+                                    <td id="shippingFeeResult" class="text-end pe-3"></td>
                                 </tr>
                                 </tbody>
                                 <tfoot>
@@ -308,10 +304,10 @@
                                     Tổng cộng
                                 </span>
                                     </th>
-                                    <td class="text-end pe-3 fs-4 text-primary">
+                                    <td id="totalAmount" class="text-end pe-3 fs-4">
 
                                 <span>
-                                   <%=numberFormat.format(totalMoney + 35000)%>
+                                   <%=numberFormat.format(totalMoney)%>
                                 </span>
 
                                     </td>
@@ -320,12 +316,15 @@
                             </table>
                         </div>
                         <div class="row py-3 ">
-                            <div class="col-4 d-flex align-items-center">
-                        <span><a href="../CartPage/view/cart.jsp"
+                            <div class="col-5 d-flex align-items-center">
+                            <span><a href="/HandMadeStore/payment?backToCart=true"
                                  class="text-decoration-none color-for-text"><strong><</strong> Quay lại giỏ hàng</a></span>
                             </div>
-                            <div class="col-8 text-end">
-                                <button type="submit" class="btn btn-primary fs-1 color-for-bg">Đặt Hàng</button>
+
+
+
+                            <div class="col-7 text-end">
+                                <button type="submit" class="btn btn-primary  color-for-bg">Đặt Hàng</button>
                             </div>
 
                         </div>
@@ -346,9 +345,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-
-
-    const startingMinutes = 5;
+        // COUNTDOWN CHO PAYMENT.
+    const startingMinutes = 1;
     let time = startingMinutes * 60;
     console.log('hello');
     const countDownEl = document.getElementById('count-down');
@@ -357,19 +355,107 @@
     function updateCountDown() {
         const minutes = Math.floor(time/60);
         let seconds = time%60;
+
+        let minutesDisplay = minutes < 10? '0' + minutes : minutes;
         seconds = seconds <  10 ? '0' + seconds : seconds;
         console.log(seconds);
-
-        countDownEl.innerHTML = ` ${minutes} : ${seconds}`
-
-
+        countDownEl.innerHTML = ` ${minutesDisplay} : ${seconds}`
+        if(time <= 0) {
+            clearInterval();
+            console.log("Countdown topped");
+            countDownEl.style.backgroundColor = '#8b8b8b'
+            Swal.fire({
+                title: "Đã hết thời gian!",
+                timer: 5000,
+                timerProgressBar: true,
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            }).then(() => {
+                window.location.href = "/HandMadeStore/payment?backToCart=true"
+            })
+        } else {
         time--;
 
-
+        }
     }
+
+
+
+
+
+    //// Format address cho order, tạo 3 biến
+        var provinceAddress = "";
+        var districtAddress = "";
+        var wardAddress = "";
+
+
+        // Gắn sự kiện input cho ô nhập địa chỉ
+
+
+
+
+        $("#address").on("input", function() {
+            updateFormattedAddress();
+        });
+
+        function updateFormattedAddress() {
+            // var provinceAddress = $("#provinceDropdown option:selected").text();
+            // var district = $("#districtDropdown option:selected").text();
+            // var ward = $("#wardDropdown option:selected").text();
+            var address =  $("#address").val();
+            var formatted = "";
+
+            if(wardAddress === "" || districtAddress ==="" || provinceAddress ==="" || address ==="") {
+                formatted = "";
+            }
+            else {
+                formatted = address + wardAddress + districtAddress + provinceAddress;
+            }
+            console.log(formatted)
+            document.getElementById('formattedAddress').value = formatted;
+        }
+
+
+
 
 //      LẤY TỈNH THÀNH.
     $(document).ready(function (){
+        // tinh phi van chuyen
+
+        function calculateFeeShip(wardCode, districtId) {
+            $.ajax({
+                type: "GET",
+                url: "/HandMadeStore/shippingFee",
+                data: {
+                    tempPrice: <%=totalMoney%>,
+                    wardCode: wardCode,
+                    districtId: districtId,
+                    totalWeight: 1000
+                },
+                dataType: "json",
+                success: function (response){
+                    var shippingFee = response.data.total + 25000;
+                    var totalMoney = <%=totalMoney%>;
+                    var totalAmount = totalMoney + shippingFee;
+
+
+                    // Định dạng thành tiền Việt Nam đồng
+                    var formattedShippingFee = formatCurrency(shippingFee);
+                    var formattedTotalAmount = formatCurrency(totalAmount);
+
+
+                    //hien thi shipping fee
+                    $('#shippingFeeResult').text(formattedShippingFee);
+                    $('#totalAmount').text(formattedTotalAmount);
+                },error: function (xhr, status,error) {
+                    console.log("Failed fetch ship: ", error);
+                    alert("Không tính được phí ship.");
+                }
+            })
+        }
 
         // dich vu van chuyen
 
@@ -420,6 +506,14 @@
                         }
                     );
 
+                    //change cho drowdown ward
+                    wardDropdown.off('change').on('change',function() {
+                        var wardCode = $(this).val();
+                        wardAddress = ", " + $("#wardDropdown option:selected").text();
+                        calculateFeeShip(wardCode, districtId);
+                        updateFormattedAddress();
+                    })
+
                 }, error: function (xhr, status, error) {
                     alert("Không lấy đươợc danh sách xã, thị trấn.");
                 }
@@ -464,6 +558,8 @@
             }else {
                 $("#districtDropdown").empty();
             }
+            provinceAddress = ", " + $("#provinceDropdown option:selected").text();
+            updateFormattedAddress();
         })
 
         // Sự kiện select district cho ward
@@ -474,6 +570,8 @@
             }else {
                 $("#wardDropdown").empty();
             }
+            districtAddress =", " + $("#districtDropdown option:selected").text();
+            updateFormattedAddress();
         })
 
         // Sự kiện select district cho service
@@ -501,16 +599,13 @@
             error: function (xhr, status, error) {
                 alert("Lỗi tải dữ liệu tỉnh, thành " + error)
             }
-
-
-
         })
-
-
-
-
     })
 
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
 
 
 

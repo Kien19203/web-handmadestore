@@ -284,14 +284,12 @@ public class OrderDAO {
                     });
 
                     System.out.println("check final: ");
-
-                    //Lay id don hang vua them
                 }
 
             });
 
 //            cập nhật lại số lượng sản phẩm
-            String sql3 = "UPDATE `product` SET quantity= quantity - :quantityOrder where id= :id";
+            String sql3 = "UPDATE `inventory` SET soldOut= soldOut + :quantityOrder where productId= :id";
             for (Item item : cart.getItems().values()) {
                 JDBIConnector.me().useHandle(handle3 ->
                         handle3.createUpdate(sql3)

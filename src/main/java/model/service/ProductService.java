@@ -246,6 +246,13 @@ public class ProductService {
 
     }
 
+    public void reduceStock(int productId, int quantity) {
+        ProductDAO.reduceStock(productId, quantity);
+    }
+    public void increaseStock(int productId, int quantity) {
+        ProductDAO.increamentStock(productId, quantity);
+    }
+
 
     //update cho sản phẩm.
     /// EDIT PRODUCT.

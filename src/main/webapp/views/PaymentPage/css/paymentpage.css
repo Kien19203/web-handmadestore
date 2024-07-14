@@ -63,15 +63,21 @@
 .color-for-text {
     color: #357ebd;
 }
+#total_amount {
+    font-weight: bold;
+    color: red;
+}
 
 #inform {
     background-color: #FBFADA;
 }
 #count-down {
-    color: red;
-    font-size: 30px;
+    background-color: red;
+    color: #FFFFFF;
+    font-size: 25px;
     font-weight: bold;
     margin: 0;
+    border-radius: 5px;
 }
 
 

@@ -5,16 +5,23 @@ import model.adapter.InventoryProductMappers;
 import model.bean.*;
 import model.db.JDBIConnector;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
 import model.service.ImageService;
 import model.service.ProductService;
+import org.jdbi.v3.core.Handle;
+import org.jdbi.v3.core.transaction.TransactionIsolationLevel;
 
 import java.sql.Connection;
 import java.util.*;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class ProductDAO {
@@ -596,6 +603,26 @@ public class ProductDAO {
 
     }
 
+//     GIẢM STOCK SARN PHAAM/
+    public static void reduceStock(int productId, int quantity) {
+        String sql = "UPDATE  product SET stock = stock - :quantity WHERE id = :id";
+
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(sql).bind("quantity", quantity).bind("id", productId).execute());
+    }
+
+    public static void increamentStock(int productId, int quantity) {
+        String sql = "UPDATE  product SET stock = stock + :quantity WHERE id = :id";
+
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(sql).bind("quantity", quantity).bind("id", productId).execute());
+    }
+
+
+
+
+
+
 
 
 
@@ -635,6 +662,8 @@ public class ProductDAO {
                         .execute()
         );
     }
+
+
 
 
 
