@@ -253,20 +253,18 @@ public class OrderDAO {
 
                 //Lấy id của order
                 int orderId = handle.createUpdate(sql)
-                        .bind("totalPrice", cart.getTotalMoney() + 35000)
+                        .bind("totalPrice", order.getTotalPrice())
                         .bind("orderDate", date)
                         .bind("status", 0)
                         .bind("consigneeName", order.getConsigneeName())
                         .bind("consigneePhoneNumber", order.getConsigneePhoneNumber())
                         .bind("address", order.getAddress())
-                        .bind("shippingFee", 35000)
+                        .bind("shippingFee", order.getShippingFee())
                         .bind("userId", u.getId())
                         .bind("note", order.getNote())
                         .executeAndReturnGeneratedKeys("id")
                         .mapTo(Integer.class)
                         .one();
-
-
                 System.out.println("check 0: " + orderId);
                 for (Item i : cart.getItems().values()) {
                     System.out.println("check 1: " + i.getProduct().getId());

@@ -42,11 +42,6 @@ public class PayMentController extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/views/CartPage/view/cart.jsp");
             return;
         }
-
-
-
-
-
 //        Validation (isSale, discount & stock.
         boolean isValidCart = true;
         List<String> errorMessage = new ArrayList<>();
@@ -85,31 +80,30 @@ public class PayMentController extends HttpServlet {
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
                 resp.getWriter().write("{ \"isValid\": true }"); // gui fan hoi json voi isValid = true
-//                doPost(req, resp);
+                //                doPost(req, resp);
+                /// Khởi tạo thời gian cho việc get payment.
+                long paymentStartTime = System.currentTimeMillis();
+                Instant instant = Instant.ofEpochMilli(paymentStartTime);
+
+                // Chuyển đổi từ Instant sang LocalDateTime
+                LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
+                System.out.println("Thời gian bắt đầu : "  + LocalDateTime.ofInstant(instant, ZoneId.systemDefault()));
+
+                //         giảm so luong stock + 5 phut bat dau
+                sessions.setAttribute("paymentStartTime", paymentStartTime);
+                reduceStockCheckout(cart);
+
             }
             else {
                 sendErrorResponse(resp, errorMessage);
             }
 
         }
-
-        /// Khởi tạo thời gian cho việc get payment.
-        long paymentStartTime = System.currentTimeMillis();
-        Instant instant = Instant.ofEpochMilli(paymentStartTime);
-
-// Chuyển đổi từ Instant sang LocalDateTime
-         LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
-            System.out.println("Thời gian bắt đầu : "  + LocalDateTime.ofInstant(instant, ZoneId.systemDefault()));
-
-//         giảm so luong stock + 5 phut bat dau
-        sessions.setAttribute("paymentStartTime", paymentStartTime);
-        reduceStockCheckout(cart);
     }
 
     //
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        System.out.println("Call me method post!");
         HttpSession sessions = req.getSession();
         User user = (User) sessions.getAttribute("auth");
         Cart cart = (Cart) sessions.getAttribute("cart");
@@ -119,10 +113,13 @@ public class PayMentController extends HttpServlet {
         String namePay = req.getParameter("namePay");
         String phonePay = req.getParameter("phonePay");
         String address = req.getParameter("formattedAddress");
+        String shippingFee = req.getParameter("shippingFee");
+        String totalAmount = req.getParameter("totalAmount");
 
-        System.out.println("Name : " + namePay);
-        System.out.println("Phone : " + phonePay);
-        System.out.println("address : " + address);
+
+
+
+
 
 
 //check validation
@@ -130,12 +127,15 @@ public class PayMentController extends HttpServlet {
 
         validateRequireField("namePay", namePay, "Tên hiển thị", errors);
         validateRequireField("phonePay", phonePay, "Số điện thoại", errors);
-        validateRequireField("address", address, "Địa chỉ", errors);
+        validateRequireField("formattedAddress", address, "Địa chỉ", errors);
 
 
-        if (!errors.isEmpty()) {
-            req.setAttribute("errors", errors);
-            req.getRequestDispatcher("views/PaymentPage/payment.jsp").forward(req, resp);
+        if (!errors.isEmpty()  || shippingFee == null || totalAmount == null ) {
+//            req.setAttribute("errors", errors);
+//            req.getRequestDispatcher("views/PaymentPage/payment.jsp").forward(req, resp);
+//            return;
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST); // Trả về lỗi 400 nếu dữ liệu không hợp lệ
+            resp.getWriter().print("{\"success\": false, \"message\": \"Validation errors occurred.\"}");
             return;
         }
 //             KIEM TRA THOI GIAN GIAO DỊCH
@@ -147,24 +147,27 @@ public class PayMentController extends HttpServlet {
         LocalDateTime.ofInstant(instant, ZoneId.systemDefault());
         System.out.println("Thời gian kết thúc: "  + LocalDateTime.ofInstant(instant, ZoneId.systemDefault()));
 
-            if(paymentStartTime != null && System.currentTimeMillis() - paymentStartTime <= TIMEOUT_SECONDS * 1000) {
-
-
-                Order order = new Order();
-                order.setConsigneeName(namePay);
-                order.setConsigneePhoneNumber(phonePay);
-                order.setAddress(address);
+            if(paymentStartTime == null || System.currentTimeMillis() - paymentStartTime > TIMEOUT_SECONDS * 1000) {
+                increaseStockCheckout(cart);
+//                resp.sendRedirect(req.getContextPath() + "/views/CartPage/view/cart.jsp");
+                resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);// Trả về lỗi 400 nếu hết thời gian thanh toán
+                resp.getWriter().print("{\"success\": false, \"message\": \"Thời gian đặt hàng đã hết.\"}");
+                return;
+            }
+        Order order = new Order();
+        order.setConsigneeName(namePay);
+        order.setConsigneePhoneNumber(phonePay);
+        order.setAddress(address);
+        order.setShippingFee(Integer.parseInt(shippingFee));
+        order.setTotalPrice(Integer.parseInt(totalAmount));
 
 //           Xoasa sesion gio hàng
-                orderZ.addOrder(order, cart, user);
-                cart.clear();
-                req.getSession().setAttribute("cart", cart);
-                resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
-            }
-            else {
-                increaseStockCheckout(cart);
-                resp.sendRedirect(req.getContextPath() + "/views/CartPage/view/cart.jsp");
-            }
+        orderZ.addOrder(order, cart, user);
+        cart.clear();
+        req.getSession().setAttribute("cart", cart);
+        resp.setStatus(HttpServletResponse.SC_OK);
+        resp.getWriter().print("{\"success\": true, \"message\": \"Đơn hàng đã được tạo.\"}");
+//        resp.sendRedirect(req.getContextPath() + "/views/MainPage/view_mainpage/mainpage.jsp");
     }
 
     public static void validateRequireField(String fieldName, String value, String viewName, Map<String, String> errors) {

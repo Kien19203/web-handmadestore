@@ -55,7 +55,7 @@
 //    double totalMoney = Double.parseDouble(request.getParameter("pricePay") == null ? "" : request.getParameter("pricePay"));
 %>
 
-    <form action="<%=request.getContextPath()%>/payment" method="post">
+    <form id="formPayment" action="<%=request.getContextPath()%>/payment" method="post">
         <div class="row">
             <div class="col-lg-8 col-sm-12 p-0">
                 <div class="h1 border-bottom alert ps-0 m-0 " style="height: 12%">
@@ -193,6 +193,8 @@
                                 <i class="fa-regular fa-money-bill-1 fa-xl ms-auto" style="color: #357ebd;"></i>
                             </div>
                             <img src="" alt="">
+                            <input type="hidden" id="shippingFeeInput" name="shippingFee" value="">
+                            <input type="hidden" id="totalAmountInput" name="totalAmount" value="">
                         </div>
                     </div>
                 </div>
@@ -324,7 +326,7 @@
 
 
                             <div class="col-7 text-end">
-                                <button type="submit" class="btn btn-primary  color-for-bg">Đặt Hàng</button>
+                                <button type="button" id="placeOrderBtn" class="btn btn-primary  color-for-bg">Đặt Hàng</button>
                             </div>
 
                         </div>
@@ -346,7 +348,7 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
         // COUNTDOWN CHO PAYMENT.
-    const startingMinutes = 1;
+    const startingMinutes = 2;
     let time = startingMinutes * 60;
     console.log('hello');
     const countDownEl = document.getElementById('count-down');
@@ -440,6 +442,9 @@
                     var shippingFee = response.data.total + 25000;
                     var totalMoney = <%=totalMoney%>;
                     var totalAmount = totalMoney + shippingFee;
+                    // Lưu giá trị vào 2 trường input :
+                    $('#shippingFeeInput').val(shippingFee);
+                    $('#totalAmountInput').val(totalAmount);
 
 
                     // Định dạng thành tiền Việt Nam đồng
@@ -600,14 +605,150 @@
                 alert("Lỗi tải dữ liệu tỉnh, thành " + error)
             }
         })
+
+
+
+
+
+        $("#placeOrderBtn").on("click", function() {
+            var namePay = document.getElementById("name").value;
+            var phonePay = document.getElementById("phone_number").value;
+            var formattedAddress = document.getElementById("formattedAddress").value;
+            var shippingFee = document.getElementById("shippingFeeInput").value;
+            var totalAmount = document.getElementById("totalAmountInput").value;
+
+            console.log(totalAmount)
+
+            $.ajax({
+                type: "POST",
+                url: "/HandMadeStore/payment", // Đường dẫn đến servlet của bạn
+                data: {
+                    namePay: namePay,
+                    phonePay: phonePay,
+                    formattedAddress: formattedAddress,
+                    shippingFee: shippingFee,
+                    totalAmount: totalAmount
+                },
+                dataType: "json",
+                success: function(response) {
+                    if(response.success){
+                                          Swal.fire({
+                                              title: "Cảm ơn bạn, đơn hàng đã được tạo!",
+                                              width: 600,
+                                              padding: "3em",
+                                              color: "rgba(5,131,39,0.98)",
+                                              background: "#fff url(/images/trees.png)",
+                                              backdrop: `
+                                                       rgba(0,0,123,0.4)
+                                                      url("/images/nyan-cat.gif")
+                                                          left top
+                                                       no-repeat
+                        `                     ,
+                                              showConfirmButton: false,
+                                              timer: 4000
+                                          }).then(function () {
+                                              window.location.href = "../../views/MainPage/view_mainpage/mainpage.jsp"; // Chuyển hướng về trang chủ
+                                          });
+                    }
+                    else {
+                        console.log("Error:", response.message)
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Thời gian đã qua!',
+                            text: response.message,
+                            showConfirmButton: true
+                        });
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Xử lý lỗi nếu có
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Vui lòng điền đầy đủ thông tin.',
+                        text: 'Bạn chỉ có thể bỏ trống trường ghi chú.',
+                        showConfirmButton: true
+                    });
+                }
+            });
+
+
+
+        })
+
+
+
+
+
+
     })
-
-
         function formatCurrency(amount) {
             return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
         }
 
 
+
+  //       function sendDataToServlet() {
+  //           var namePay = document.getElementById("namePay").value;
+  //           var phonePay = document.getElementById("phonePay").value;
+  //           var formattedAddress = document.getElementById("formattedAddress").value;
+  //           var shippingFee = document.getElementById("shippingFeeInput").value;
+  //           var totalAmount = document.getElementById("totalAmountInput").value;
+  //
+  //           console.log("click button");
+  //
+  //           $.ajax({
+  //               type: "POST",
+  //               url: "HandMadeStore/payment", // Đường dẫn đến servlet của bạn
+  //               data: {
+  //                   namePay: namePay,
+  //                   phonePay: phonePay,
+  //                   formattedAddress: formattedAddress,
+  //                   shippingFee: shippingFee,
+  //                   totalAmount: totalAmount
+  //               },
+  //               dataType: "json",
+  //               success: function(response) {
+  //                   if(response.success){
+  //                       alert("Thanh cong");
+  // //                   Swal.fire({
+  //                       //                       title: "Cảm ơn bạn, đơn hàng đã được tạo!",
+  //                       //                       width: 600,
+  //                       //                       padding: "3em",
+  //                       //                       color: "rgba(123,255,2,0.45)",
+  //                       //                       background: "#fff url(/images/trees.png)",
+  //                       //                       backdrop: `
+  //                       //                                rgba(0,0,123,0.4)
+  //                       //                               url("/images/nyan-cat.gif")
+  //                       //                                   left top
+  //                       //                                no-repeat
+  //                       // `                     ,
+  //                       //                       showConfirmButton: false,
+  //                       //                       timer: 2000
+  //                       //                   }).then(function () {
+  //                       //                       window.location.href = "/views/MainPage/view_mainpage/mainpage.jsp"; // Chuyển hướng về trang chủ
+  //                       //                   });
+  //                                         }
+  //                   else {
+  //                       console.log("Error:", response.message)
+  //                       Swal.fire({
+  //                           icon: 'error',
+  //                           title: 'Vui lòng kiểm tra các trường dữ liệu!',
+  //                           text: response.message,
+  //                           showConfirmButton: true
+  //                       });
+  //                   }
+  //               },
+  //               error: function(xhr, status, error) {
+  //                   // Xử lý lỗi nếu có
+  //                   Swal.fire({
+  //                       icon: 'error',
+  //                       title: 'Đặt hàng không thành công!',
+  //                       text: 'Vui lòng thử lại sau.',
+  //                       showConfirmButton: true
+  //                   });
+  //               }
+  //           });
+  //       }
 
 
 </script>
