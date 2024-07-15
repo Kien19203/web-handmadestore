@@ -21,7 +21,7 @@
 
 <body>
 <%
-    List<Category> categoryP = CategoryService.getInstance().getALl();
+    List<Category> categoryP = CategoryService.getInstance().getAllCategoriesWithNoProductsOnSale();
 %>
 <!--menu-->
 

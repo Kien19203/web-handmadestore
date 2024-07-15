@@ -2,6 +2,7 @@ package model.service;
 
 import model.bean.Category;
 import model.dao.CategoryDAO;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.List;
 
@@ -16,16 +17,16 @@ public class CategoryService {
     public List<Category> getALl() {
 
 
-        return CategoryDAO.getAll() ;
+        return CategoryDAO.getAll();
     }
 
-    public  Category getCategoryById(int id) {
+    public List<Category> getAllCategoriesWithNoProductsOnSale() {
+        return CategoryDAO.getAllCategoriesWithNoProductsOnSale();
+    }
+
+    public Category getCategoryById(int id) {
         return CategoryDAO.getCategoryById(id);
     }
-
-
-
-
 
 
     public String createNewCategory(String newCategoryName) {
@@ -35,11 +36,12 @@ public class CategoryService {
     public void editCategoryNameById(String id, String newName) {
         CategoryDAO.updateCategoryNameById(id, newName);
     }
+
     public void deleteNoUsedCategoryById(String id) {
         CategoryDAO.deleteNoUsedCategoryById(id);
     }
 
-    public boolean checkNoUsedCategoryById(String id) {
+    public boolean checkNoUsedCategoryById(int id) {
         return CategoryDAO.checkNoUsedCategoryById(id);
     }
 }
