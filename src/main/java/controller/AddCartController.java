@@ -3,6 +3,8 @@ package controller;
 import model.bean.Cart;
 import model.bean.Item;
 import model.bean.Product;
+import model.bean.User;
+import model.dao.ProductDAO;
 import model.service.ProductService;
 
 import javax.servlet.ServletException;
@@ -20,15 +22,25 @@ import java.util.Map;
 public class AddCartController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        HttpSession sessions = req.getSession();
-        Cart cart = (Cart) sessions.getAttribute("cart");
-        if(cart == null) {
-            cart= new Cart();
+        User user = (User) (req.getSession().getAttribute("auth"));
+        HttpSession sessions = null;
+        Cart cart = null;
+        if (user == null) {
+            resp.getWriter().write("false");
+        } else {
+            sessions = req.getSession();
+            cart = (Cart) sessions.getAttribute("cart");
+            if (cart == null) {
+                cart = new Cart();
+            }
+            sessions.setAttribute("cart", cart);
+            doPost(req, resp);
         }
 
         sessions.setAttribute("cart", cart);
 
         doPost(req, resp);
+
 
     }
 
@@ -59,6 +71,14 @@ public class AddCartController extends HttpServlet {
             case "post":
                 int id = Integer.parseInt(req.getParameter("id")); // lay id product
                 int num = Integer.parseInt(req.getParameter("num"));
+                for (Item item: cart.getItems().values()){
+                    if(item.getProduct().getId() == id){
+                        if(ProductDAO.StockProduct(id) - item.getQuantity() - num < 0){
+                            resp.getWriter().write("NoPost");
+                            return;
+                        }
+                    }
+                }
                 resp.setContentType("application/json");
                 resp.setCharacterEncoding("UTF-8");
 

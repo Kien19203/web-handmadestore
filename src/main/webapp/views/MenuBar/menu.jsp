@@ -377,7 +377,7 @@
     <ul class="d-flex m-0 justify-content-around">
         <li class="logo d-flex my-auto">
             <a class="item_a" href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp"> <img
-                    src="<%=request.getContextPath()%>/images/logo.png" style="width: 18vh"></a>
+                    src="<%=request.getContextPath()%>/images/logo.png" style="width: 15vh"></a>
             <a class="name"
                href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">HEADQUARTERS</a>
         </li>

@@ -71,7 +71,7 @@
             transform: translate(-50%, -50%);
             overflow: auto;
             z-index: 9999;
-            background-color: #afe2ea;
+            background-color: #e0eaf4;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -168,7 +168,7 @@
                     hàng thành công
                 </button>
             </div>
-            <div class="table-wrapper-scroll-y my-custom-scrollbar d-flex justify-content-center">
+            <div class="table-wrapper-scroll-y my-custom-scrollbar d-flex justify-content-center mt-3">
                 <table id="data" class="table table-striped table-hover">
                     <thead>
                     <tr class="text-center sticky-top">
@@ -293,6 +293,9 @@
                 }
                 // delete row in table
                 $('#data tbody tr').eq(rowIndex).remove();
+
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Error deleting user!");
@@ -320,6 +323,9 @@
                 }
                 // delete row in table
                 $('#data tbody tr').eq(rowIndex).remove();
+
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Error deleting user!");
@@ -357,6 +363,8 @@
                 if ($('#loadingConfirmBox')) {
                     $('#loadingConfirmBox').remove();
                 }
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Error deleting user!");
@@ -396,6 +404,8 @@
                 waitConfirmOrdersNumber.innerHTML = response;
 
                 $('#data tbody tr').eq(rowIndex).remove();
+                // reload log gui
+                reloadGUI();
             },
             error: function () {
                 alert("Hủy đơn hàng thất bại!");
@@ -491,14 +501,15 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <h3>Chi tiết sản phẩm</h3>
-                            <div class="row" id="product-details">
+                            <h3 style = "text-decoration: underline;">Chi tiết sản phẩm</h3>
+                            <div class="row" id="product-details" style="height: 500px;overflow-y: scroll;">
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="bg-secondary p-3 rounded">
-                                <h2>Thông tin chi tiết đơn hàng</h2>
+                            <div class=" p-3 rounded">
+                                <h2 style = "text-decoration: underline;">Thông tin chi tiết đơn hàng</h2>
                                 <p><strong>Mã đơn hàng:</strong> ${orderDetailsResponse.order.id}</p>
+                                <p><strong>Email tài khoản:</strong> ${orderDetailsResponse.user.email}</p>
                                 <p><strong>Ngày đặt hàng:</strong> ${formattedDate(orderDetailsResponse.order.orderDate)}</p>
                                 <p><strong>Trạng thái:</strong> <p id="status" class="text-center fw-bold fs-5">${asNameStatus(orderDetailsResponse.order.status)}</p></p>
                                 <p><strong>Tên người nhận:</strong> ${orderDetailsResponse.order.consigneeName}</p>
@@ -525,14 +536,14 @@
                     productDetailsHtml += `
                         <div class="col-md-12 mb-4">
                             <div class="card">
-                                <div class="row">
+                                <div class="row" >
                                     <img src="<%=request.getContextPath()+"/"%>${orderDetailMapping.imagePath}" class="col-4" width="100px" alt="Product Image">
                                     <div class="col">
-                                        <h5 class="card-title">${orderDetailMapping.productName}</h5>
-                                        <p class="card-text">Đơn giá: ${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice)}</p>
-                                        <p class="card-text">X ${orderDetailMapping.orderDetail.quantity}</p>
-                                        <p class="card-text fw-bold">${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice * orderDetailMapping.orderDetail.quantity)}</p>
-                                        <a href="<%=request.getContextPath()%>/product-detail?id=${orderDetailMapping.orderDetail.productId}">Xem, Đánh giá trực tiếp sản phẩm</a>
+                                        <h5 class="card-title mt-3">${orderDetailMapping.productName}</h5>
+                                        <p class="card-text  my-0 ">Đơn giá: ${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice)}</p>
+                                        <p class="card-text  my-0">X ${orderDetailMapping.orderDetail.quantity}</p>
+                                        <p class="card-text fw-bold text-danger my-0">${formattedPrice(orderDetailMapping.orderDetail.finalSellingPrice * orderDetailMapping.orderDetail.quantity)}</p>
+                                        <a href="<%=request.getContextPath()%>/product-detail?id=${orderDetailMapping.orderDetail.productId}" class ="my-3">Xem, Đánh giá trực tiếp sản phẩm</a>
                                     </div>
                                 </div>
                             </div>
@@ -541,7 +552,7 @@
                 });
 
                 // Hiển thị thông tin chi tiết đơn hàng
-                $('#detailOrder').addClass('w-100 h-100 bg-secondary p-3 rounded');
+                $('#detailOrder').addClass('w-100 h-100 p-3 rounded');
                 $('#detailOrder').css('display', 'block');
                 $('#detailOrder').html(htmlContent);
                 // Hiển thị danh sách sản phẩm
@@ -655,6 +666,7 @@
         return backgroundColor;
     }
 </script>
+<script src="<%=request.getContextPath()%>/views/Admin/js/logging.reload.js"></script>
 </body>
 <%
     } else {

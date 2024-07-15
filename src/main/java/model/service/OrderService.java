@@ -69,7 +69,7 @@ public class OrderService {
         OrderDAO.confirmOrder(orderId);
     }
     public void preparingOder(String orderId) {
-        OrderDAO.confirmOrder(orderId);
+        OrderDAO.preparingOder(orderId);
     }
 
     public void deliveredOrder(String orderId) {

@@ -8,6 +8,7 @@ import model.dao.UserDAO;
 import model.db.JDBIConnector;
 
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -23,6 +24,11 @@ public class ProductService {
     public List<Product> getAll() {
         return ProductDAO.getAll();
     }
+
+    public List<Product> getAllProducts(int limit, int offset) {
+        return ProductDAO.getAllProducts(limit, offset);
+    }
+
     public List<Product> getAllProducts() {
         return ProductDAO.getAllProducts();
     }
@@ -135,6 +141,7 @@ public class ProductService {
     public void unSetDiscountByProduct(String discountId, String productId) {
         ProductDAO.unSetDiscountByProduct(discountId, productId);
     }
+
     /*
     comparison: -1 <; 0 =; 1 >
      */
@@ -145,7 +152,6 @@ public class ProductService {
     public void unSetDiscountByQuantity(String discountId, int number, int comparison) {
         ProductDAO.unSetDiscountByQuantity(discountId, number, comparison);
     }
-
 
 
     //Sắp xếp từ thấp đến cao
@@ -179,6 +185,16 @@ public class ProductService {
         return ProductDAO.getNumberRateStarsByUser(productId, userId);
     }
 
+    public double getAverageRateStars(int productId) {
+        return ProductDAO.getAverageRateStars(productId);
+    }
+
+    public double roundNumber(double averageRateStars) {
+        // Làm tròn kết quả về 1 chữ số thập phân
+        DecimalFormat df = new DecimalFormat("#.#");
+        return Double.parseDouble(df.format(averageRateStars));
+    }
+
     public List<Rate> getRatesByStarNumber(int productId, int starRatings, Integer userId) {
         return ProductDAO.getRatesByStarNumber(productId, starRatings, userId);
     }
@@ -197,8 +213,6 @@ public class ProductService {
     }
 
 
-
-
     public int getChangeNumber(int productId, int userId) {
         boolean check = UserService.getInstance().checkUserAllowedToRate(productId, userId);
         // nếu mua r => get Rate -> xem changeNumber
@@ -208,6 +222,7 @@ public class ProductService {
         }
         return -1;
     }
+
     public void changeRate(int productId, int userId, int starRatings, String comment) {
         if (ProductDAO.rateExists(productId, userId) != null) {
             ProductDAO.updateRate(productId, userId, starRatings, comment);
@@ -219,7 +234,6 @@ public class ProductService {
     public Rate rateExists(int productId, int userId) {
         return ProductDAO.rateExists(productId, userId);
     }
-
 
 
     public long getNumberAvailProduct() {
@@ -264,7 +278,11 @@ public class ProductService {
         ProductDAO.updateProduct(id, name, description, costPrice, categoryId, isSale);
     }
 
-    public static void main(String[] args) {
+    public List<Product> getProductByFilter(String categoryFilter, int sort, Double startPrice, Double endPrice, int limit, int offset) {
+        return ProductDAO.getProductByFilter(categoryFilter, sort, startPrice, endPrice, limit, offset);
+    }
 
+    public List<Product> getProductBySearchFilter(String keyword, int sort, Double startPrice, Double endPrice, int limit, int offset) {
+        return ProductDAO.getProductBySearchFilter(keyword, sort, startPrice, endPrice, limit, offset);
     }
 }

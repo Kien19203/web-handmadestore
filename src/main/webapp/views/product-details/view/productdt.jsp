@@ -48,7 +48,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Inline+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+          rel="stylesheet">
     <!--https://datatables.net/download/-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
@@ -70,68 +71,21 @@
         .dt-empty {
             display: none;
         }
-
-
-        .rate {
-            float: left;
-            height: 46px;
-            padding: 0 10px;
-        }
-
-        .rate:not(:checked) > input {
-            position: absolute;
-            top: -9999px;
-            display: none;
-        }
-
-        .rate:not(:checked) > label {
-            float: right;
-            width: 1em;
-            overflow: hidden;
-            white-space: nowrap;
-            cursor: pointer;
-            font-size: 30px;
-            color: #ccc;
-        }
-
-        .rate:not(:checked) > label:before {
-            content: '★ ';
-        }
-
-        .rate > input:checked ~ label {
-            color: #ffc700;
-        }
-
-        .rate:not(:checked) > label:hover,
-        .rate:not(:checked) > label:hover ~ label {
-            color: #deb217;
-        }
-
-        .rate > input:checked + label:hover,
-        .rate > input:checked + label:hover ~ label,
-        .rate > input:checked ~ label:hover,
-        .rate > input:checked ~ label:hover ~ label,
-        .rate > label:hover ~ input:checked ~ label {
-            color: #c59b08;
-        }
     </style>
-
+    <link rel="stylesheet" href="<%=request.getContextPath()%>/stars.css">
 </head>
 <body>
 <%--Thanh điều hướng - header--%>
 <%@include file="/views/MenuBar/menu.jsp" %>
-
-
 <!-- Nội dung Product-details-->
 <!-- Thẻ navigation : thanh chuyển hướng -->
 <section class="product-details container">
-
     <nav aria-label="breadcrumb ">
         <ol class="breadcrumb m-0 ">
             <li class="breadcrumb-item"><a
                     href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>
             <li class="breadcrumb-item"><a
-                    href="product?category=<%=categoryByProduct.getId()%>"><%=categoryByProduct.getName()%>
+                    href="productsPage?categoryFilter=<%=categoryByProduct.getId()%>"><%=categoryByProduct.getName()%>
             </a></li>
             <li class="breadcrumb-item active" aria-current="page" style="color: #e32124"><%=product.getName()%>
             </li>
@@ -157,7 +111,7 @@
                     Image mainImage = imageList.get(0);
             %>
             <div class="main-img col-lg-10">
-            <img class=" large-img " id="MainImg" src="<%=mainImage.getPath()%>" alt="">
+                <img class=" large-img " id="MainImg" src="<%=mainImage.getPath()%>" alt="">
                 <img class="large-img " id="imgZoom" src="<%=mainImage.getPath()%>" alt="">
                 <%
                     }
@@ -171,33 +125,52 @@
 
             <h3 class=""><%=product.getName() %>
             </h3>
+            <%!double averageStarsNumber;%>
+            <%averageStarsNumber = ProductService.getInstance().getAverageRateStars(product.getId());%>
+            <%if(averageStarsNumber>0){%>
             <div class="d-flex rate-content">
-                <div class="icon-rate me-3">
-                    <i class="bi bi-star "></i>
-                    <i class="bi bi-star"></i>
-                    <i class="bi bi-star"></i>
-                    <i class="bi bi-star"></i>
-                    <i class="bi bi-star"></i></div>
-                <a href="#rating-comment">Xem chi tiết</a>
+                <div class="icon-rate me-3 d-flex align-items-center">
+                    <div class="me-1" style="font-weight: bold; font-size: 25px"><%=ProductService.getInstance().roundNumber(averageStarsNumber)%></div>
+                    <div class="stars">
+                        <svg viewBox="0 0 576 512" title="star">
+                            <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/>
+                        </svg>
+                        <svg viewBox="0 0 576 512" title="star">
+                            <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/>
+                        </svg>
+                        <svg viewBox="0 0 576 512" title="star">
+                            <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/>
+                        </svg>
+                        <svg viewBox="0 0 576 512" title="star">
+                            <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/>
+                        </svg>
+                        <svg viewBox="0 0 576 512" title="star">
+                            <path d="M259.3 17.8L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0z"/>
+                        </svg>
 
+                        <div class="cover" style="width: <%=(100-(averageStarsNumber/5)*100)%>%;"></div>
+                    </div>
+                    <a href="#rating-comment">Xem chi tiết</a>
+                </div>
             </div>
-
-            <% if(product.getStock() > 0) {
+            <%}%>
+            <% if (product.getStock() > 0) {
             %>
             <div class="state-pd my-2">
-                <label class="me-2 label-title">Còn <strong style="color: #ff1a1a"><%=product.getStock()%></strong> sản phẩm</label>
-                <label class="me-2 ">  <strong>| Trạng thái :</strong>
-                <%
-                     String status = "Ngừng kinh doanh";
-                     switch (product.getIsSale()) {
-                    case 1:
-                        status = "Có sẵn";
-                        break;
-                    case 2:
-                        status = "Tạm hết hàng";
-                        break;
-                }
-                %>
+                <label class="me-2 label-title">Còn <strong style="color: #ff1a1a"><%=product.getStock()%>
+                </strong> sản phẩm</label>
+                <label class="me-2 "> <strong>| Trạng thái :</strong>
+                    <%
+                        String status = "Ngừng kinh doanh";
+                        switch (product.getIsSale()) {
+                            case 1:
+                                status = "Có sẵn";
+                                break;
+                            case 2:
+                                status = "Tạm hết hàng";
+                                break;
+                        }
+                    %>
                     <%=status%>
                 </label>
             </div>
@@ -209,57 +182,60 @@
 
             <%
                 double discountPrice = ProductService.getInstance().productPriceIncludeDiscount(product);
-                if(product.getSellingPrice() > discountPrice) {
+                if (product.getSellingPrice() > discountPrice) {
                     int discountProductKM = ProductService.getInstance().discountProduct(product.getId());
             %>
 
             <div class="price-discount d-flex flex-row">
-            <h2 class="price-pd">
-                <%=numberFormat.format(discountPrice)%>
-            </h2>
+                <h2 class="price-pd">
+                    <%=numberFormat.format(discountPrice)%>
+                </h2>
                 <span class="ms-2" style="color: #4d8a54"> <strong>  <%=discountProductKM + "%"%><strong/></span>
             </div>
-                <span>Giá gốc : <span class="text-decoration-line-through fst-italic"><%=numberFormat.format(product.getSellingPrice())%></span></span>
-            <% }  else {%>
+            <span>Giá gốc : <span
+                    class="text-decoration-line-through fst-italic"><%=numberFormat.format(product.getSellingPrice())%></span></span>
+            <% } else {%>
             <h2 class="price-pd">
-                <%=numberFormat.format(product.getSellingPrice())%> </h2>
+                <%=numberFormat.format(product.getSellingPrice())%>
+            </h2>
             <%}%>
-                <div class="row mt-3">
+            <div class="row mt-3">
 
-                    <%
-                    if(product.getIsSale() == 1) {
-                    %>
-                    <div class="quantity-pd mb-4 col-4">
-                        <label class="me-2 label-title" style="font-size: 14px">Số lượng: </label>
-                        <div class="qu-value">
-                            <button class="pd-des m-0" id="#minus-button">-</button>
-                            <input type="text" class="quantity-input p-0" id="#quantity-label" value="1">
-                            <button class="pd-inc m-0" id="#plus-button">+</button>
-                        </div>
+                <%
+                    if (product.getIsSale() == 1) {
+                %>
+                <div class="quantity-pd mb-4 col-4">
+                    <label class="me-2 label-title" style="font-size: 14px">Số lượng: </label>
+                    <div class="qu-value">
+                        <button class="pd-des m-0" id="#minus-button">-</button>
+                        <input type="text" class="quantity-input p-0" id="#quantity-label" value="1">
+                        <button class="pd-inc m-0" id="#plus-button">+</button>
                     </div>
-                    <button class="buy-btn col-4" style="font-size: 16px" <%=request.getAttribute("disable")%>>
-                        Thêm vào giỏ hàng
-                    </button>
-
-                    <% } else {%>
-                    <a href="#relate" style="font-style: italic; font-size: 14px" > Xem các sản phẩm khác </a>
-                    <%}%>
-
                 </div>
+                <button class="buy-btn col-4" style="font-size: 16px" <%=request.getAttribute("disable")%>>
+                    Thêm vào giỏ hàng
+                </button>
+
+                <% } else {%>
+                <a href="#relate" style="font-style: italic; font-size: 14px"> Xem các sản phẩm khác </a>
+                <%}%>
+
+            </div>
 
 
-                <hr class="mx-auto">
-                <h4 class=" mt-4 mb-4 ">Chi tiết sản phẩm</h4>
+            <hr class="mx-auto">
+            <h4 class=" mt-4 mb-4 ">Chi tiết sản phẩm</h4>
 
-                <%--          Xử lý hiển thị chi tiết sản phẩm theo từng dòng văn bản--%>
-                    <%String[] lines = description.split("\\r?\\n");
-                for(String line : lines) {
+            <%--          Xử lý hiển thị chi tiết sản phẩm theo từng dòng văn bản--%>
+            <%
+                String[] lines = description.split("\\r?\\n");
+                for (String line : lines) {
 
-%>
+            %>
 
-                <p class="gray-content"><%=line%>
-                </p>
-                    <%}%>
+            <p class="gray-content"><%=line%>
+            </p>
+            <%}%>
         </div>
     </div>
 
@@ -449,7 +425,7 @@
 
 <script>
 
-<%--    XỬ LÝ ẢNH  START--%>
+    <%--    XỬ LÝ ẢNH  START--%>
     var MainImg = document.getElementById('MainImg');
     var smallimg = document.getElementsByClassName('small-img');
     let imgZoom = document.getElementById('imgZoom')
@@ -479,11 +455,10 @@
     smallimg[0].style.border = '2px solid #ff1a1a'
 
 
-
     MainImg.addEventListener('mousemove', (event) => {
         imgZoom.style.opacity = 1;
         let positionPx = event.x - MainImg.getBoundingClientRect().left;
-        let positionx = (positionPx / MainImg.offsetWidth) *100;
+        let positionx = (positionPx / MainImg.offsetWidth) * 100;
 
         let positionPy = event.y - MainImg.getBoundingClientRect().top;
         let positiony = (positionPy / MainImg.offsetHeight) * 100;
@@ -492,14 +467,14 @@
         imgZoom.style.setProperty('--zoom-x', positionx + '%');
         imgZoom.style.setProperty('--zoom-y', positiony + '%');
 
-        let transformX = - (positionx - 50) /3.5;
-        let transformY = - (positionx - 50) /3.5;
+        let transformX = -(positionx - 50) / 3.5;
+        let transformY = -(positionx - 50) / 3.5;
         imgZoom.style.transform = 'scale(1.1)' + 'translateX(' + transformX + ') translateY(' + transformY + ')';
 
     })
 
-    MainImg.addEventListener('mouseout', ()=> {
-        imgZoom.style.opacity=0;
+    MainImg.addEventListener('mouseout', () => {
+        imgZoom.style.opacity = 0;
     })
 
     //  XỬ LÝ ẢNH END
@@ -515,63 +490,82 @@
         const addToCartLink = document.querySelector(".buy-btn");
 
 
-            incrementButton.addEventListener("click", function () {
-                console.log("Button + clicked");
-                quantityInput.value = parseInt(quantityInput.value) + 1;
-                console.log(quantityInput.value)
-            });
+        incrementButton.addEventListener("click", function () {
+            console.log("Button + clicked");
+            quantityInput.value = parseInt(quantityInput.value) + 1;
+            console.log(quantityInput.value)
+        });
 
-            decrementButton.addEventListener("click", function () {
-                console.log("Button - clicked");
-                const currentValue = parseInt(quantityInput.value);
+        decrementButton.addEventListener("click", function () {
+            console.log("Button - clicked");
+            const currentValue = parseInt(quantityInput.value);
 
-                if (currentValue > 1) {
-                    quantityInput.value = currentValue - 1;
-                }
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
 
-            });
+        });
 
-            let idProductList = [];
-            addToCartLink.addEventListener("click", function (event) {
-                let actionCart = "post";
-                $.ajax({
-                    url: "/HandMadeStore/add-cart",
-                    method: "GET",
-                    data:{
-                        id: <%=product.getId()%>,
-                        actionCart: actionCart,
-                        num: quantityInput.value
-                    },
-                    success:function(response){
-                        if(!idProductList.includes(<%=product.getId()%>)) {
-                            idProductList.push(<%=product.getId()%>);
-                            handleAddToCart(response);
-                        }
-                            Swal.fire({
-                                position: "center",
-                                icon: "success",
-                                title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
-                                showConfirmButton: false,
-                                timer: 1500
-                            });
 
-                    },
-                    error:function () {
+        let idProductList = [];
+        addToCartLink.addEventListener("click", function (event) {
+            let actionCart = "post";
+            $.ajax({
+                url: "/HandMadeStore/add-cart",
+                method: "GET",
+                data: {
+                    id: <%=product.getId()%>,
+                    actionCart: actionCart,
+                    num: quantityInput.value
+                },
+                success: function (response) {
+                    console.log(response);
+                    if (response != null && response == 'false') {
                         Swal.fire({
                             position: "center",
                             icon: "error",
-                            title: "Số lượng không hợp lệ !",
-                            showConfirmButton: true,
+                            title: "Vui lòng đăng nhập",
+                            showConfirmButton: false,
+                            timer: 1500
                         });
-
+                        return;
+                    }else if(response != null && response == 'NoPost'){
+                        Swal.fire({
+                            position: "center",
+                            icon: "error",
+                            title: "Sản Phẩm Không Đủ Số Lượng!",
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                        return;
+                    } else if (!idProductList.includes(<%=product.getId()%>)) {
+                        idProductList.push(<%=product.getId()%>);
+                        handleAddToCart(response);
                     }
+                    Swal.fire({
+                        position: "center",
+                        icon: "success",
+                        title: "Thêm Sản Phẩm Vào Giỏ Hàng Thành Công!",
+                        showConfirmButton: false,
+                        timer: 1500
+                    });
 
-                })
+                },
+                error: function () {
+                    Swal.fire({
+                        position: "center",
+                        icon: "error",
+                        title: "Số lượng không hợp lệ !",
+                        showConfirmButton: true,
+                    });
 
-                    quantityInput.value = 1;
-                })
+                }
+
+            })
+
+            quantityInput.value = 1;
+        })
     })
-
 
 
     // XỬ LÝ THÊM VÀO GIỎ HÀNG END.

@@ -41,8 +41,12 @@ public class DiscountService {
         DiscountDAO.deleteDiscountById(id);
     }
 
+
     public static void main(String[] args) {
         System.out.println(getPercentageByDiscount(1));
     }
 
+    public double getPercentageOff(int id) {
+        return DiscountDAO.getPercentageOff(id);
+    }
 }

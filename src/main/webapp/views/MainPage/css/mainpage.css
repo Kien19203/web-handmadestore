@@ -167,6 +167,15 @@ body{
 .bikip .title_bk p:hover {
     color: red;
 }
+.bikip .content_bk ul .item{
+    border: 1px solid #afadad;
+    border-radius: 10px;
+    margin: 10px 20px;
+    box-shadow: 0 0 10px rgba(23, 21, 21, 0.1),
+    5px 0 5px rgba(0, 0, 0, 0.1),
+    0 5px 5px rgba(0, 0, 0, 0.1),
+    -5px 0 5px rgba(0, 0, 0, 0.1);
+}
 
 /*Footer*/
 #footer {
@@ -209,7 +218,7 @@ li {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 5em;
+    height: 4em;
 }
 
 .products .product_list .item_product a.image {
@@ -261,7 +270,7 @@ li {
     position: absolute;
     left: 0;
     right: 0;
-    bottom: 10px;
+    bottom: 32px;
 }
 .product_list {
     width: 25%;
@@ -276,13 +285,14 @@ li {
     color: white;
 }
 .content_bk .item {
-    width: 40%;
+    width: 25%;
 }
 .product .item_product img{
     height: 80%;
 }
 .content_bk .item img{
     height: 60%;
+    margin-top: 20px;
 }
 /*KM*/
 #sp_khuyenmai{
@@ -308,7 +318,7 @@ li {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 5em;
+    height: 3em;
 }
 
 .products .productkm .item_product a.image {

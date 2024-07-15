@@ -89,6 +89,12 @@
                        aria-expanded="true"><i
                             class="bi bi-shop me-2"></i>Quản lý sản phẩm</a>
                     <div class="dropdown-menu bg-transparent border-0 show ms-5" data-bs-popper="none">
+                        <a href="<%=request.getContextPath()%>/admin?func=inventory_management" class="dropdown-item
+                                <%if(func.equals("inventory_management")){%>
+                                     active
+                                 <%}%>"><i class="fa-solid fa-layer-group me-2"></i>
+                            Kho lưu trữ hàng
+                        </a>
                         <a href="<%=request.getContextPath()%>/admin?func=product_management"
                            class="dropdown-item
                                  <%if(func.equals("product_management")){%>
@@ -205,14 +211,14 @@
                         <i class="fa-solid fa-scroll me-lg-2"></i>
                         <span class="d-none d-lg-inline-flex">Lịch sử hệ thống</span>
                     </div>
-                    <div class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
+                    <div id="logs" class="dropdown-menu dropdown-menu-end bg-secondary border-0 rounded-0 rounded-bottom m-0">
                         <%for (Log log : LoggingService.getInstance().getThreeLogs()) {%>
                         <div class="dropdown-item">
                             <div class="d-flex align-items-center">
                                 <div class="fs-5">
 
                                     <%if (log.isINFORMLevel()) {%>
-                                    <i class="fa-regular fa-message"></i>
+                                    <i class="text-info fa-solid fa-info"></i>
                                     <%} else if (log.isALERTLevel()) {%>
                                     <i class="text-info fa-solid fa-circle-info"></i>
                                     <%} else if (log.isWARNINGLevel()) {%>

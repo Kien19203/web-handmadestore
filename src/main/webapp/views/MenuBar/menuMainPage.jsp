@@ -391,7 +391,7 @@
     <ul class="d-flex m-0 justify-content-around">
         <li class="logo my-auto">
             <a class="item_a" href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp"> <img
-                    src="<%=request.getContextPath()%>/images/logo.png" style="width: 18vh"></a>
+                    src="<%=request.getContextPath()%>/images/logo.png" style="width: 15vh"></a>
         </li>
 <%--        --%>
         <li class="nav-item dropdown itemNav my-auto" id="ProductList">
@@ -400,18 +400,18 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown" style="margin-top: 33px">
                 <%for(Category categoryProduct : categoryP){%>
-                <a id="submenuNav" class="dropdown-item" href="<%=request.getContextPath()%>/product?category=<%=categoryProduct.getId()%>"><%=categoryProduct.getName()%></a>
+                <a id="submenuNav" class="dropdown-item" href="<%=request.getContextPath()%>/productsPage?categoryFilter=<%=categoryProduct.getId()%>"><%=categoryProduct.getName()%></a>
                 <%}%>
             </div>
         </li>
         <li class="itemNav my-auto">
-            <a class="titleNav" href="#sp">Sản Phẩm</a>
+            <a class="titleNav" href="<%=request.getContextPath()%>/productsPage?categoryFilter=all">Danh sách sản Phẩm</a>
         </li>
         <li class="itemNav my-auto">
             <a class="titleNav" href="#bikip">Bí Kíp HandMade</a>
         </li>
         <li class="itemNav my-auto">
-            <a class="titleNav" href="#footer">Về Chúng Tôi</a>
+            <a class="titleNav" href="#footer">Liên hệ</a>
         </li>
 <%--        --%>
         <li class="search d-flex py-4 my-auto">

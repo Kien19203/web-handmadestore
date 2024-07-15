@@ -4,40 +4,34 @@ import model.adapter.InventoryProduct;
 import model.adapter.InventoryProductMappers;
 import model.bean.*;
 import model.db.JDBIConnector;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
-
 import model.service.ImageService;
-import model.service.ProductService;
-import org.jdbi.v3.core.Handle;
-import org.jdbi.v3.core.transaction.TransactionIsolationLevel;
-
-import java.sql.Connection;
 import java.util.*;
-
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 public class ProductDAO {
     //Tất cả các sản phẩm
     public static List<Product> getAll() {
         List<Product> product = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product WHERE isSale = 1")
+                handle.createQuery("SELECT p.* " +
+                                "FROM product p " +
+                                "LEFT JOIN inventory i ON p.id = i.productId " +
+                                "LEFT JOIN discount d ON p.discountId = d.id " +
+                                "WHERE p.isSale = 1 " +
+                                "ORDER BY i.createDate DESC, d.percentageOff DESC")
                         .mapToBean(Product.class)
                         .stream()
                         .toList()
         );
         return product;
     }
+
     public static List<Product> getAllProducts() {
         List<Product> product = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product")
+                handle.createQuery("SELECT p.* " +
+                                "FROM product p " +
+                                "LEFT JOIN inventory i ON p.id = i.productId " +
+                                "LEFT JOIN discount d ON p.discountId = d.id " +
+                                "ORDER BY i.createDate DESC, d.percentageOff DESC")
                         .mapToBean(Product.class)
                         .stream()
                         .toList()
@@ -101,7 +95,7 @@ public class ProductDAO {
 
     public static List<Product> findByCategory(int categoryID) {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("select * from product where categoryId = :id AND isSale = 1")
+                handle.createQuery("select * from product where categoryId = :id")
                         .bind("id", categoryID)
                         .mapToBean(Product.class)
                         .stream()
@@ -294,7 +288,11 @@ public class ProductDAO {
 
     public static List<Product> discountProduct() {
         List<Product> products = JDBIConnector.me().withHandle(handle ->
-                handle.createQuery("SELECT  product.* FROM product INNER JOIN discount ON product.discountId = discount.id WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP AND  isSale = 1 LIMIT 5")
+                handle.createQuery("SELECT  product.* FROM product " +
+                                "INNER JOIN discount ON product.discountId = discount.id " +
+                                "WHERE discount.startDate < CURRENT_TIMESTAMP AND discount.endDate > CURRENT_TIMESTAMP AND  isSale = 1 " +
+                                "ORDER BY discount.percentageOff DESC " +
+                                "LIMIT 5 ")
                         .mapToBean(Product.class)
                         .stream().toList());
         return products;
@@ -432,12 +430,6 @@ public class ProductDAO {
     }
 
 
-
-
-
-
-
-
     //Trang chính xuất 15 sản phẩm trong từng category và phải còn hàng
     public static List<Product> list4product(int idCategory) {
         List<Product> productList = JDBIConnector.me().withHandle(handle ->
@@ -459,6 +451,220 @@ public class ProductDAO {
         return products;
     }
 
+    public static List<Product> getProductByFilter(String categoryFilter, int sort, Double startPrice, Double endPrice, int limit, int offset) {
+        String categoryQuery, rangePriceQuery;
+        try {
+            int cid = Integer.parseInt(categoryFilter);
+            categoryQuery = "categoryId=" + cid;
+        } catch (Exception e) {
+            categoryQuery = "";
+        }
+
+        if (startPrice != null && endPrice == null) {
+            rangePriceQuery = "p.sellingPrice >= " + startPrice;
+        } else if (startPrice == null && endPrice != null) {
+            rangePriceQuery = "p.sellingPrice <= " + endPrice;
+        } else if (startPrice != null && endPrice != null) {
+            rangePriceQuery = "p.sellingPrice BETWEEN " + startPrice + " AND " + endPrice;
+        } else {
+            rangePriceQuery = "";
+        }
+        String sql;
+        switch (sort) {
+            case SortOption.SORT_MOST_RATES:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "LEFT JOIN rate r ON p.id = r.productId " +
+                        "WHERE "
+                        + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "GROUP BY p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "ORDER BY COUNT(r.productId) DESC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_HIGHEST_RATING:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "LEFT JOIN rate r ON p.id = r.productId " +
+                        "WHERE "
+                        + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "GROUP BY p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "ORDER BY AVG(r.starRatings) DESC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_PRICE_ASC:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "WHERE "
+                        + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY p.sellingPrice ASC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_PRICE_DESC:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "WHERE "
+                        + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY p.sellingPrice DESC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_DISCOUNT:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "LEFT JOIN discount d ON p.discountId = d.id " +
+                        "WHERE "
+                        + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
+                        " p.isSale = 1 " +
+                        "  AND d.startDate <= NOW() AND d.endDate >= NOW() "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY d.percentageOff DESC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_STOCK:
+                sql = "SELECT * FROM product p WHERE "
+                        + (categoryQuery.isEmpty() ? "" : categoryQuery + " AND ") +
+                        " isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY p.stock DESC " +
+                        " LIMIT ? OFFSET ?";
+                break;
+            default:
+                sql = "SELECT p.* FROM product p " +
+                        "LEFT JOIN inventory i ON p.id = i.productId " +
+                        " WHERE "
+                        + (categoryQuery.isEmpty() ? "" : "p." + categoryQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        " ORDER BY i.createDate DESC " +
+                        " LIMIT ? OFFSET ?";
+                break;
+        }
+        System.out.println("hehe\n:" + sql);
+        List<Product> products = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind(0, limit)
+                        .bind(1, offset)
+                        .mapToBean(Product.class)
+                        .stream().toList());
+        return products;
+    }
+
+    public static List<Product> getProductBySearchFilter(String keyword, int sort, Double startPrice, Double endPrice, int limit, int offset) {
+        String kwQuery, rangePriceQuery;
+        kwQuery = "p.name LIKE '%" + keyword + "%'";
+
+        if (startPrice != null && endPrice == null) {
+            rangePriceQuery = "p.sellingPrice >= " + startPrice;
+        } else if (startPrice == null && endPrice != null) {
+            rangePriceQuery = "p.sellingPrice <= " + endPrice;
+        } else if (startPrice != null && endPrice != null) {
+            rangePriceQuery = "p.sellingPrice BETWEEN " + startPrice + " AND " + endPrice;
+        } else {
+            rangePriceQuery = "";
+        }
+        String sql;
+        switch (sort) {
+            case SortOption.SORT_MOST_RATES:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "LEFT JOIN rate r ON p.id = r.productId " +
+                        "WHERE "
+                        + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "GROUP BY p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "ORDER BY COUNT(r.productId) DESC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_HIGHEST_RATING:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "LEFT JOIN rate r ON p.id = r.productId " +
+                        "WHERE "
+                        + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "GROUP BY p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "ORDER BY AVG(r.starRatings) DESC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_PRICE_ASC:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "WHERE "
+                        + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY p.sellingPrice ASC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_PRICE_DESC:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "WHERE "
+                        + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY p.sellingPrice DESC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_DISCOUNT:
+                sql = "SELECT p.id, p.name, p.description, p.sellingPrice, p.stock, p.categoryId, p.discountId, p.isSale " +
+                        "FROM product p " +
+                        "LEFT JOIN discount d ON p.discountId = d.id " +
+                        "WHERE "
+                        + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
+                        " p.isSale = 1 " +
+                        "  AND d.startDate <= NOW() AND d.endDate >= NOW() "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY d.percentageOff DESC " +
+                        "LIMIT ? OFFSET ?";
+                break;
+            case SortOption.SORT_STOCK:
+                sql = "SELECT * FROM product p WHERE "
+                        + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
+                        " isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        "ORDER BY p.stock DESC " +
+                        " LIMIT ? OFFSET ?";
+                break;
+            default:
+                sql = "SELECT p.* FROM product p " +
+                        "LEFT JOIN inventory i ON p.id = i.productId WHERE "
+                        + (kwQuery.isEmpty() ? "" : kwQuery + " AND ") +
+                        " p.isSale = 1 "
+                        + (rangePriceQuery.isEmpty() ? "" : " AND " + rangePriceQuery) +
+                        " ORDER BY i.createDate DESC " +
+                        " LIMIT ? OFFSET ?";
+                break;
+        }
+        System.out.println(sql);
+        List<Product> products = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql)
+                        .bind(0, limit)
+                        .bind(1, offset)
+                        .mapToBean(Product.class)
+                        .stream().toList());
+        return products;
+    }
+
+    public static int getFindProductNumber(String nameP) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("SELECT count(id) FROM `product` WHERE name LIKE :name AND isSale = 1")
+                        .bind("name", "%" + nameP + "%")
+                        .mapTo(Integer.class).one());
+    }
+
+
+
+
     public static long getNumberAvailProduct() {
         return JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select count(id) from product where stock>0 and isSale!=0").mapTo(Long.class).one());
@@ -472,7 +678,7 @@ public class ProductDAO {
                         .map(new InventoryProductMappers.SoldOutMapper())
                         .stream()
                         .toList());
-                return inventoryProducts;
+        return inventoryProducts;
     }
 
 
@@ -579,7 +785,84 @@ public class ProductDAO {
         return result;
     }
 
+//Tính số sao trung bình của sản phẩm theo id
 
+    public static double avarageStar(int idProduct) {
+        List<Rate> rateList = JDBIConnector.me().withHandle(
+                handle -> handle.createQuery("SELECT * FROM `rate` WHERE productId = :productId")
+                        .bind("productId", idProduct)
+                        .mapToBean(Rate.class)
+                        .stream().toList());
+        double result = 0;
+        if (!rateList.isEmpty()) {
+            int count = 0;
+            double starAll = 0;
+            for (Rate rate : rateList) {
+                count++;
+                starAll += rate.getStarRatings();
+            }
+            result = starAll / count;
+        }
+        return result;
+    }
+
+    //Sản Phẩm đã bán số lượng
+    public static int sellProduct(int idProduct) {
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select soldOut from inventory where productId=?")
+                        .bind(0, idProduct)
+                        .mapTo(Integer.class).one());
+    }
+
+    public static double getAverageRateStars(int productId) {
+        try {
+            double averageStars = JDBIConnector.me().withHandle(handle ->
+                    handle.createQuery(
+                                    "SELECT AVG(starRatings) AS averageStars " +
+                                            "FROM rate WHERE productId = ? " +
+                                            "GROUP BY productId"
+                            )
+                            .bind(0, productId)
+                            .mapTo(Double.class)
+                            .one());
+            return averageStars;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    /*
+
+     public static List<Order> getOrderByCustomerId(String customerId, int limit, int offset, int statusNumber) {
+        List<Order> orders = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from `order` where userId=? and status=? order by orderDate desc LIMIT ? OFFSET ?")
+                        .bind(0, customerId)
+                        .bind(1, statusNumber)
+                        .bind(2, limit)
+                        .bind(3, offset)
+                        .mapToBean(Order.class)
+                        .stream().collect(Collectors.toList())
+        );
+        return orders;
+    }
+     */
+    //Lấy stock
+    public static int StockProduct(int idProduct){
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("SELECT stock FROM product WHERE id= :idProduct")
+                        .bind("idProduct",idProduct)
+                        .mapTo(Integer.class)
+                        .one());
+    }
+    public static List<Product> getAllProducts(int limit, int offset) {
+        List<Product> products = JDBIConnector.me().withHandle(handle ->
+                handle.createQuery("select * from `product` where isSale=1 LIMIT ? OFFSET ?")
+                        .bind(0, limit)
+                        .bind(1, offset)
+                        .mapToBean(Product.class)
+                        .stream().toList());
+        return products;
+    }
 
 //    chỉnh sửa thông tin sản phẩm.
     //    --------------------UPDATE SẢN PHẨM.
@@ -611,7 +894,7 @@ public class ProductDAO {
                 handle.createUpdate(sql).bind("quantity", quantity).bind("id", productId).execute());
     }
 
-    public static void increamentStock(int productId, int quantity) {
+    public static void increamentStock  (int productId, int quantity) {
         String sql = "UPDATE  product SET stock = stock + :quantity WHERE id = :id";
 
         JDBIConnector.me().useHandle(handle ->
@@ -668,7 +951,11 @@ public class ProductDAO {
 
 
 
+
     public static void main(String[] args) {
+//        List<Product> products = getProductBySearchFilter("Thiệp", SortOption.SORT_PRICE_ASC, null, 1620000.0, 15, 0);
+//        products.forEach((p) -> System.out.println(p.getName()));
+        System.out.println(StockProduct(1));
     }
 }
 

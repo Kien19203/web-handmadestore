@@ -43,12 +43,13 @@ public class changeUserInfo extends HttpServlet {
                     }
                 } else if (action.equals("changePhone")) {
                     String newPhone = req.getParameter("newPhone");
-                    if (newPhone == null || newPhone.trim().equals("") || newPhone.equals(user.getPhoneNumber()))
+                    if (newPhone != null) newPhone = newPhone.trim();
+                    if (newPhone == null || newPhone.isEmpty() || newPhone.equals(user.getPhoneNumber()))
                         resp.getWriter().write("Số điện thoại không khả dụng");
-                    else if(Validation.checkPhoneNumber(newPhone)==false){
+                    else if (!Validation.checkPhoneNumber(newPhone)) {
+                        System.out.println("validate phone" + newPhone + "- " + Validation.checkPhoneNumber(newPhone));
                         resp.getWriter().write("Số điện thoại không hợp lệ");
-                    }
-                    else {
+                    } else {
                         UserService.getInstance().updatePhoneNumber(user.getId() + "", newPhone);
                         resp.getWriter().write("Số điện thoại mới - " + newPhone + " đã cập nhật");
 
