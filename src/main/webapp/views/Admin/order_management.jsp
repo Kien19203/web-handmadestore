@@ -501,13 +501,13 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6">
-                            <h3>Chi tiết sản phẩm</h3>
+                            <h3 style = "text-decoration: underline;">Chi tiết sản phẩm</h3>
                             <div class="row" id="product-details" style="height: 500px;overflow-y: scroll;">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class=" p-3 rounded">
-                                <h2>Thông tin chi tiết đơn hàng</h2>
+                                <h2 style = "text-decoration: underline;">Thông tin chi tiết đơn hàng</h2>
                                 <p><strong>Mã đơn hàng:</strong> ${orderDetailsResponse.order.id}</p>
                                 <p><strong>Email tài khoản:</strong> ${orderDetailsResponse.user.email}</p>
                                 <p><strong>Ngày đặt hàng:</strong> ${formattedDate(orderDetailsResponse.order.orderDate)}</p>
