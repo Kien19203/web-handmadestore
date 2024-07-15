@@ -377,15 +377,15 @@
     <div class="my-3" id="rate-box">
         <div class="rate">
             <input type="radio" id="star5" name="rate" value="5"/>
-            <label for="star5" title="text">5 stars</label>
+            <label for="star5" title="text">5 <i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></label>
             <input type="radio" id="star4" name="rate" value="4"/>
-            <label for="star4" title="text">4 stars</label>
+            <label for="star4" title="text">4 <i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></label>
             <input type="radio" id="star3" name="rate" value="3"/>
-            <label for="star3" title="text">3 stars</label>
+            <label for="star3" title="text">3 <i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></label>
             <input type="radio" id="star2" name="rate" value="2"/>
-            <label for="star2" title="text">2 stars</label>
+            <label for="star2" title="text">2 <i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></label>
             <input type="radio" id="star1" name="rate" value="1"/>
-            <label for="star1" title="text">1 star</label>
+            <label for="star1" title="text">1 <i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></label>
         </div>
         <div class="border rounded-3">
             <div class="text-danger mt-3" id="rate_validate" style="display: none">
@@ -512,7 +512,7 @@
             let actionCart = "post";
             $.ajax({
                 url: "/HandMadeStore/add-cart",
-                method: "GET",
+                method: "POST",
                 data: {
                     id: <%=product.getId()%>,
                     actionCart: actionCart,

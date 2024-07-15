@@ -219,8 +219,7 @@
                             </div>
                             <%if (averageRateStars > 0) {%>
                             <div style="float: right; width: 50%; padding-bottom: 3%;font-size: 15px; text-align: end; padding-right: 3px">
-                                <div><%=averageRateStars%><i class="fa-solid fa-star"
-                                                             style="color: #FFD43B;font-size: 13px"></i></div>
+                                <div><%=averageRateStars%><i class="fa-solid fa-star" style="color: #FFD43B;font-size: 13px"></i></div>
                             </div>
                             <%}%>
 
@@ -306,7 +305,7 @@
         var num = 1;
         $.ajax({
             url: "/HandMadeStore/add-cart",
-            method: "GET",
+            method: "POST",
             data: {
                 id: id,
                 actionCart: actionCart,
