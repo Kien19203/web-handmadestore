@@ -56,6 +56,10 @@ public class SignUp extends HttpServlet {
             req.setAttribute("erDuplicateEmail", "Email đã được sử dụng!");
             req.getRequestDispatcher("views/Login/view_login/signup.jsp").forward(req,  resp);
         }
+        else if( utel.length() != 10 || Integer.parseInt(utel) < 200000000 || Integer.parseInt(utel) > 999000000) {
+            req.setAttribute("erPhoneExist", "Số điện thoại không hợp lệ!");
+            req.getRequestDispatcher("views/Login/view_login/signup.jsp").forward(req,  resp);
+        }
         else   if(UserService.getInstance().isPhoneNumberExist(utel) == true) {
             req.setAttribute("erPhoneExist", "Số điện thoại đã được sử dụng!");
             req.getRequestDispatcher("views/Login/view_login/signup.jsp").forward(req,  resp);
@@ -83,5 +87,6 @@ public class SignUp extends HttpServlet {
             errors.put(fieldName, viewName + " không được bỏ trống");
         }
     }
+
 
 }

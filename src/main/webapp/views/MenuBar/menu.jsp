@@ -414,8 +414,6 @@
         </li>
 
         <li class="cart p-4 dropdown my-auto  position-relative">
-            <%--            <i class="fa-solid fa-cart-shopping" style="color: #2a3241;"></i>--%>
-            <%--            <a href="<%=request.getContextPath()%>/views/CartPage/cart.html">Giỏ Hàng</a>--%>
                 <a href="<%=request.getContextPath()%>/views/CartPage/view/cart.jsp">
 
                 <i class="fa-solid fa-cart-shopping position-relative" style="color: #2a3241;">
@@ -425,84 +423,84 @@
                 <span class="label ps-2"> Giỏ hàng </span>
             </a>
             <!--Danh sách giỏ hàng -->
-            <div class="top-cart-content " style="display: none">
-                <ul id="cart-side-bar" class="mini-product-list">
+<%--            <div class="top-cart-content " style="display: none">--%>
+<%--                <ul id="cart-side-bar" class="mini-product-list">--%>
 
-                    <ul class="list-item-cart">
-                        <% double total = 0;%>
-                        <% for (Item items : cart.getItems().values()) { %>
-                        <li class="item-sub">
-                            <div class="border_list">
-                                <a class="product-image" href="">
-                                    <img src="<%=request.getContextPath()%>/<%=ImageService.getInstance().pathImageOnly(items.getProduct().getId())%>"
-                                         width="100" alt="">
-                                </a>
-                                <div class="detail-item">
-                                    <div class="product-detail">
-                                        <p class="product-name">
-                                            <a href=""><%=items.getProduct().getName()%>
-                                            </a>
-                                        </p>
-                                    </div>
-                                    <div class="product-detail-bottom">
-                                        <span class="price"> <%=numberFormat.format(items.getPrice())%></span>
-
-
-                                        <a href="<%=request.getContextPath()%>/add-cart?actionCart=delete&id=<%=items.getProduct().getId()%>">
-                                            <i class="bi bi-x-circle-fill"></i>
-                                        </a>
-                                        <div class="quantity-select">
-
-                                            <button class="pd-des m-0" type="submit" name="num" value="-1">
-                                                <a href="<%=request.getContextPath()%>/add-cart?actionCart=put&num=-1&id=<%=items.getProduct().getId()%>">- </a>
-                                            </button>
-                                            <input type="text" readonly class="quantity-input p-0"
-                                                   value="<%=items.getQuantity()%>">
-                                            <button type="submit" name="num" value="1"
-                                                    class="pd-inc m-0">
-                                                <a href="<%=request.getContextPath()%>/add-cart?actionCart=put&num=1&id=<%=items.getProduct().getId()%>">+</a>
-                                            </button>
-
-                                        </div>
-                                    </div>
-
-                                </div>
-
-                            </div>
-                        </li>
-
-                        <%total += (items.getQuantity() * items.getPrice()); %>
-
-                        <%}%>
-
-                    </ul>
-                    <div class="pd">
-                        <div class="top-subtotal">
-                            Tổng tiền:
-                            <span class="price"> <%=numberFormat.format(total)%></span>
-                        </div>
-                    </div>
-                    <%if (!cart.getItems().isEmpty()) {%>
-                    <div class="pda rigth-ct">
-
-                        <a href="<%=request.getContextPath()%>/views/CartPage/view/cart.jsp"
-                           class="btn"><span>Giỏ hàng</span></a>
-
-                        <%if (u != null) {%>
-                        <a href="<%=request.getContextPath()%>/views/PaymentPage/payment.jsp" class="btn"><span>Thanh Toán</span></a>
-                        <%} else {%>
-                        <a href="<%=request.getContextPath()%>/login" class="btn"><span>Thanh Toán</span></a>
-                        <%}%>
+<%--                    <ul class="list-item-cart">--%>
+<%--                        <% double total = 0;%>--%>
+<%--                        <% for (Item items : cart.getItems().values()) { %>--%>
+<%--                        <li class="item-sub">--%>
+<%--                            <div class="border_list">--%>
+<%--                                <a class="product-image" href="">--%>
+<%--                                    <img src="<%=request.getContextPath()%>/<%=ImageService.getInstance().pathImageOnly(items.getProduct().getId())%>"--%>
+<%--                                         width="100" alt="">--%>
+<%--                                </a>--%>
+<%--                                <div class="detail-item">--%>
+<%--                                    <div class="product-detail">--%>
+<%--                                        <p class="product-name">--%>
+<%--                                            <a href=""><%=items.getProduct().getName()%>--%>
+<%--                                            </a>--%>
+<%--                                        </p>--%>
+<%--                                    </div>--%>
+<%--                                    <div class="product-detail-bottom">--%>
+<%--                                        <span class="price"> <%=numberFormat.format(items.getPrice())%></span>--%>
 
 
-                    </div>
-                    <%} else {%>
-                    <div class="align-content-center">
-                        <span>Giỏ hàng đang trống !</span></div>
-                    <%}%>
-                </ul>
+<%--                                        <a href="<%=request.getContextPath()%>/add-cart?actionCart=delete&id=<%=items.getProduct().getId()%>">--%>
+<%--                                            <i class="bi bi-x-circle-fill"></i>--%>
+<%--                                        </a>--%>
+<%--                                        <div class="quantity-select">--%>
 
-            </div>
+<%--                                            <button class="pd-des m-0" type="submit" name="num" value="-1">--%>
+<%--                                                <a href="<%=request.getContextPath()%>/add-cart?actionCart=put&num=-1&id=<%=items.getProduct().getId()%>">- </a>--%>
+<%--                                            </button>--%>
+<%--                                            <input type="text" readonly class="quantity-input p-0"--%>
+<%--                                                   value="<%=items.getQuantity()%>">--%>
+<%--                                            <button type="submit" name="num" value="1"--%>
+<%--                                                    class="pd-inc m-0">--%>
+<%--                                                <a href="<%=request.getContextPath()%>/add-cart?actionCart=put&num=1&id=<%=items.getProduct().getId()%>">+</a>--%>
+<%--                                            </button>--%>
+
+<%--                                        </div>--%>
+<%--                                    </div>--%>
+
+<%--                                </div>--%>
+
+<%--                            </div>--%>
+<%--                        </li>--%>
+
+<%--                        <%total += (items.getQuantity() * items.getPrice()); %>--%>
+
+<%--                        <%}%>--%>
+
+<%--                    </ul>--%>
+<%--                    <div class="pd">--%>
+<%--                        <div class="top-subtotal">--%>
+<%--                            Tổng tiền:--%>
+<%--                            <span class="price"> <%=numberFormat.format(total)%></span>--%>
+<%--                        </div>--%>
+<%--                    </div>--%>
+<%--                    <%if (!cart.getItems().isEmpty()) {%>--%>
+<%--                    <div class="pda rigth-ct">--%>
+
+<%--                        <a href="<%=request.getContextPath()%>/views/CartPage/view/cart.jsp"--%>
+<%--                           class="btn"><span>Giỏ hàng</span></a>--%>
+
+<%--                        <%if (u != null) {%>--%>
+<%--                        <a href="<%=request.getContextPath()%>/views/PaymentPage/payment.jsp" class="btn"><span>Thanh Toán</span></a>--%>
+<%--                        <%} else {%>--%>
+<%--                        <a href="<%=request.getContextPath()%>/login" class="btn"><span>Thanh Toán</span></a>--%>
+<%--                        <%}%>--%>
+
+
+<%--                    </div>--%>
+<%--                    <%} else {%>--%>
+<%--                    <div class="align-content-center">--%>
+<%--                        <span>Giỏ hàng đang trống !</span></div>--%>
+<%--                    <%}%>--%>
+<%--                </ul>--%>
+
+<%--            </div>--%>
             </a>
 
 

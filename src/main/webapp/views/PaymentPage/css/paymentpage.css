@@ -1,3 +1,11 @@
+* {
+    font-family: "Montserrat", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+}
+
+
 #infor_center {
     display: none;
 }
@@ -54,6 +62,22 @@
 
 .color-for-text {
     color: #357ebd;
+}
+#total_amount {
+    font-weight: bold;
+    color: red;
+}
+
+#inform {
+    background-color: #FBFADA;
+}
+#count-down {
+    background-color: red;
+    color: #FFFFFF;
+    font-size: 25px;
+    font-weight: bold;
+    margin: 0;
+    border-radius: 5px;
 }
 
 

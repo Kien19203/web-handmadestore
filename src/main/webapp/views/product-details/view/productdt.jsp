@@ -506,6 +506,7 @@
 
         });
 
+
         let idProductList = [];
         addToCartLink.addEventListener("click", function (event) {
             let actionCart = "post";

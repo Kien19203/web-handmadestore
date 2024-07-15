@@ -136,7 +136,7 @@ public class ImageService {
     public static List<String> writeProductImagesFromClient(String productName, HttpServletRequest req, HttpServletResponse resp, ServletContext servletContext) throws ServletException, IOException {
         List<String> uploadedFiles = new ArrayList<>();
 
-        String relativePath = "images/products"; // Đường dẫn tới thư mục images trong ứng dụng
+        String relativePath = "images/products"; // Đường dẫn tới thư mục    images trong ứng dụng
         String absolutePath = servletContext.getRealPath(relativePath);
 
         // Tạo thư mục nếu chưa tồn tại

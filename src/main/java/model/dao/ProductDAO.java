@@ -4,14 +4,10 @@ import model.adapter.InventoryProduct;
 import model.adapter.InventoryProductMappers;
 import model.bean.*;
 import model.db.JDBIConnector;
-
 import java.util.Collections;
 import java.util.List;
-
 import model.service.ImageService;
-
 import java.util.*;
-
 public class ProductDAO {
     //Tất cả các sản phẩm
     public static List<Product> getAll() {
@@ -53,6 +49,8 @@ public class ProductDAO {
         );
         return product.isEmpty() ? null : product.get();
     }
+
+
 
     public static void deleteProduct(String product_id) {
         //delete products image
@@ -865,6 +863,94 @@ public class ProductDAO {
                         .stream().toList());
         return products;
     }
+
+//    chỉnh sửa thông tin sản phẩm.
+    //    --------------------UPDATE SẢN PHẨM.
+
+    public static Integer getCostPriceProduct(int id) {
+        String sql = "select costPrice from inventory where productId=?";
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).bind(0, id).mapTo(Integer.class).one());
+    }
+
+    public static Integer getStockProduct(int id) {
+        String sql = "select stock from product where id=?";
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).bind(0, id).mapTo(Integer.class).one());
+    }
+
+    public static Integer getIsSale(int id) {
+        String sql = "select isSale from product where id=?";
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).bind(0, id).mapTo(Integer.class).one());
+
+    }
+
+//     GIẢM STOCK SARN PHAAM/
+    public static void reduceStock(int productId, int quantity) {
+        String sql = "UPDATE  product SET stock = stock - :quantity WHERE id = :id";
+
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(sql).bind("quantity", quantity).bind("id", productId).execute());
+    }
+
+    public static void increamentStock  (int productId, int quantity) {
+        String sql = "UPDATE  product SET stock = stock + :quantity WHERE id = :id";
+
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(sql).bind("quantity", quantity).bind("id", productId).execute());
+    }
+
+
+
+
+
+
+
+
+
+    public static void updateProduct(String id, String name, String description, int sellingPrice, String categoryId, String discountId, int isSale) {
+
+        String updateProduct = "UPDATE product SET name=:name, description=:description, sellingPrice=:sellingPrice, categoryId=:categoryId, discountId=:discountId, isSale=:isSale where id=:id";
+
+
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                updateProduct
+                        )
+                        .bind("name", name)
+                        .bind("description", description)
+                        .bind("sellingPrice", sellingPrice)
+                        .bind("categoryId", categoryId)
+                        .bind("discountId", discountId)
+                        .bind("isSale", isSale)
+                        .bind("id", id)
+                        .execute()
+        );
+    }
+
+    public static void updateProduct(String id, String name, String description, int sellingPrice, String categoryId, int isSale) {
+
+        String updateProduct = "UPDATE product SET name=:name, description=:description, sellingPrice=:sellingPrice, categoryId=:categoryId, isSale=:isSale where id=:id";
+        JDBIConnector.me().useHandle(handle ->
+                handle.createUpdate(
+                                updateProduct
+                        )
+                        .bind("name", name)
+                        .bind("description", description)
+                        .bind("sellingPrice", sellingPrice)
+                        .bind("categoryId", categoryId)
+                        .bind("isSale", isSale)
+                        .bind("id", id)
+                        .execute()
+        );
+    }
+
+
+
+
+
+
 
     public static void main(String[] args) {
 //        List<Product> products = getProductBySearchFilter("Thiệp", SortOption.SORT_PRICE_ASC, null, 1620000.0, 15, 0);

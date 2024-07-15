@@ -243,6 +243,40 @@ public class ProductService {
     public static Integer discountProduct(int idProduct) {
         return ProductDAO.discountProduct(idProduct);
     }
+    public static Integer getProductCostPrice(int productId) {
+        return ProductDAO.getCostPriceProduct(productId);
+
+    }
+
+    public static Integer getStockProduct(int productId){
+
+        return ProductDAO.getStockProduct(productId);
+
+    }
+
+    public static Integer getIsSale(int productId){
+
+        return ProductDAO.getIsSale(productId);
+
+    }
+
+    public void reduceStock(int productId, int quantity) {
+        ProductDAO.reduceStock(productId, quantity);
+    }
+    public void increaseStock(int productId, int quantity) {
+        ProductDAO.increamentStock(productId, quantity);
+    }
+
+
+    //update cho sản phẩm.
+    /// EDIT PRODUCT.
+    public void editProduct(String id, String name, String description, int sellingPrice, String categoryId, String discountId, int isSale) {
+        ProductDAO.updateProduct(id, name, description ,sellingPrice, categoryId, discountId, isSale);
+    }
+
+    public void editProduct(String id, String name, String description, int costPrice, String categoryId, int isSale) {
+        ProductDAO.updateProduct(id, name, description, costPrice, categoryId, isSale);
+    }
 
     public List<Product> getProductByFilter(String categoryFilter, int sort, Double startPrice, Double endPrice, int limit, int offset) {
         return ProductDAO.getProductByFilter(categoryFilter, sort, startPrice, endPrice, limit, offset);

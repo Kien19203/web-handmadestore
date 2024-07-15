@@ -14,23 +14,34 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @WebServlet(name = "CartController", value = "/add-cart")
 public class AddCartController extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User user = (User) (req.getSession().getAttribute("auth"));
-        if(user == null){
+        HttpSession sessions = null;
+        Cart cart = null;
+        if (user == null) {
             resp.getWriter().write("false");
-        }else {
-            HttpSession sessions = req.getSession();
-            Cart cart = (Cart) sessions.getAttribute("cart");
+        } else {
+            sessions = req.getSession();
+            cart = (Cart) sessions.getAttribute("cart");
             if (cart == null) {
                 cart = new Cart();
             }
             sessions.setAttribute("cart", cart);
             doPost(req, resp);
         }
+
+        sessions.setAttribute("cart", cart);
+
+        doPost(req, resp);
+
+
     }
 
     @Override
@@ -82,7 +93,7 @@ public class AddCartController extends HttpServlet {
                 sessions.setAttribute("cart", cart);
                 resp.sendRedirect(referer);
                 break;
-            default:
+                default:
 
                 break;
         }

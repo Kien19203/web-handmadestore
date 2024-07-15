@@ -1,6 +1,7 @@
-<%@ page import="java.util.Map" %>
-<%@ page import="model.bean.Item" %>
-<%@ page import="model.service.ImageService" %><%--
+<%@ page import="model.service.ImageService" %>
+<%@ page import="java.util.*" %>
+<%@ page import="model.service.ProductService" %>
+<%@ page import="model.bean.*" %><%--
 =======
 <<<<<<< HEAD
 =======
@@ -55,6 +56,83 @@
 
 <%@include file="/views/MenuBar/menu.jsp" %>
 <%--<%Map<Integer, Item> list = cart. %>--%>
+<%
+    //Xử lý trường hợp, stock giảm sau khi khách đã thêm vào giỏ hàng trước đó => thông báo xin lỗi.
+    List<String> messages = new ArrayList<>();
+
+
+    Iterator<Map.Entry<Integer, Item>> entryIterator = cart.getItems().entrySet().iterator();
+    while (entryIterator.hasNext()) {
+        Map.Entry<Integer, Item> itemEntry = entryIterator.next();
+        Product p = ProductService.getInstance().getProductById(itemEntry.getKey());
+        int stock = p.getStock();
+        int isSale = p.getIsSale();
+
+        itemEntry.getValue().setProduct(p);
+
+        double price = ProductService.getInstance().productPriceIncludeDiscount(p);
+
+        itemEntry.getValue().getProduct().setStock(stock);
+        if(isSale == 0) {
+            messages.add("Sản phẩm " + itemEntry.getValue().getProduct().getName() + " đã ngừng kinh doanh.");
+            entryIterator.remove();
+            continue;
+        }
+
+        if(itemEntry.getValue().getPrice() != price) {
+            itemEntry.getValue().setPrice(price);
+        }
+
+
+
+
+        if(stock ==0) {
+            itemEntry.getValue().setQuantity(stock);
+            messages.add("Sản phẩm " + itemEntry.getValue().getProduct().getName() + " đã hết hàng.");
+
+        } else if(itemEntry.getValue().getQuantity() > stock ) {
+            itemEntry.getValue().setQuantity(stock);
+            messages.add("Sản phẩm " + itemEntry.getValue().getProduct().getName() + " chỉ còn " + stock + " sản phẩm.");
+        }
+
+
+    }
+
+
+
+//    for(Map.Entry<Integer, Item> itemEntry : cart.getItems().entrySet()){
+//        int stock = ProductService.getStockProduct(itemEntry.getKey());
+//        int isSale = ProductService.getIsSale(itemEntry.getKey());
+//        double price = ProductService.getInstance().productPriceIncludeDiscount(itemEntry.getValue().getProduct());
+//        System.out.println(price);
+//        itemEntry.getValue().getProduct().setStock(stock);
+//        if(itemEntry.getValue().getPrice() != price) {
+//            itemEntry.getValue().setPrice(price);
+//        }
+//
+//        if(isSale == 0) {
+//            messages.add("Sản phẩm " + itemEntry.getValue().getProduct().getName() + " đã ngừng kinh doanh.");
+//
+//        }
+//
+//
+//
+//        if(stock == 0 ) {
+//            itemEntry.getValue().setQuantity(stock);
+//            messages.add("Sản phẩm " + itemEntry.getValue().getProduct().getName() + " đã hết hàng.");
+//        }
+//
+//
+//        else if(itemEntry.getValue().getQuantity() > stock ) {
+//            itemEntry.getValue().setQuantity(stock);
+//            messages.add("Sản phẩm " + itemEntry.getValue().getProduct().getName() + " chỉ còn " + stock + " sản phẩm.");
+//        }
+//    }
+
+
+
+
+%>
 
 
 <nav aria-label="breadcrumb ">
@@ -66,13 +144,45 @@
         </li>
     </ol>
 </nav>
+<div>
+    <%if (!messages.isEmpty()) { %>
+    <div id="inform" class="d-flex justify-content-center flex-column align-items-center p-3">
+        <h2>Kính gửi quý khách hàng,</h2>
+    <span>Chúng tôi xin trân trọng thông báo rằng sau khi kiểm tra, có một số sản phẩm trong giỏ hàng của Quý khách hiện không đủ số lượng trong kho. Cụ thể là:
+    </span>
+        <% for(String i : messages) { %>
+        <p style="font-weight: bold; color: red" class="m-0 p-2" ><%=i%></p>
+
+        <%
+            }
+        %>
+        <span>Chúng tôi rất xin lỗi về sự bất tiện này và cam kết sẽ nhanh chóng khắc phục tình trạng hàng hoá để mang đến dịch vụ tốt nhất cho Quý khách. </span>
+    </div>
+
+    <%}%>
+</div>
 
 
 <div class="row">
     <div class="col-12">
             <div class="vh-100 w-100 bg-body d-flex justify-content-center align-items-center ">
+
+
+                <%  if (cart.getItems().isEmpty()) {
+                %>
+                    <div  id="empty-cart-display" class="d-flex flex-column justify-content-center align-items-center ">
+                    <img src="<%=request.getContextPath()%>/images/empty-cart.png" class="w-256px h-256px" alt="">
+                    <h3>Giỏ hàng của bạn đang trống !</h3>
+                    <span>Quay trở lại trang chủ, khám phá và đưa vào giỏ những lựa chọn tuyệt vời nào!</span>
+                        <button type="button" class="pause_bt mt-3" style="background-color: #faf5f5"
+                                onclick="window.location = '../../MainPage/view_mainpage/mainpage.jsp'">Tiếp tục mua hàng
+                        </button>
+                    </div>
+                <%
+                    } else {
+                %>
                 <!--Main-->
-                <div>
+                <div id="list-cart-item">
                     <div class="m-auto" style="height: 400px;width: 90%; overflow-y: auto;">
                         <table id="order-list" class="table table-borderless text-center mb-5">
                             <thead>
@@ -86,9 +196,12 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <%Item itemTemp = new Item();%>
+                            <%Item itemTemp = new Item();
+                            double total = 0;%>
                             <% for (Item item : cart.getItems().values()) { %>
-                            <%itemTemp = item;%>
+                            <%
+                            total += item.getQuantity() * item.getPrice();
+                                itemTemp = item;%>
                             <tr class="border-1">
                                 <td class="align-middle">
                                     <% String pathImage = ImageService.getInstance().pathImageOnly(item.getProduct().getId()); %>
@@ -157,17 +270,22 @@
                         <button type="button" class="pause_bt"
                                 onclick="window.location = '../../MainPage/view_mainpage/mainpage.jsp'">Tiếp tục mua hàng
                         </button>
+                        <%if(total > 0) {%>
+
                      <%if(u != null){%>
-                        <button type="button" class="complete_bt me-5"
-                                onclick="window.location = '../../PaymentPage/payment.jsp'">Thanh Toán
+                        <button type="button" id="btn-payment" class="complete_bt me-5"
+                                >Thanh Toán
                         </button>
                         <%}else{%>
                         <button type="button" class="complete_bt me-5"
                                 onclick="window.location = '<%=request.getContextPath()%>/login'">Thanh Toán
                         </button>
                         <%}%>
+                        <%}%>
                     </div>
                 </div>
+
+                <%}%>
             </div>
     </div>
 </div>
@@ -209,23 +327,47 @@ function deleteRow(btn,idProduct,priceProduct) {
         },
         success: function (response) {
             console.log("Thành Công Xóa");
-            btn.closest("tr").remove();
-            let formatTotal = numberFomat.format(newTotal);
-            console.log(formatTotal);
-            total_amount.innerText = formatTotal;
-            total_Cart.innerText = newTotal;
-            handleDeleteToCart(response);
-            Swal.fire({
-                position: "center",
-                icon: "success",
-                title: "Xóa Sản Phẩm Thành Công!",
-                showConfirmButton: false,
-                timer: 1500
-            });
+            let currentCartItems = $("#order-list tr").length;
+            console.log( "so item : " +  currentCartItems);
+                btn.closest("tr").remove();
+                currentCartItems -=1;
+            console.log( "so item after : " +  currentCartItems);
 
-        }
+                if(currentCartItems === 1){
+                    $("#list-cart-item").html(`
+                    <div  id="empty-cart-display" class="d-flex flex-column justify-content-center align-items-center ">
+                    <img src="<%=request.getContextPath()%>/images/empty-cart.png" class="w-256px h-256px" alt="">
+                    <h3>Giỏ hàng của bạn đang trống !</h3>
+                    <span>Quay trở lại trang chủ, khám phá và đưa vào giỏ những lựa chọn tuyệt vời nào!</span>
+                        <button type="button" class="pause_bt mt-3" style="background-color: #faf5f5"
+                                onclick="window.location = '../../MainPage/view_mainpage/mainpage.jsp'">Tiếp tục mua hàng
+                        </button>
+                    </div>
+                `);
+                    return; // Ngừng thực hiện các bước tiếp theo
+
+                }
+                else {
+
+
+                let formatTotal = numberFomat.format(newTotal);
+                console.log(formatTotal);
+                total_amount.innerText = formatTotal;
+                total_Cart.innerText = newTotal;
+                handleDeleteToCart(response);
+                Swal.fire({
+                    position: "center",
+                    icon: "success",
+                    title: "Xóa Sản Phẩm Thành Công!",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+        }}
     })
 }
+
+
 // Giảm So luong
 function giamSL(btn,idProduct,priceProduct){
     console.log(idProduct);
@@ -318,6 +460,54 @@ function tangSL(btn,idProduct,priceProduct,stockProduct){
     }
 }
 
+
+// Validate trước khi vào trang thanh toán.
+$(document).ready(function () {
+    $("#btn-payment").click(function () {
+        $.ajax({
+            type:"GET",
+            url: "/HandMadeStore/payment",
+            success: function (response) {
+
+
+                if(response.isValid) {
+
+                    window.location.href = "../../PaymentPage/payment.jsp"
+
+                }
+                else {
+                    var errorMessageHtml = '<ul>';
+                    response.forEach(function(message) {
+                        errorMessageHtml += '<li>' + message + '</li>';
+                    });
+                    errorMessageHtml += '</ul>';
+
+                    Swal.fire({
+                        title: 'Thông báo',
+                        html:  errorMessageHtml,
+                        icon: 'info',
+                        showCancelButton: true,
+                        confirmButtonText: 'Chấp nhận',
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Xử lý khi người dùng ấn "Xác nhận"
+                            location.reload()
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            // Xử lý khi người dùng ấn "Quay lại" hoặc click bên ngoài hộp thoại
+                            console.log('Người dùng đã quay lại');
+                        }
+                    });
+                }
+
+            },
+            error: function (xhr, status, error) {
+                console.log("Loi khi gui yeu cau ajax"+ error);
+            }
+        })
+    })
+    }
+
+)
 
 </script>
 </body>
