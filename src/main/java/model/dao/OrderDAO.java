@@ -253,20 +253,18 @@ public class OrderDAO {
 
                 //Lấy id của order
                 int orderId = handle.createUpdate(sql)
-                        .bind("totalPrice", cart.getTotalMoney() + 35000)
+                        .bind("totalPrice", order.getTotalPrice())
                         .bind("orderDate", date)
                         .bind("status", 0)
                         .bind("consigneeName", order.getConsigneeName())
                         .bind("consigneePhoneNumber", order.getConsigneePhoneNumber())
                         .bind("address", order.getAddress())
-                        .bind("shippingFee", 35000)
+                        .bind("shippingFee", order.getShippingFee())
                         .bind("userId", u.getId())
                         .bind("note", order.getNote())
                         .executeAndReturnGeneratedKeys("id")
                         .mapTo(Integer.class)
                         .one();
-
-
                 System.out.println("check 0: " + orderId);
                 for (Item i : cart.getItems().values()) {
                     System.out.println("check 1: " + i.getProduct().getId());
@@ -284,14 +282,12 @@ public class OrderDAO {
                     });
 
                     System.out.println("check final: ");
-
-                    //Lay id don hang vua them
                 }
 
             });
 
 //            cập nhật lại số lượng sản phẩm
-            String sql3 = "UPDATE `product` SET quantity= quantity - :quantityOrder where id= :id";
+            String sql3 = "UPDATE `inventory` SET soldOut= soldOut + :quantityOrder where productId= :id";
             for (Item item : cart.getItems().values()) {
                 JDBIConnector.me().useHandle(handle3 ->
                         handle3.createUpdate(sql3)

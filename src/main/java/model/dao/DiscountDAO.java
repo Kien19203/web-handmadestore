@@ -17,6 +17,12 @@ public class DiscountDAO {
         return categories;
     }
 
+    public static Double getPercentageDiscount(int id) {
+        String sql = "select percentageOff from discount where id=? ";
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).bind(0, id).mapTo(Double.class).one());
+    }
+
     public static Discount getDiscountById(String id) {
         Optional<Discount> discount = JDBIConnector.me().withHandle(handle ->
                 handle.createQuery("select * from discount where id= :id")

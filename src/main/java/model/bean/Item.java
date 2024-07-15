@@ -1,5 +1,8 @@
 package model.bean;
 
+import lombok.ToString;
+
+@ToString
 public class Item {
     /**
      *  product: Sản phẩm mà mình thêm vào giỏ hàng

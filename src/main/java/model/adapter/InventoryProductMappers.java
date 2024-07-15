@@ -35,7 +35,8 @@ public class InventoryProductMappers {
                     rs.getInt("soldOut"),
                     rs.getInt("priceDifference"),
                     rs.getDate("lastModified"),
-                    rs.getInt("isSale")
+                    rs.getInt("isSale"),
+                    rs.getInt("discountId")
             );
         }
     }
@@ -67,6 +68,7 @@ public class InventoryProductMappers {
             return new InventoryProduct(
                     rs.getInt("id"),
                     rs.getString("name"),
+                    rs.getString("description"),
                     rs.getInt("costPrice"),
                     rs.getInt("sellingPrice"),
                     rs.getInt("quantityRemaining"),

@@ -216,7 +216,7 @@
     function addcart(btn, idP) {
         let num = 1;
         $.ajax({
-            url: "/HandMadeStore/add-cart-2",
+            url: "/HandMadeStore/add-cart",
             method: "POST",
             data: {
                 id: idP,

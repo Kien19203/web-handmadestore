@@ -17,9 +17,7 @@ public class BannerItemDAO {
         return bannerItems;
     }
 
-    public static void main(String[] args) {
-        System.out.println(getAll());
-    }
+
 
     public static BannerItem getBannerItemByTitle(String title) {
         Optional<BannerItem> bannerItem = JDBIConnector.me().withHandle(handle ->
@@ -68,4 +66,6 @@ public class BannerItemDAO {
                         .mapTo(Integer.class)
                         .one() > 0);
     }
+
+
 }

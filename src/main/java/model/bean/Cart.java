@@ -14,6 +14,13 @@ public class Cart {
 
     Map<Integer, Item> items = new HashMap<>();
 
+    @Override
+    public String toString() {
+        return "Cart{" +
+                "items=" + items +
+                '}';
+    }
+
     public Map<Integer, Item> getItems() {
         return items;
     }
@@ -81,80 +88,6 @@ public class Cart {
         items.clear();
     }
 
-    //giỏ trống khong có gì.
-//    public Cart() {
-//        items = new ArrayList<>();
-//    }
-//
-//    public List<Item> getItems() {
-//        return items;
-//    }
-//
-//    public void setItems(List<Item> items) {
-//        this.items = items;
-//    }
-
-    /**
-     * lấy số luượng mỗi sản phâm nào đó ở trong giỏ
-     * id : id product.
-     * Cộng dồn số lượng sản phẩm. (khi khách hàng thêm sản phẩm ngắt quãng)
-     * Lần 1: Bỏ vào 1 cái
-     * Lần 2: bỏ vào thêm 3 cái
-     */
-//    public int getQuantityById(int id) {
-//        return getItemById(id).getQuantity();
-//    }
-
-
-//    private Item getItemById(int id) {
-//        for (Item i : items) {
-//            if (i.getProduct().getId() == id)
-//                return i;
-//        }
-//        return null;
-//
-//    }
-    /**
-     *  Thêm item vào giỏ hàng.
-     * + Đã có thì chỉ thêm số lượng vào thôi
-     * + Chưa có thì mới phải add thêm.
-     *
-     */
-
-//    public void addItem (Item t) {
-//        if(getItemById(t.getProduct().getId()) != null) {
-//            Item m = getItemById(t.getProduct().getId());
-//            m.setQuantity(m.getQuantity() + t.getQuantity());
-//        }
-//        else {
-//            items.add(t);
-//        }
-//    }
-
-    /**
-     * Xóa 1 item ra khỏi giỏ hàng hiện tại
-     * id: Id của product muốn xóa khỏi giỏ.
-     * Check nó có trong giỏ hàng thì cho nó cook.
-     */
-
-//    public void removeItem(int id) {
-//        if(getItemById(id)!= null) {
-//            items.remove(getItemById(id));
-//        }
-//    }
-
-    /** GIẢI QUYẾT KHUYẾN MÃI.
-     * Tổng tiền giỏ hàng nefeee.
-     *
-     * Tổng tiền = Số lượng item * Mỗi sản phẩm * giá của từng sản phẩm.
-     */
-//    public double getTotalPrice() {
-//        double t =0;
-//        for(Item s : items) {
-//            t += (s.getQuantity()*s.getProduct().getSellingPrice());
-//             }
-//        return t;
-//    }
 
 
 }

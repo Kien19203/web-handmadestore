@@ -1,3 +1,8 @@
+
+
+
+
+
 function showPoliciesAndTerms(option) {
     var s = document.getElementById("infor_center");
     var t = document.getElementById("infor_center_title");

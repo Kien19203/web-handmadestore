@@ -230,7 +230,7 @@
             var registerButton = document.getElementById("submit_button");
 
             if (phoneNumber.length <10) {
-                errorMessageElement.innerHTML = "Lưu ý: Số điện thoại phải đủ 10 số!";
+                errorMessageElement.innerHTML = "Số điện thoại phải đủ 10 số!";
                 registerButton.disabled = true; // Vô hiệu hóa nút "Đăng ký"
             } else {
                 errorMessageElement.innerHTML = "";
@@ -248,7 +248,7 @@
             var specialCharRegex = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/;
 
             if (password.length < 6 || !specialCharRegex.test(password)) {
-                errorMessageElement.innerHTML = "Mật khẩu phải có ít nhất 6 ký tự và chứa ít nhất một ký tự đặc biệt";
+                errorMessageElement.innerHTML = "Mật khẩu phải có ít nhất 8 ký tự và chứa ít nhất một ký tự đặc biệt";
                 registerButton.disabled = true; // Vô hiệu hóa nút "Đăng ký"
             } else {
                 errorMessageElement.innerHTML = "";
@@ -325,7 +325,7 @@
                         <span class="error-message warning" style="font-size: 11px"><%= listNull.get("tel") %></span>
                         <% } %>
                         <span class="error-message warning" style="font-size: 11px"> <%=erPhoneExist%></span>
-                        <span id="phoneError" style="color: #FF5733; font-size: 11px; font-weight: bold"></span>
+                        <span id="phoneError" style="color: #FF5733; font-size: 11px"></span>
 
 
                     </div>
@@ -356,7 +356,7 @@
                     <% } %>
 
 
-                    <span id="passwordError" style="color: #FF5733; font-size: 11px; font-weight: bold"></span>
+                    <span id="passwordError" style="color: #FF5733; font-size: 11px"></span>
 
                 </div>
 
