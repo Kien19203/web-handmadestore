@@ -34,6 +34,21 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        #delete_image_box, #delete_product_box {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            overflow: auto;
+            display: none;
+            z-index: 1033;
+            background-color: #2c3e50; /* Adjust the background color as needed */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Optional: Add a box shadow for a subtle effect */
+        }
+    </style>
 </head>
 <body>
     <%InventoryProduct ipd = (InventoryProduct) request.getAttribute("product_detail");
@@ -81,7 +96,7 @@
                                value="<%=ipd.getId()%>" style="display: none">
                         <input type="text" class="form-control" id="productName" name="productName"
                                value="<%=ipd.getName()%>" oninput="validateCharacter()" >
-                        <label for="productName">Tên sản phẩm (Lưu ý: Không nên chứa ký tự '#')</label>
+                        <label for="productName">Tên sản phẩm</label>
                         <span id="productNameError" style="color: #FF5733; font-size: 11px; font-weight: bold"></span>
 
                     </div>
@@ -343,14 +358,63 @@
         }
 
     }
+    function showDeleteImageBox(imageId) {
+        const container = document.getElementById('delete_image_box');
+        container.innerHTML = `
+        <div>
+            <h4 class="text-danger">Bạn sẽ không thể hoàn tác thao tác này!</h1>
+            <button type="button" class="btn btn-outline-secondary" onclick="removeDeleteImageBox()">Hủy</button>
+            <button type="button" class="btn btn-outline-danger" onclick="deleteImageBox(${imageId})">Tiếp tục xóa ảnh</button>
+        </div>`;
+        container.style.display = 'block';
+    }
 
+    function removeDeleteImageBox() {
+        const container = document.getElementById('delete_image_box');
+        if (container) {
+            while (container.firstChild) {
+                container.removeChild(container.firstChild);
+            }
+        }
+        container.style.display = 'none';
+    }
 
+    function deleteImageBox(imageId) {
+        $.ajax({
+            method: "POST",
+            url: "/HandMadeStore/image-ajax-handle",
+            data: {
+                action: "deleteImage",
+                imageId: imageId
+            },
+            success: function (response) {
+                const imageDiv = document.getElementById('image_' + response);
+                if (imageDiv) {
+                    imageDiv.remove();
+                }
+                removeDeleteImageBox();
+            },
+            error: function () {
+                alert("lỗi")
+            }
+        })
+    }
 
+    function displayFileNames(input) {
+        var fileNamesContainer = document.getElementById("fileNamesContainer");
+        fileNamesContainer.innerHTML = "";
 
-
-
-
-
+        if (input.files.length > 0) {
+            for (var i = 0; i < input.files.length; i++) {
+                var fileName = input.files[i].name;
+                var fileNameElement = document.createElement("span");
+                fileNameElement.textContent = fileName + "; ";
+                fileNamesContainer.appendChild(fileNameElement);
+            }
+        } else {
+            fileNamesContainer.innerHTML = "Không có file được chọn";
+        }
+    }
 </script>
 </body>
 </html>

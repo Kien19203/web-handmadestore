@@ -18,7 +18,7 @@
     numberFormat.setCurrency(currency); %>
 <%
     List<InventoryProduct> ipList = InventoryService.getInstance().showInventoryView();
-        InventoryProduct ipd = (InventoryProduct) request.getAttribute("product_detail");
+    InventoryProduct ipd = (InventoryProduct) request.getAttribute("product_detail");
     List<Category> categories = CategoryService.getInstance().getALl();
 %>
 <html lang="en">
@@ -93,7 +93,6 @@
         }
 
 
-
         #edit-info {
             background-color: #FBFADA;
             color: #000;
@@ -109,9 +108,11 @@
             z-index: 3;
 
         }
+
         .detail-info h3 {
             color: #eb1616;
         }
+
         .quantity-label {
             justify-content: space-around;
             align-items: center;
@@ -124,12 +125,14 @@
             background-color: black; /* Adjust the color as needed */
             margin: 0 10px; /* Optional: add margin to separate from other elements */
         }
+
         .image-area {
             border: 1px solid #dee2e6;
             border-radius: 5px;
 
 
         }
+
         .spinner-overlay {
             position: fixed;
             top: 0;
@@ -142,6 +145,7 @@
             align-items: center;
             z-index: 9999;
         }
+
         .d-none {
             display: none !important;
         }
@@ -182,30 +186,32 @@
             <h2>Kho hàng HandmadeStore</h2>
         </div>
 
-            <div class="col-12">
-                <div class="data_table  mt-2 ">
-                    <table id="table-inventory" class="display table table-striped table-hover table-bordered">
-                        <thead class="table-dark">
-                        <tr>
-                            <th>Xem</th>
-                            <th>Mã</th>
-                            <th>Tên</th>
-                            <th>Giá nhập</th>
-                            <th>Giá bán</th>
-                            <th>Khuyến mãi</th>
-                            <th>Lượng tồn</th>
-                            <th>Lượng bán</th>
-                            <th>Biến động giá</th>
-                            <th>Nhập gần nhất</th>
-                            <th>Trạng thái</th>
-                        </tr>
-                        </thead>
+        <div class="col-12">
+            <div class="data_table  mt-2 ">
+                    <div class="d-flex justify-content-end">
+                        <input type="text" placeholder="Nhập mã sản phẩm" id="searchInput">
+                    </div>
+                <table id="table-inventory" class="display table table-striped table-hover table-bordered">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>Xem</th>
+                        <th>Mã</th>
+                        <th>Tên</th>
+                        <th>Giá nhập</th>
+                        <th>Giá bán</th>
+                        <th>Khuyến mãi</th>
+                        <th>Lượng tồn</th>
+                        <th>Lượng bán</th>
+                        <th>Biến động giá</th>
+                        <th>Nhập gần nhất</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                    </thead>
 
-                    </table>
-                </div>
+                </table>
             </div>
-<%--        </form>--%>
-
+        </div>
+        <%--        </form>--%>
 
 
     </div>
@@ -220,12 +226,6 @@
 <div id="edit-info">
 
 </div>
-
-
-
-
-
-
 
 
 <script>
@@ -279,12 +279,10 @@
 
     <%}%>
 
-
+    const searchInput = document.querySelector('#searchInput');
+    let table;
     $(document).ready(function () {
-            var table = $("#table-inventory").DataTable(
-
-
-
+            table = $("#table-inventory").DataTable(
                 {
                     layout: {
                         topStart: {
@@ -305,84 +303,87 @@
                         {data: 'productId'},
                         {data: 'productName'},
                         {data: 'costPrice'},
-                        {data: 'sellingPrice'
+                        {
+                            data: 'sellingPrice'
                         },
-                        {data: 'discount',
-                        render: function (data, type) {
-                            if(type=='display') {
-                                var value = parseInt(data);
-                                var colour = '';
-                                if(value >= 50) {
-                                    colour = '#d00000';
-                                }else if(value >= 30) {
-                                    colour = '#e85d04';
-                                } else if(value > 0) {
-                                    colour = '#ffba08';
+                        {
+                            data: 'discount',
+                            render: function (data, type) {
+                                if (type == 'display') {
+                                    var value = parseInt(data);
+                                    var colour = '';
+                                    if (value >= 50) {
+                                        colour = '#d00000';
+                                    } else if (value >= 30) {
+                                        colour = '#e85d04';
+                                    } else if (value > 0) {
+                                        colour = '#ffba08';
+                                    }
+                                    if (value === 0) {
+                                        return '';
+                                    }
+
+                                    return '<span style="background-color: ' + colour + '; color: #FFFFFF">' + value + '%' + '</div>';
                                 }
-                            if(value ===0) {
-                                return '';
+                                return data;
+
+
                             }
-
-                            return '<span style="background-color: ' + colour + '; color: #FFFFFF">' + value + '%' + '</div>';
-                            }
-                            return data;
-
-
-                        }
 
                         },
                         {data: 'quantityRemaining'},
                         {data: 'soldOut'},
-                        {data: 'priceDifference',
-                            render: function (data,type) {
-                            if(type=='display') {
-                                var value = parseInt(data);
-                                var colour = 'green';
-                                var icon= '';
-                                var number = DataTable.render
-                                    .number(',', '.', 0, '', ' ₫') // Không cần số thập phân
-                                    .display(data);
+                        {
+                            data: 'priceDifference',
+                            render: function (data, type) {
+                                if (type == 'display') {
+                                    var value = parseInt(data);
+                                    var colour = 'green';
+                                    var icon = '';
+                                    var number = DataTable.render
+                                        .number(',', '.', 0, '', ' ₫') // Không cần số thập phân
+                                        .display(data);
 
-                                if(value > 0) {
-                                    icon = '<i class="fas fa-arrow-alt-circle-up" style=`color:${colour}`></i>'
-                                }
-                                else if(value < 0) {
-                                    colour = 'red';
-                                    icon = '<i class="fas fa-arrow-alt-circle-down" style=`color:${colour}`></i>'
-                                }
-                                else {
-                                    colour = 'gray';
-                                    icon = '<i class="fas fa-minus-circle" style=`color:${colour}`></i>'
-                                    return `<span style="color:${colour}">${icon}</span>`;
-                                }
-                                return `<span style="color:${colour}">${icon} ${number}</span>`;
+                                    if (value > 0) {
+                                        icon = '<i class="fas fa-arrow-alt-circle-up" style=`color:${colour}`></i>'
+                                    } else if (value < 0) {
+                                        colour = 'red';
+                                        icon = '<i class="fas fa-arrow-alt-circle-down" style=`color:${colour}`></i>'
+                                    } else {
+                                        colour = 'gray';
+                                        icon = '<i class="fas fa-minus-circle" style=`color:${colour}`></i>'
+                                        return `<span style="color:${colour}">${icon}</span>`;
+                                    }
+                                    return `<span style="color:${colour}">${icon} ${number}</span>`;
 
-                            }
-                            return data;
+                                }
+                                return data;
                             }
 
                         },
                         {data: 'lastModified'},
-                        {data: 'isSale',
-                        render: function (data, type) {
-                            if (type === 'display') {
-                                if (data === "0") {
-                                    return 'Ngừng bán';
-                                } else if (data === "2") {
-                                    return 'Hết hàng';
-                                } else {
-                                    return 'Có sẵn';
+                        {
+                            data: 'isSale',
+                            render: function (data, type) {
+                                if (type === 'display') {
+                                    if (data === "0") {
+                                        return 'Ngừng bán';
+                                    } else if (data === "2") {
+                                        return 'Hết hàng';
+                                    } else {
+                                        return 'Có sẵn';
+                                    }
                                 }
+                                return data; // Trả về giá trị gốc trong các chế độ khác (sort, filter, type)
                             }
-                            return data; // Trả về giá trị gốc trong các chế độ khác (sort, filter, type)
-                        }
                         }
                     ]
-
-
                 });
-
-
+            if (searchInput) {
+                searchInput.addEventListener('input', function () {
+                    table.columns(1).search(this.value).draw();
+                });
+            }
         }
     );
 
@@ -390,45 +391,43 @@
 
 
     <%--BẮT ĐẦU XỬ LÝ NÚT XEM CHI TIẾT--%>
-        function showEdit(productid) {
 
-            // Gửi giá trị ID sang mã JSP.
-            $('#spinner-overlay').removeClass('d-none');
+    function showEdit(productid) {
 
-            $.ajax({
-                url:'/HandMadeStore/admin/inventory',
-                type:'GET',
-                data: {id: productid},
-                success :function (response) {
-                    // Hiển thị edit-info và overlay
-                    document.getElementById("edit-info").style.display = "block";
-                    document.getElementById("overlay").style.display = "block";
+        // Gửi giá trị ID sang mã JSP.
+        $('#spinner-overlay').removeClass('d-none');
 
-                        <%--window.location.href = "<%=request.getContextPath()%>/admin/inventory?id=" + productid;--%>
+        $.ajax({
+            url: '/HandMadeStore/admin/inventory',
+            type: 'GET',
+            data: {id: productid},
+            success: function (response) {
+                // Hiển thị edit-info và overlay
+                document.getElementById("edit-info").style.display = "block";
+                document.getElementById("overlay").style.display = "block";
 
-                    $('#edit-info').html(response);
+                <%--window.location.href = "<%=request.getContextPath()%>/admin/inventory?id=" + productid;--%>
+
+                $('#edit-info').html(response);
 
 
-                },
-                error : function (error) {
-                    console.log("Lỗi khi lấy productID ",error);
-                },
+            },
+            error: function (error) {
+                console.log("Lỗi khi lấy productID ", error);
+            },
 
-                complete: function() {
-                    // Ẩn spinner sau khi AJAX hoàn thành (bao gồm cả khi có lỗi) sau khoảng thời gian 3 giây
-                    setTimeout(function() {
-                        $('#spinner-overlay').addClass('d-none');
-                    }, 1000); // 0.3s
-                }
+            complete: function () {
+                // Ẩn spinner sau khi AJAX hoàn thành (bao gồm cả khi có lỗi) sau khoảng thời gian 3 giây
+                setTimeout(function () {
+                    $('#spinner-overlay').addClass('d-none');
+                }, 1000); // 0.3s
+            }
 
-            });
-        }
+        });
+    }
 
 
     <%--KẾT THÚC XỬ LÝ NÚT XEM CHI TIẾT ĐƠN HÀNG--%>
-
-
-
 
 
     function showAvailableCategory() {
@@ -447,15 +446,12 @@
     }
 
 
-
-
 </script>
 </body>
 <%
 
 
-
-//    }
+    //    }
 //    else {
 //        response
 //                .

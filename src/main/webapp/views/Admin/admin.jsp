@@ -95,14 +95,6 @@
                                  <%}%>"><i class="fa-solid fa-layer-group me-2"></i>
                             Kho lưu trữ hàng
                         </a>
-                        <a href="<%=request.getContextPath()%>/admin?func=product_management"
-                           class="dropdown-item
-                                 <%if(func.equals("product_management")){%>
-                                     active
-                                 <%}%>">
-                            <i class="fa-solid fa-list me-2"></i>
-                            Danh sách sản phẩm
-                        </a>
                         <a href="<%=request.getContextPath()%>/admin?func=category_management"
                            class="dropdown-item
                            <%if(func.equals("category_management")){%>
@@ -133,13 +125,6 @@
                         <a href="<%=request.getContextPath()%>/admin?func=inventory_management" class="dropdown-item"><i class="fa-solid fa-layer-group me-2"></i>
                             Kho lưu trữ hàng
                         </a>
-                        <a href="<%=request.getContextPath()%>/admin?func=product_management"
-                           class="dropdown-item
-                         <%if(func.equals("product_management")){%>
-                             active
-                         <%}%>"><i
-                                class="fa-solid fa-list me-2"
-                        ></i>Danh sách sản phẩm</a>
                         <a href="<%=request.getContextPath()%>/admin?func=category_management" class="dropdown-item"><i
                                 class="fa-solid fa-layer-group me-2"></i>
                             Quản lý danh mục
