@@ -57,7 +57,7 @@
 <%----%>
 <div id="findProducts" style="display: none">Tìm kiếm tại đây</div>
 <%if (textSearch != null && !textSearch.isEmpty()) {%>
-<h3 class="mx-3">
+<h3 class="mx-3 mt-3 ms-3">
     <span>Có </span>
     <span class="fw-bold"><%=searchResultNumber%> sản phẩm </span>
     <span>cho tìm kiếm từ khóa </span>
