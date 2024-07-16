@@ -23,6 +23,10 @@ public class InventoryService {
         return InventoryDAO.showInventoryView();
     }
 
+    public List<InventoryProduct> inventorySoldoutTop() {
+        return InventoryDAO.inventorySoldoutTop();
+    }
+
     public List<InventoryProduct> getTopSoldoutProduct(int number) {
         return ProductDAO.getTopSoldoutProduct(number);
     }

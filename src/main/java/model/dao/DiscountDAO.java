@@ -93,4 +93,12 @@ public class DiscountDAO {
     public static void main(String[] args) {
         System.out.println(getPercentageOff(118));
     }
+
+    public static int discountOnTodayNumber() {
+        String sql =
+                "SELECT COUNT(*) AS available_discounts FROM `discount` WHERE CURRENT_DATE() BETWEEN DATE(`startDate`) AND DATE(`endDate`)";
+        return JDBIConnector.me().withHandle(handle ->
+                handle.createQuery(sql).mapTo(Integer.class).findOne()
+                        .orElse(0));
+    }
 }

@@ -81,6 +81,9 @@
 <!-- Thẻ navigation : thanh chuyển hướng -->
 <section class="product-details container">
     <nav aria-label="breadcrumb ">
+        <div>
+            <i class="fa-solid fa-backward p-2 fs-5" onclick="window.history.back()" style="cursor: pointer"></i>
+        </div>
         <ol class="breadcrumb m-0 ">
             <li class="breadcrumb-item"><a
                     href="<%=request.getContextPath()%>/views/MainPage/view_mainpage/mainpage.jsp">Trang Chủ</a></li>

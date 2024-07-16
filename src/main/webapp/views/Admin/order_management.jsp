@@ -348,7 +348,7 @@
             success: function (response) {
                 if ($('#status')) {
                     console.log(response)
-                    $('#status').html(asNameStatus(2));
+                    $('#status').html(asNameStatus(1));
                 }
                 let parentDocument = window.parent.document;
                 let waitConfirmOrdersNumber = parentDocument.getElementById('waitConfirmOrdersNumber');

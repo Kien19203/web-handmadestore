@@ -1,178 +1,175 @@
-<%@ page import="model.bean.User" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="model.adapter.InventoryProduct" %>
+<%@ page import="java.util.Locale" %>
+<%@ page import="java.util.Currency" %>
+<%@ page import="java.text.NumberFormat" %>
+<%@ page import="java.util.List" %>
 <%@ page import="model.service.*" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-    <link rel="stylesheet" href="../css/main.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-          integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<%
+    /**
+     * FORMAT GIÁ TIỀN THEO ĐƠN VỊ CỦA VIỆT NAM.
+     */
+    Locale locale = new Locale("vi", "VN");
+    Currency currency = Currency.getInstance(locale);
+    NumberFormat numberFormat = NumberFormat.getCurrencyInstance(locale);
+    numberFormat.setCurrency(currency);
 
+    List<InventoryProduct> inventoryProducts = InventoryService.getInstance().inventorySoldoutTop();
+%>
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+    <title>Dashboard</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="keywords">
+    <meta content="" name="description">
+    <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Alumni+Sans+Inline+One&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap"
+          rel="stylesheet">
+    <!-- Icon Font Stylesheet -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Libraries Stylesheet -->
+    <link href="<%=request.getContextPath()%>/views/Admin/lib/owlcarousel/assets/owl.carousel.css" rel="stylesheet">
+    <link href="<%=request.getContextPath()%>/views/Admin/lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css"
+          rel="stylesheet"/>
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="<%=request.getContextPath()%>/views/Admin/css/bootstrap.min.custom.css" rel="stylesheet">
+
+    <!-- Template Stylesheet -->
+    <link href="<%=request.getContextPath()%>/views/Admin/css/style.dashboard.css" rel="stylesheet">
     <script
             src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js">
     </script>
+    <style>
+        .content-2 {
+            margin-left: 300px;
+            min-height: 100vh;
+            background: var(--light);
+            transition: 0.5s;
+        }
+    </style>
 </head>
 <%
     boolean isAdmin = ((request.getSession().getAttribute("isAdmin") == null) ? false : ((boolean) request.getSession().getAttribute("isAdmin")));
     if (isAdmin) {
 %>
 <body>
-<div class="m-2 title-main">
-    <h5 class="p-3">Chào bạn quay trở lại, Admin ơi!</h5>
-</div>
-<div class="main-content">
-    <div class="card-box m-4 d-flex align-middle">
-        <div class="card mb-3 me-3" style="max-width: 300px;">
-            <div class="row g-0">
-                <div class="col-md-4 card-icon">
-                    <i class="bi bi-eye"></i>
-                    <p class="card-text"><%=CounterFilter.getCount()%>
-                    </p>
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">Lượt xem</h5>
-                        <p class="card-text">Tổng số lượt ghé thăm trang web</p>
+<div class="content-2 main-content-se row mx-2 mb-2">
+    <!-- Sale & Revenue Start -->
+    <div class="container-fluid pt-4 px-4">
+        <div class="row g-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-chart-line fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Số đơn hàng đang giao</p>
+                        <h6 class="mb-0"><%=OrderService.getInstance().deliveringOrdersNumber()%></h6>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="card mb-3 me-3 " style="max-width: 300px;">
-            <div class="row g-0">
-                <div class="col-md-4 card-icon">
-                    <i class="bi bi-bag-fill"></i>
-                    <p class="card-text"><%=ProductService.getInstance().getNumberAvailProduct()%>
-                    </p>
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">Sản phẩm</h5>
-                        <p class="card-text">Tổng số lượng sản phẩm có sẵn</p>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-chart-bar fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Số khách hàng</p>
+                        <h6 class="mb-0"><%=UserService.getInstance().usersNumber()%>
+                        </h6>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="card mb-3 me-3  " style="max-width: 300px;">
-            <div class="row g-0">
-                <div class="col-md-4 card-icon">
-                    <i class="bi bi-truck"></i>
-                    <p class="card-text"><%=OrderService.getInstance().deliveringOrdersNumber()%>
-                    </p>
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">Đơn hàng</h5>
-                        <p class="card-text">Số lượng đơn hàng đang vận chuyển</p>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-chart-area fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Số sản phẩm</p>
+                        <h6 class="mb-0"><%=ProductService.getInstance().getNumberAvailProduct()%></h6>
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div class="card mb-3   " style="max-width: 300px;">
-            <div class="row g-0">
-                <div class="col-md-4 card-icon">
-                    <i class="bi bi-people-fill"></i>
-                    <p class="card-text"><%=UserService.getInstance().usersNumber()%>
-                    </p>
-                </div>
-                <div class="col-md-8">
-                    <div class="card-body">
-                        <h5 class="card-title">Khách hàng</h5>
-                        <p class="card-text">Tổng số lượng khách hàng đang có</p>
+            <div class="col-sm-6 col-xl-3">
+                <div class="bg-secondary rounded d-flex align-items-center justify-content-between p-4">
+                    <i class="fa fa-chart-pie fa-3x text-primary"></i>
+                    <div class="ms-3">
+                        <p class="mb-2">Khuyến mãi khả dụng</p>
+                        <h6 class="mb-0"><%=DiscountService.getInstance().discountOnTodayNumber()%></h6>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<!--ĐƠN HÀNG-->
-<div class="main-content-se row mx-2 mb-2">
-    <div class="chart-product row p-3">
-        <div class="best-sell-pd  col-sm-5">
-            <h5 class="title-f">Top 5 sản phẩm bán chạy</h5>
-            <hr class="line-split">
-            <table class="table">
-                <thead>
-                <tr>
-                    <th scope="col">STT</th>
-                    <th scope="col">Mã sản phẩm</th>
-                    <th scope="col">Tên sản phẩm</th>
-                    <th scope="col">Số lượng đã bán</th>
-                    <th scope="col">Số lượng còn lại</th>
-                </tr>
-                </thead>
-                <tbody>
-                <%
-                    int count = 0;
-                    for (InventoryProduct p : InventoryService.getInstance().getTopSoldoutProduct(5)) {
+    <!-- Sale & Revenue End -->
 
-                        count++;
-                %>
-                <tr>
-                    <td><%=count%>
-                    </td>
-                    <th scope="row"><%=p.getId()%>
-                    </th>
-                    <th scope="row"><%=p.getName()%>
-                    </th>
-                    <th><%=p.getSoldOut()%>
-                    </th>
-                    <th><%=p.getQuantityRemaining()%>
-                    </th>
-                </tr>
-                <%}%>
-                </tbody>
-            </table>
-        </div>
-
-        <div class="profit col-sm-7">
-            <h5 class="title-f">Doanh thu bán hàng gần nhất <%=LocalDate.now().getYear()%>
-            </h5>
-            <hr class="line-split">
-            <canvas id="myCharts" style="width:100%;max-width:600px"></canvas>
-        </div>
-    </div>
-    <div class="row">
-        <div class="user-header">
-            <h5 class="title-f">10 Khách hàng gần nhất</h5>
+    <!-- Sales Chart Start -->
+    <div class="profit container-fluid pt-4 px-4 profit">
+        <div>Doanh thu bán hàng gần nhất <%=LocalDate.now().getYear()%>
         </div>
         <hr class="line-split">
-        <table>
-            <thead>
-            <tr>
-                <th>Khách hàng</th>
-                <th>Email</th>
-                <th>Ngày đăng ký</th>
-            </tr>
-            </thead>
-            <tbody>
-            <% for (User u : UserService.getInstance().getNewUsersTop(10)) { %>
-            <tr>
-                <td><i class="bi bi-person-circle"></i>
-                    <%= u.getName() %>
-                </td>
-                <td><%= u.getEmail() %>
-                </td>
-                <td><%= u.getCreateDate() %>
-                </td>
-            </tr>
-            <% } %>
-            </tbody>
-        </table>
+        <canvas id="myCharts" style="width:100%; height: 200px"></canvas>
     </div>
+    <!-- Sales Chart End -->
+    <!-- Recent Sales Start -->
+    <div class="container-fluid pt-4 px-4 mt-3">
+        <div class="bg-secondary text-center rounded p-4">
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h6 class="mb-0">Top sản phẩm bán chạy</h6>
+<%--                <a href="">Show All</a>--%>
+            </div>
+            <div class="table-responsive">
+                <table class="table text-start align-middle table-bordered table-hover mb-0">
+                    <thead>
+                    <tr class="text-white">
+                        <th scope="col">Mã sản phẩm</th>
+                        <th scope="col">Sản phẩm</th>
+                        <th scope="col">Giá nhập</th>
+                        <th scope="col">Giá bán</th>
+                        <th scope="col">Đã bán</th>
+                        <th scope="col">Lượng tồn kho</th>
+                        <th scope="col">Nhập gần nhất</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <%
+                        for (InventoryProduct o : inventoryProducts) {
+                            int discountPrice = (int) (InventoryService.getInstance().productPriceIncludeDiscount(o.getId()));
+                    %>
+                    <tr>
+                        <td><%=o.getId()%>
+                        </td>
+                        <td><%=o.getName()%>
+                        </td>
+                        <td><%=numberFormat.format(o.getCostPrice())%>
+                        </td>
+                        <%if ((discountPrice != o.getSellingPrice())) {%>
+                        <td><%= numberFormat.format(
+                                discountPrice) + " (" + numberFormat.format(
+                                o.getSellingPrice()) + ")"
+                        %>
+                        </td>
+                        <%} else {%>
+                        <td><%=  numberFormat.format(
+                                o.getSellingPrice())
+                        %>
+                        </td>
+                        <%}%>
+                        <td><%=o.getSoldOut()%>
+                        </td>
+                        <td><%=o.getQuantityRemaining()%>
+                        </td>
+                        <td><%=o.getLastModified()%></td>
+                        <td><a class="btn btn-sm btn-primary"
+                               href="<%=request.getContextPath()%>/product-detail?id=<%=o.getId()%>">Xem</a></td>
+                    </tr>
+                    <%}%>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- Recent Sales End -->
 </div>
 
 <%!int year = LocalDate.now().getYear();%>
@@ -207,14 +204,19 @@
 <input type="hidden" id="m11" value="<%=OrderService.getInstance().getRevenueForMonth(11,year)%>">
 <input type="hidden" id="m12" value="<%=OrderService.getInstance().getRevenueForMonth(12,year)%>">
 
+<!-- JavaScript Libraries -->
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="<%=request.getContextPath()%>/views/Admin/lib/chart/chart.min.js"></script>
+<script src="<%=request.getContextPath()%>/views/Admin/lib/easing/easing.min.js"></script>
+<script src="<%=request.getContextPath()%>/views/Admin/lib/waypoints/waypoints.min.js"></script>
+<script src="<%=request.getContextPath()%>/views/Admin/lib/owlcarousel/owl.carousel.min.js"></script>
+<script src="<%=request.getContextPath()%>/views/Admin/lib/tempusdominus/js/moment.min.js"></script>
+<script src="<%=request.getContextPath()%>/views/Admin/lib/tempusdominus/js/moment-timezone.min.js"></script>
+<script src="<%=request.getContextPath()%>/views/Admin/lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
-        crossorigin="anonymous"></script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"
-        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<script src="../js/main.js"></script>
-<script src="../js/main.js"></script>
+<!-- Template Javascript -->
+<script src="<%=request.getContextPath()%>/views/Admin/js/main.custom.js"></script>
 <script>
     var y_last1 = parseFloat(document.getElementById("lastyear_m1").value);
     var y_last2 = parseFloat(document.getElementById("lastyear_m2").value);
