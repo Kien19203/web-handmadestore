@@ -58,10 +58,10 @@ public class InventoryAdminController extends HttpServlet {
         String description = req.getParameter("description");
 
 //
-//        List<String> paths = ImageService.writeProductImagesFromClient(productName, req, resp, getServletContext());
-//        if (!paths.isEmpty()) {
-//            ImageService.insertImages(productId, paths);
-//        }
+        List<String> paths = ImageService.writeProductImagesFromClient(productName, req, resp, getServletContext());
+        if (!paths.isEmpty()) {
+            ImageService.insertImages(productId, paths);
+        }
 
         // Kiểm tra điều kiện
         if (productName == null || productName.trim().isEmpty() ||

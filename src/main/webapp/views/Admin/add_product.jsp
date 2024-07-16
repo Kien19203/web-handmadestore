@@ -49,7 +49,7 @@
                 <div class="form-floating w-75 mx-5 my-2 p-2 ">
                     <input type="text" class="form-control" id="productName" name="productName" value="<%=productName%>"
                            placeholder="Thiệp sinh nhật" oninput="validateNotEmpty(this)">
-                    <label for="productName">Tên sản phẩm (Lưu ý: Không nên chứa ký tự '#')</label>
+                    <label for="productName">Tên sản phẩm</label>
                 </div>
                 <div class="form-floating w-75 mx-5 my-2 p-2">
                     <input type="number" class="form-control" id="quantity" name="quantity" placeholder="Số lượng"

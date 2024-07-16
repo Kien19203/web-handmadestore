@@ -25,6 +25,14 @@ public class InventoryDAO {
         );
         return inventoryProductList;
     }
+    public static List<InventoryProduct> inventorySoldoutTop() {
+        String sql = "SELECT p.id, p.name, i.costPrice, p.sellingPrice, i.quantity - i.soldOut AS quantityRemaining , i.soldOut, i.costPriceUpdate - i.costPrice AS priceDifference, i.createDate AS lastModified, p.isSale, p.discountId" +
+                "                  FROM product p JOIN inventory i on p.id = i.productId WHERE i.soldOut > 0 order by i.soldOut desc limit 10" ;
+        List<InventoryProduct> inventoryProductList = JDBIConnector.me().withHandle(
+                handle -> handle.createQuery(sql).map(new InventoryProductMappers.ViewInventoryMapper()).stream().toList()
+        );
+        return inventoryProductList;
+    }
     /**
      * Hiển thị trên bảng discount..
      */

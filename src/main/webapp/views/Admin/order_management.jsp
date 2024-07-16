@@ -52,7 +52,6 @@
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> <!--icon-->
     <title>Quản lý đơn hàng</title>
-    <link rel="stylesheet" href="<%=request.getContextPath()%>/views/Admin/css/table_style.css">
     <!--https://datatables.net/download/-->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.6.0/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.datatables.net/v/bs4-4.6.0/jq-3.7.0/dt-2.0.6/datatables.min.css" rel="stylesheet">
@@ -80,7 +79,7 @@
         .pagination {
             position: fixed;
             overflow: auto;
-            bottom: 20%;
+            bottom: 0;
             left: 50%;
             transform: translateX(-50%);
             z-index: 1000;
@@ -349,7 +348,7 @@
             success: function (response) {
                 if ($('#status')) {
                     console.log(response)
-                    $('#status').html(asNameStatus(2));
+                    $('#status').html(asNameStatus(1));
                 }
                 let parentDocument = window.parent.document;
                 let waitConfirmOrdersNumber = parentDocument.getElementById('waitConfirmOrdersNumber');

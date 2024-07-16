@@ -49,4 +49,7 @@ public class DiscountService {
     public double getPercentageOff(int id) {
         return DiscountDAO.getPercentageOff(id);
     }
+    public int discountOnTodayNumber() {
+        return DiscountDAO.discountOnTodayNumber();
+    }
 }
