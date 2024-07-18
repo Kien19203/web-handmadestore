@@ -170,7 +170,7 @@
     <%--    Add Box--%>
     <div class="row d-flex justify-content-center">
         <div id="add_discount" class="w-50 bg-secondary p-3 rounded">
-            <div class="text-center fw-bold p-3" style="font-size: 30px; color: #0dcaf0">Thêm khuyến mãi giảm giá</div>
+            <div class="text-center fw-bold p-3" style="font-size: 30px; color: #ffffff">Thêm khuyến mãi giảm giá</div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend me-3">
                     <span class="input-group-text fw-bold">Tên khuyến mãi</span>

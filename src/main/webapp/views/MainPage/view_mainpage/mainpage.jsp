@@ -119,7 +119,7 @@
                     <div style="position: absolute;top: 0;z-index: 1000;background: red;color: white;padding: 5px;"><%=discountProductKM%>
                         %
                     </div>
-                    <div>
+                    <div class="mt-3">
                         <del><p style="margin-bottom: 0"><%=numberFormat.format(prd.getSellingPrice())%>
                         </p></del>
                         <p class="fw-bold text-danger"><%=numberFormat.format(ProductService.getInstance().productPriceIncludeDiscount(prd))%>

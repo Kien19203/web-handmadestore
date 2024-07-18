@@ -67,6 +67,7 @@ body{
     top: 20%;
     color: white;
     font-weight: bold;
+    font-size: 20px;
 
 }
 .categorys .item_category .button_seld {
@@ -318,7 +319,7 @@ li {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 3em;
+    height: 4em;
 }
 
 .products .productkm .item_product a.image {

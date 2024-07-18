@@ -265,18 +265,18 @@
                             <%}%>
 
                         </table>
-                        <div class="row border-top py-3">
-                            <div class="input-group-prepend col-9  d-flex align-items-center">
-                                <div class="form-floating w-100">
-                                    <input id="discount_code" type="text" class="form-control"
-                                           placeholder="Nhập mã giảm giá">
-                                    <label for="discount_code" class="floatingInput">Nhập mã giảm giá</label>
-                                </div>
-                            </div>
-                            <div class="col-3 d-flex align-items-center">
-                                <button type="button" class="btn btn-primary h-100 w-100 color-for-bg">Áp dụng</button>
-                            </div>
-                        </div>
+<%--                        <div class="row border-top py-3">--%>
+<%--                            <div class="input-group-prepend col-9  d-flex align-items-center">--%>
+<%--                                <div class="form-floating w-100">--%>
+<%--                                    <input id="discount_code" type="text" class="form-control"--%>
+<%--                                           placeholder="Nhập mã giảm giá">--%>
+<%--                                    <label for="discount_code" class="floatingInput">Nhập mã giảm giá</label>--%>
+<%--                                </div>--%>
+<%--                            </div>--%>
+<%--                            <div class="col-3 d-flex align-items-center">--%>
+<%--                                <button type="button" class="btn btn-primary h-100 w-100 color-for-bg">Áp dụng</button>--%>
+<%--                            </div>--%>
+<%--                        </div>--%>
                         <div class="row border-top py-3">
                             <table class="table-borderless">
                                 <thead>
