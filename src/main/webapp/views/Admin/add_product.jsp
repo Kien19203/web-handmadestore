@@ -42,6 +42,13 @@
 <body>
 
 <div class="container-fluid mx-auto mt-2">
+    <% String re = (String) request.getAttribute("result");
+        if (re != null) {
+    %>
+    <div id="errorAlert" class="alert alert-warning" role="alert">
+        <%=re%>
+    </div>
+    <%}%>
     <form action="<%=request.getContextPath()%>/addproduct" method="post" enctype="multipart/form-data"
           onsubmit="return validateForm()">
         <div class="row my-4">
@@ -138,9 +145,7 @@
         <div class="row my-4 mx-5 border rounded-3">
             <!--    input Images-->
             <div class="row">
-                <p class="fw-bold">Chọn một hoặc nhiều ảnh cho sản phẩm (Lưu ý rằng sẽ không thể thay đổi ảnh của sản
-                    phẩm
-                    sau này và ảnh đại diện cho sản phẩm sẽ là ảnh đầu tiên theo thứ tự alphabet!)</p>
+                <p class="fw-bold">Chọn một hoặc nhiều ảnh cho sản phẩm</p>
             </div>
             <div class="row align-items-center" style="height: 100px;">
                 <div class="row">
@@ -152,10 +157,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <% String re = request.getAttribute("result") == null ? "" : request.getAttribute("result").toString(); %>
-        <div id="errorAlert" class="alert alert-danger" role="alert">
-            <%=re%>
         </div>
         <div class="row mb-2 me-5 mb-2">
             <div class="d-flex justify-content-end m-0" id="submit">
